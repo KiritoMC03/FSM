@@ -7,11 +7,26 @@ namespace FSM.Runtime
     {
         public static void Main()
         {
-            DecisionSolver solver = new DecisionSolver();
+            ConditionSolver solver = new ConditionSolver();
+            Stopwatch sw = new Stopwatch();
             ILogicLayoutNode root = new AndLayoutNode(Create2(), Create2());
+            sw.Start();
+            bool a = solver.Solve(new ConditionsBlock(root));
+            sw.Stop();
+            Console.WriteLine(sw.ElapsedTicks);
+
             
-            var a = solver.Solve(new DecisionsBlock(root));
-            Console.WriteLine($"Result: {a}");
+            sw = new Stopwatch();
+            bool r = true;
+            sw.Start();
+            for (int i = 0; i < 100; i++)
+            {
+                r &= solver.Solve(new ConditionsBlock(root));
+            }
+            sw.Stop();
+            Console.WriteLine(sw.ElapsedTicks / 100);
+            
+            Console.WriteLine($"Result: {a} {r}");
         }
 
         private static ILogicLayoutNode Create2()
@@ -22,10 +37,10 @@ namespace FSM.Runtime
         private static ILogicLayoutNode Create()
         {
             return new AndLayoutNode(
-                new NotLayoutNode(new BaseLogicGateNode(default, new FalseDecision())),
+                new NotLayoutNode(new BaseLogicGateNode(default, new FalseCondition())),
                 new OrLayoutNode(
-                    new BaseLogicGateNode(default, new FalseDecision()),
-                    new BaseLogicGateNode(default, new TrueDecision())));
+                    new BaseLogicGateNode(default, new FalseCondition()),
+                    new BaseLogicGateNode(default, new TrueCondition())));
         }
     }
 }

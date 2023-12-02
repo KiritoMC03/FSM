@@ -2,7 +2,7 @@
 
 namespace FSM.Runtime
 {
-    public class FalseDecision : IDecision
+    public class FalseCondition : ICondition
     {
         public bool Decide() => false;
     }

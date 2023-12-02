@@ -11,7 +11,7 @@
         public LogicNode()
         {
         }
-        
+
         public LogicNode(bool value)
         {
             IsLeaf = true;

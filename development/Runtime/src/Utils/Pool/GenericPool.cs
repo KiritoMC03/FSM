@@ -8,7 +8,7 @@ namespace FSM.Runtime.Utils
         private Stack<T> items;
         private FactoryMethod<T> factoryMethod;
 
-        public GenericPool(FactoryMethod<T> factoryMethod, int initialCapacity = 32)
+        public GenericPool(FactoryMethod<T> factoryMethod, int initialCapacity = 2)
         {
             this.factoryMethod = factoryMethod ?? throw new ArgumentNullException(nameof(factoryMethod));
             this.items = new Stack<T>(initialCapacity);
@@ -22,11 +22,14 @@ namespace FSM.Runtime.Utils
                 return factoryMethod();
             }
 
-            var item = items.Pop();
-            item.Reset();
+            T item = items.Pop();
             return item;
         }
 
-        public void Push(T item) => items.Push(item);
+        public void Push(T item)
+        {
+            item.Reset();
+            items.Push(item);
+        }
     }
 }

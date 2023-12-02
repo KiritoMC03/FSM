@@ -1,10 +1,10 @@
 ﻿namespace FSM.Runtime
 {
-    public class DecisionsBlock
+    public class ConditionsBlock
     {
         public readonly ILogicLayoutNode Node;
 
-        public DecisionsBlock(ILogicLayoutNode node)
+        public ConditionsBlock(ILogicLayoutNode node)
         {
             Node = node;
         }

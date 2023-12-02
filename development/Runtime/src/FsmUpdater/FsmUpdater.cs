@@ -50,7 +50,7 @@ namespace FSM.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Update<T>(T state) where T: IState
         {
-#if FSM_SAFE
+#if FSM_CATCH
             try
             {
                 state.OnUpdate();

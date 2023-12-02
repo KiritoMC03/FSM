@@ -1,29 +1,31 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Runtime.Utils;
 
 namespace FSM.Runtime.Utils
 {
     public sealed class LogicTreeSolver
     {
-        private readonly Stack<LogicNode> stack;
+        private readonly Stack<LogicNode> logicChain;
 
         public LogicTreeSolver(int initialStackCapacity = 32)
         {
-            stack = new Stack<LogicNode>(initialStackCapacity);
+            logicChain = new Stack<LogicNode>(initialStackCapacity);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Solve(LogicNode root) // ToDo: tests
         {
-            stack.Push(root);
+            logicChain.Push(root);
             bool value = false;
-            while (stack.Count > 0)
+            // Simple binary tree traversal. We need to convert every node to simple true/false state
+            while (logicChain.Count > 0) 
             {
-                LogicNode current = stack.Peek();
+                LogicNode current = logicChain.Peek();
                 if (current.IsLeaf)
                 {
                     value = current.Value;
-                    stack.Pop();
+                    logicChain.Pop();
                 }
                 else
                 {
@@ -35,8 +37,8 @@ namespace FSM.Runtime.Utils
                                 current.Value = current.Left.Value && current.Right.Value;
                                 current.IsLeaf = true;
                             }
-                            else if (current.Left.IsLeaf) stack.Push(current.Right);
-                            else stack.Push(current.Left);
+                            else if (current.Left.IsLeaf) logicChain.Push(current.Right);
+                            else logicChain.Push(current.Left);
                             break;
                         case Operator.Or:
                             if (current.Left.IsLeaf && current.Right.IsLeaf)
@@ -44,8 +46,8 @@ namespace FSM.Runtime.Utils
                                 current.Value = current.Left.Value || current.Right.Value;
                                 current.IsLeaf = true;
                             }
-                            else if (current.Left.IsLeaf) stack.Push(current.Right);
-                            else stack.Push(current.Left);
+                            else if (current.Left.IsLeaf) logicChain.Push(current.Right);
+                            else logicChain.Push(current.Left);
                             break;
                         case Operator.Not:
                             if (current.Left.IsLeaf)
@@ -53,8 +55,11 @@ namespace FSM.Runtime.Utils
                                 current.Value = !current.Left.Value;
                                 current.IsLeaf = true;
                             }
-                            else stack.Push(current.Left);
+                            else logicChain.Push(current.Left);
                             break;
+                        default:
+                            Logger.LogError(Messages.InvalidLogicOperatorWithExitError); // ToDo: Maybe not the best 
+                            return false;
                     }
                 }
             }
