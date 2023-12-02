@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Runtime.Utils
+namespace FSM.Runtime.Utils
 {
-    public class Logger
+    public static class Logger
     {
 #if UNITY_ENGINE
         public static void Log(string message) => Debug.Log($"[FSM] {message}");

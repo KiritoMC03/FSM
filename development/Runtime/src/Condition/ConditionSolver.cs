@@ -12,10 +12,10 @@ namespace FSM.Runtime
         private readonly Queue<LogicNode> copyQueue = new Queue<LogicNode>(16);
         private readonly Stack<LogicNode> clearStack = new Stack<LogicNode>(4); 
 
-        public bool Solve(ConditionsBlock conditionsBlock)
+        public bool Solve(ILogicLayoutNode logicLayoutNode)
         {
             // Creating of temp logic tree to solve him. 
-            LogicNode tree = CreateLogicTree(conditionsBlock);
+            LogicNode tree = CreateLogicTree(logicLayoutNode);
             bool result = logicTreeSolver.Solve(tree);
 
             clearStack.Push(tree);
@@ -30,10 +30,10 @@ namespace FSM.Runtime
             return result;
         }
 
-        private LogicNode CreateLogicTree(ConditionsBlock conditionsBlock)
+        private LogicNode CreateLogicTree(ILogicLayoutNode logicLayoutNode)
         {
-            (LogicNode newNode, ILogicLayoutNode rootLeft, ILogicLayoutNode rootRight) = GetNodeFor(conditionsBlock.Node);
-            originalQueue.Enqueue((conditionsBlock.Node, rootLeft, rootRight));
+            (LogicNode newNode, ILogicLayoutNode rootLeft, ILogicLayoutNode rootRight) = GetNodeFor(logicLayoutNode);
+            originalQueue.Enqueue((logicLayoutNode, rootLeft, rootRight));
             copyQueue.Enqueue(newNode);
 
             while (originalQueue.Count > 0)

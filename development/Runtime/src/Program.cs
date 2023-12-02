@@ -11,7 +11,7 @@ namespace FSM.Runtime
             Stopwatch sw = new Stopwatch();
             ILogicLayoutNode root = new AndLayoutNode(Create2(), Create2());
             sw.Start();
-            bool a = solver.Solve(new ConditionsBlock(root));
+            bool a = solver.Solve(root);
             sw.Stop();
             Console.WriteLine(sw.ElapsedTicks);
 
@@ -21,7 +21,7 @@ namespace FSM.Runtime
             sw.Start();
             for (int i = 0; i < 100; i++)
             {
-                r &= solver.Solve(new ConditionsBlock(root));
+                r &= solver.Solve(root);
             }
             sw.Stop();
             Console.WriteLine(sw.ElapsedTicks / 100);

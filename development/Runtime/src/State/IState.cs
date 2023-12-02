@@ -4,7 +4,8 @@ namespace FSM.Runtime
 {
     public interface IState
     {
-        IEnumerable<ITransition> Transitions { get; }
+        IEnumerable<ITransition> OutgoingTransitions { get; }
+
         void OnEnter();
         void OnUpdate();
         void OnExit();
