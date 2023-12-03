@@ -1,24 +1,18 @@
 ﻿namespace FSM.Runtime.Utils
 {
-    public class LogicNode : IPoolable
+    public sealed class LogicOperationNode : IPoolable
     {
         public bool IsLeaf;
         public bool Value;
+        public LogicOperationNode Left;
+        public LogicOperationNode Right;
         public Operator Operator;
-        public LogicNode Left;
-        public LogicNode Right;
 
-        public LogicNode()
+        public LogicOperationNode()
         {
         }
 
-        public LogicNode(bool value)
-        {
-            IsLeaf = true;
-            Value = value;
-        }
-
-        public LogicNode(Operator @operator, LogicNode left, LogicNode right)
+        public LogicOperationNode(Operator @operator, LogicOperationNode left, LogicOperationNode right)
         {
             IsLeaf = false;
             Operator = @operator;
@@ -26,7 +20,7 @@
             Right = right;
         }
 
-        public LogicNode(Operator @operator, LogicNode left)
+        public LogicOperationNode(Operator @operator, LogicOperationNode left)
         {
             IsLeaf = false;
             Operator = @operator;
@@ -38,7 +32,6 @@
         {
             IsLeaf = false;
             Value = default;
-            Operator = default;
             Left = default;
             Right = default;
         }

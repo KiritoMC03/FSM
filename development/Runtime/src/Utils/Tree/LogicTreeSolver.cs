@@ -1,27 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Runtime.Utils;
 
 namespace FSM.Runtime.Utils
 {
     public sealed class LogicTreeSolver
     {
-        private readonly Stack<LogicNode> logicChain;
+        private readonly Stack<LogicOperationNode> logicChain;
 
         public LogicTreeSolver(int initialStackCapacity = 32)
         {
-            logicChain = new Stack<LogicNode>(initialStackCapacity);
+            logicChain = new Stack<LogicOperationNode>(initialStackCapacity);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Solve(LogicNode root) // ToDo: tests
+        public bool Solve(LogicOperationNode root) // ToDo: tests
         {
             logicChain.Push(root);
             bool value = false;
             // Simple binary tree traversal. We need to convert every node to simple true/false state
             while (logicChain.Count > 0) 
             {
-                LogicNode current = logicChain.Peek();
+                LogicOperationNode current = logicChain.Peek();
                 if (current.IsLeaf)
                 {
                     value = current.Value;

@@ -3,6 +3,6 @@
     public interface ITransition
     {
         IState To { get; }
-        ILogicLayoutNode Condition { get; }
+        ILayoutNode Condition { get; }
     }
 }

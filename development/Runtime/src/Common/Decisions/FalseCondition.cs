@@ -1,6 +1,4 @@
-﻿using FSM.Runtime;
-
-namespace FSM.Runtime
+﻿namespace FSM.Runtime
 {
     public class FalseCondition : ICondition
     {

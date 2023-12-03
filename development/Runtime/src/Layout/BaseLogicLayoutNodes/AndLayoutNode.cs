@@ -1,10 +1,10 @@
 ﻿namespace FSM.Runtime
 {
-    public sealed class AndLayoutNode : BaseLogicGateNode
+    public sealed class AndLayoutNode : BaseGateNode
     {
-        public ILogicLayoutNode Right { get; }
+        public ILayoutNode Right { get; }
 
-        public AndLayoutNode(ILogicLayoutNode input, ILogicLayoutNode right) : base(input, default)
+        public AndLayoutNode(ILayoutNode left, ILayoutNode right) : base(default, left)
         {
             Right = right;
         }

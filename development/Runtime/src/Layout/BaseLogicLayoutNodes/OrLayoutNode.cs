@@ -1,10 +1,10 @@
 ﻿namespace FSM.Runtime
 {
-    public sealed class OrLayoutNode : BaseLogicGateNode
+    public sealed class OrLayoutNode : BaseGateNode
     {
-        public ILogicLayoutNode Right { get; }
+        public ILayoutNode Right { get; }
 
-        public OrLayoutNode(ILogicLayoutNode input, ILogicLayoutNode right) : base(input, default)
+        public OrLayoutNode(ILayoutNode left, ILayoutNode right) : base(default, left)
         {
             Right = right;
         }

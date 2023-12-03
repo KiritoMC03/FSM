@@ -1,17 +1,17 @@
 ﻿namespace FSM.Runtime
 {
-    public class BaseLogicGateNode : ILogicLayoutNode
+    public class BaseGateNode : ILayoutNode
     {
         /// <summary>
         /// Input is associated as Left node
         /// </summary>
-        public ILogicLayoutNode Input { get; }
+        public ILayoutNode Connection { get; }
         public object LogicObject { get; }
 
-        public BaseLogicGateNode(ILogicLayoutNode input, object logicObject)
+        public BaseGateNode(object logicObject, ILayoutNode connection)
         {
-            Input = input;
             LogicObject = logicObject;
+            Connection = connection;
         }
     }
 }

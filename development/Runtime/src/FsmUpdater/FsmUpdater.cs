@@ -29,13 +29,16 @@ namespace FSM.Runtime
         private void UpdateAgent<T>(T agent) where T: IFsmAgent
         {
             IState currentState = agent.CurrentState;
-            foreach (ITransition transition in currentState.OutgoingTransitions)
+            if (currentState.OutgoingTransitions != null)
             {
-                if (conditionSolver.Solve(transition.Condition))
+                foreach (ITransition transition in currentState.OutgoingTransitions)
                 {
-                    currentState.OnExit();
-                    currentState = agent.CurrentState = transition.To;
-                    currentState.OnEnter();
+                    if (conditionSolver.Solve(transition.Condition))
+                    {
+                        currentState.OnExit();
+                        currentState = agent.CurrentState = transition.To;
+                        currentState.OnEnter();
+                    }
                 }
             }
             currentState.OnUpdate();

@@ -1,8 +1,8 @@
 ﻿namespace FSM.Runtime
 {
-    public sealed class NotLayoutNode : BaseLogicGateNode
+    public sealed class NotLayoutNode : BaseGateNode
     {
-        public NotLayoutNode(ILogicLayoutNode input) : base(input, default)
+        public NotLayoutNode(ILayoutNode connection) : base(default, connection)
         {
         }
     }

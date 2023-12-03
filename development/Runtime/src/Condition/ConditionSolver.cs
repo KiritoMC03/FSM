@@ -6,22 +6,22 @@ namespace FSM.Runtime
     public class ConditionSolver
     {
         private readonly LogicTreeSolver logicTreeSolver = new LogicTreeSolver();
-        private readonly GenericPool<LogicNode> logicNodesPool = new GenericPool<LogicNode>(NewLogicNode);
-        private readonly Queue<(ILogicLayoutNode self, ILogicLayoutNode left, ILogicLayoutNode right)> originalQueue =
-                     new Queue<(ILogicLayoutNode self, ILogicLayoutNode left, ILogicLayoutNode right)>(16);
-        private readonly Queue<LogicNode> copyQueue = new Queue<LogicNode>(16);
-        private readonly Stack<LogicNode> clearStack = new Stack<LogicNode>(4); 
+        private readonly GenericPool<LogicOperationNode> logicNodesPool = new GenericPool<LogicOperationNode>(NewLogicNode);
+        private readonly Queue<(ILayoutNode self, ILayoutNode left, ILayoutNode right)> originalQueue =
+                     new Queue<(ILayoutNode self, ILayoutNode left, ILayoutNode right)>(16);
+        private readonly Queue<LogicOperationNode> copyQueue = new Queue<LogicOperationNode>(16);
+        private readonly Stack<LogicOperationNode> clearStack = new Stack<LogicOperationNode>(4); 
 
-        public bool Solve(ILogicLayoutNode logicLayoutNode)
+        public bool Solve(ILayoutNode layoutNode)
         {
             // Creating of temp logic tree to solve him. 
-            LogicNode tree = CreateLogicTree(logicLayoutNode);
+            LogicOperationNode tree = CreateLogicTree(layoutNode);
             bool result = logicTreeSolver.Solve(tree);
 
             clearStack.Push(tree);
             while (clearStack.Count > 0)
             {
-                LogicNode current = clearStack.Pop();
+                LogicOperationNode current = clearStack.Pop();
                 if (current.Right != null) clearStack.Push(current.Right);
                 if (current.Left != null) clearStack.Push(current.Left);
                 logicNodesPool.Push(current);
@@ -30,32 +30,32 @@ namespace FSM.Runtime
             return result;
         }
 
-        private LogicNode CreateLogicTree(ILogicLayoutNode logicLayoutNode)
+        private LogicOperationNode CreateLogicTree(ILayoutNode layoutNode)
         {
-            (LogicNode newNode, ILogicLayoutNode rootLeft, ILogicLayoutNode rootRight) = GetNodeFor(logicLayoutNode);
-            originalQueue.Enqueue((logicLayoutNode, rootLeft, rootRight));
+            (LogicOperationNode newNode, ILayoutNode rootLeft, ILayoutNode rootRight) = GetNodeFor(layoutNode);
+            originalQueue.Enqueue((layoutNode, rootLeft, rootRight));
             copyQueue.Enqueue(newNode);
 
             while (originalQueue.Count > 0)
             {
-                (ILogicLayoutNode original, ILogicLayoutNode originalLeft, ILogicLayoutNode originalRight) = originalQueue.Dequeue();
-                LogicNode copyNode = copyQueue.Dequeue();
+                (ILayoutNode original, ILayoutNode originalLeft, ILayoutNode originalRight) = originalQueue.Dequeue();
+                LogicOperationNode copyOperationNode = copyQueue.Dequeue();
 
                 if (originalLeft != null)
                 {
-                    (LogicNode result, ILogicLayoutNode left, ILogicLayoutNode right) = GetNodeFor(originalLeft);
+                    (LogicOperationNode result, ILayoutNode left, ILayoutNode right) = GetNodeFor(originalLeft);
                     originalQueue.Enqueue((originalLeft, left, right));
                     result.IsLeaf = left == null && right == null;
-                    copyNode.Left = result;
+                    copyOperationNode.Left = result;
                     copyQueue.Enqueue(result);
                 }
 
                 if (originalRight != null)
                 {
-                    (LogicNode result, ILogicLayoutNode left, ILogicLayoutNode right) = GetNodeFor(originalRight);
+                    (LogicOperationNode result, ILayoutNode left, ILayoutNode right) = GetNodeFor(originalRight);
                     originalQueue.Enqueue((originalRight, left, right));
                     result.IsLeaf = left == null && right == null;
-                    copyNode.Right = result;
+                    copyOperationNode.Right = result;
                     copyQueue.Enqueue(result);
                 }
             }
@@ -65,26 +65,27 @@ namespace FSM.Runtime
             return newNode;
         }
 
-        private (LogicNode result, ILogicLayoutNode left, ILogicLayoutNode right) GetNodeFor(ILogicLayoutNode layoutNode)
+        private (LogicOperationNode result, ILayoutNode left, ILayoutNode right) GetNodeFor(ILayoutNode layoutNode)
         {
-            LogicNode result = logicNodesPool.Pop();
+            LogicOperationNode result = logicNodesPool.Pop();
             switch (layoutNode)
             {
                 case NotLayoutNode:
                     result.Operator = Operator.Not;
-                    return (result, layoutNode.Input, null);
+                    return (result, layoutNode.Connection, null);
                 case OrLayoutNode orLayoutNode:
                     result.Operator = Operator.Or;
-                    return (result, orLayoutNode.Input, orLayoutNode.Right);
+                    return (result, orLayoutNode.Connection, orLayoutNode.Right);
                 case AndLayoutNode andLayoutNode:
                     result.Operator = Operator.And;
-                    return (result, andLayoutNode.Input, andLayoutNode.Right);
+                    return (result, andLayoutNode.Connection, andLayoutNode.Right);
                 default:
                     result.Value = ((ICondition)layoutNode.LogicObject).Decide();
+                    result.IsLeaf = true;
                     return (result, null, null);
             }
         }
 
-        private static LogicNode NewLogicNode() => new LogicNode();
+        private static LogicOperationNode NewLogicNode() => new LogicOperationNode();
     }
 }

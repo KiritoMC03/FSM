@@ -1,4 +1,4 @@
-﻿namespace Runtime.Utils
+﻿namespace FSM.Runtime.Utils
 {
     public class Messages
     {
