@@ -5,7 +5,11 @@
         public abstract object LogicObject { get; }
         public ILayoutNode Connection { get; }
 
-        public FunctionLayoutNode(ILayoutNode connection)
+        protected FunctionLayoutNode()
+        {
+        }
+
+        protected FunctionLayoutNode(ILayoutNode connection)
         {
             Connection = connection;
         }
@@ -16,7 +20,12 @@
     public sealed class FunctionLayoutNode<T> : FunctionLayoutNode
     {
         private readonly IFunction<T> functionObject;
+
         public override object LogicObject => functionObject;
+
+        public FunctionLayoutNode()
+        {
+        }
 
         public FunctionLayoutNode(ILayoutNode connection, IFunction<T> functionObject) : base(connection)
         {

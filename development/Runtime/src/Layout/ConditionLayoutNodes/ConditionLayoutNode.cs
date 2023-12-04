@@ -1,14 +1,10 @@
 ﻿namespace FSM.Runtime
 {
-    public sealed class ConditionLayoutNode : ILayoutNode
+    public sealed class ConditionLayoutNode : IConditionalLayoutNode
     {
-        public object LogicObject { get; }
-        /// <summary>
-        /// Conditions has no connections.
-        /// </summary>
-        public ILayoutNode Connection { get; } = default;
+        public ICondition LogicObject { get; }
 
-        public ConditionLayoutNode(object conditionObject)
+        public ConditionLayoutNode(ICondition conditionObject)
         {
             LogicObject = conditionObject;
         }

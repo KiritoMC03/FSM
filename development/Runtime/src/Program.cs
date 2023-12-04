@@ -1,14 +1,55 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading;
 using FSM.Runtime.Common;
+using FSM.Runtime.Serialization;
+using Newtonsoft.Json;
+using Runtime.Utils.Serialization;
 
 namespace FSM.Runtime
 {
+    [Serializable]
+    public class IntFunc : IFunction<int>
+    {
+        public int val;
+        public int Execute() => val;
+    }
+    
     public class Program
     {
         public static void Main()
         {
+            // var s = JsonConvert.SerializeObject(new ConditionLayoutNodeModel(new TrueCondition()));
+            // var r = JsonConvert.DeserializeObject<ConditionLayoutNodeModel>(s);
+            //
+            // var sOr = JsonConvert.SerializeObject(new BaseLayoutNodeModel(new OrLayoutNode(
+            //     new ConditionLayoutNode(new FalseCondition()),
+            //     new ConditionLayoutNode(new TrueCondition()))));
+            // var rOr = JsonConvert.DeserializeObject<BaseLayoutNodeModel>(sOr);
+
+            var tp = JsonConvert.SerializeObject(new NotLayoutNodeModel(new ConditionLayoutNodeModel(new FalseCondition())).GetType());
+            var dtp = JsonConvert.DeserializeObject<Type>(tp);
+
+            var src = new AbstractSerializableType<ConditionalLayoutNodeModel>(
+                new AndLayoutNodeModel
+                (
+                    new NotLayoutNodeModel(new ConditionLayoutNodeModel(new FalseCondition())),
+                    new OrLayoutNodeModel
+                    (
+                        new ConditionLayoutNodeModel(new FalseCondition()),
+                        new ConditionLayoutNodeModel(new TrueCondition()))
+                )
+            );
+            var text = JsonConvert.SerializeObject(src, Formatting.None);
+            
+
+            var textObj = JsonConvert.DeserializeObject<AbstractSerializableType<ConditionalLayoutNodeModel>>(text);
+            
+            FunctionLayoutNode<int> func = new FunctionLayoutNode<int>(default, new IntFunc(){val = 3});
+            Type type = func.GetType(); 
+            string ser = JsonConvert.SerializeObject(func);
+            FunctionLayoutNode deser = (FunctionLayoutNode)JsonConvert.DeserializeObject(ser, type);
+            var res = deser.ExecuteObject();
+
             ActionLayoutNode actions0 =
                 new ActionLayoutNode(new LogAction("actions0_0"),
                     new ActionLayoutNode(new LogAction("actions0_1"), default));
@@ -25,52 +66,62 @@ namespace FSM.Runtime
             StateBase state1 = new StateBase(actions1, default);
             StateBase state2 = new StateBase(actions2, default);
             StateBase state3 = new StateBase(actions3, default);
-            BaseTransition transitionTo1 = new BaseTransition(state1, new ConditionLayoutNode(new TrueCondition()));
+            BaseTransition transitionTo1 = new BaseTransition(state1, new ConditionLayoutNode(new TrueCondition())); 
             BaseTransition transitionTo2 = new BaseTransition(state2, new ConditionLayoutNode(new TrueCondition()));
             BaseTransition transitionTo3 = new BaseTransition(state3, new OrLayoutNode(
+                new ConditionLayoutNode(new FalseCondition()),
+                new ConditionLayoutNode(new TrueCondition())));
+            BaseTransition transitionTo0 = new BaseTransition(state0, new OrLayoutNode(
                 new ConditionLayoutNode(new FalseCondition()),
                 new ConditionLayoutNode(new TrueCondition())));
             state0.SetTransitions(new []{transitionTo1});
             state1.SetTransitions(new []{transitionTo2});
             state2.SetTransitions(new []{transitionTo3});
+            state3.SetTransitions(new []{transitionTo0});
 
             FsmAgentBase agent = new FsmAgentBase(state0);
             FsmData data = new FsmData(new []{agent});
-            while (true)
-            {
-                new FsmUpdater().Update(data);
-                Thread.Sleep(100);
-            }
+            FsmUpdater updater = new FsmUpdater();
             
-            
-            ConditionSolver solver = new ConditionSolver();
+            updater.Update(data);
             Stopwatch sw = new Stopwatch();
-            ILayoutNode root = new AndLayoutNode(Create2(), Create2());
-            sw.Start();
-            bool a = solver.Solve(root);
-            sw.Stop();
-            Console.WriteLine(sw.ElapsedTicks);
-
-            
-            sw = new Stopwatch();
-            bool r = true;
             sw.Start();
             for (int i = 0; i < 100; i++)
             {
-                r &= solver.Solve(root);
+                updater.Update(data);
             }
             sw.Stop();
             Console.WriteLine(sw.ElapsedTicks / 100);
             
-            Console.WriteLine($"Result: {a} {r}");
+            
+            // ConditionSolver solver = new ConditionSolver();
+            // Stopwatch sw = new Stopwatch();
+            // ILayoutNode root = new AndLayoutNode(Create2(), Create2());
+            // sw.Start();
+            // bool a = solver.Solve(root);
+            // sw.Stop();
+            // Console.WriteLine(sw.ElapsedTicks);
+            //
+            //
+            // sw = new Stopwatch();
+            // bool r = true;
+            // sw.Start();
+            // for (int i = 0; i < 100; i++)
+            // {
+            //     r &= solver.Solve(root);
+            // }
+            // sw.Stop();
+            // Console.WriteLine(sw.ElapsedTicks / 100);
+            //
+            // Console.WriteLine($"Result: {a} {r}");
         }
 
-        private static ILayoutNode Create2()
+        private static IConditionalLayoutNode Create2()
         {
             return new AndLayoutNode(Create(), Create());
         }
         
-        private static ILayoutNode Create()
+        private static IConditionalLayoutNode Create()
         {
             return new AndLayoutNode(
                 new NotLayoutNode(new ConditionLayoutNode(new FalseCondition())),

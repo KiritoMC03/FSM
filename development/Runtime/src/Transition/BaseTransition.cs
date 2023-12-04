@@ -3,9 +3,9 @@
     public class BaseTransition : ITransition
     {
         public IState To { get; }
-        public ILayoutNode Condition { get; }
+        public IConditionalLayoutNode Condition { get; }
 
-        public BaseTransition(IState to, ILayoutNode condition)
+        public BaseTransition(IState to, IConditionalLayoutNode condition)
         {
             To = to;
             Condition = condition;
