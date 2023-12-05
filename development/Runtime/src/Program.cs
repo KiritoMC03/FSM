@@ -3,7 +3,6 @@ using System.Diagnostics;
 using FSM.Runtime.Common;
 using FSM.Runtime.Serialization;
 using Newtonsoft.Json;
-using Runtime.Utils.Serialization;
 
 namespace FSM.Runtime
 {
@@ -18,18 +17,7 @@ namespace FSM.Runtime
     {
         public static void Main()
         {
-            // var s = JsonConvert.SerializeObject(new ConditionLayoutNodeModel(new TrueCondition()));
-            // var r = JsonConvert.DeserializeObject<ConditionLayoutNodeModel>(s);
-            //
-            // var sOr = JsonConvert.SerializeObject(new BaseLayoutNodeModel(new OrLayoutNode(
-            //     new ConditionLayoutNode(new FalseCondition()),
-            //     new ConditionLayoutNode(new TrueCondition()))));
-            // var rOr = JsonConvert.DeserializeObject<BaseLayoutNodeModel>(sOr);
-
-            var tp = JsonConvert.SerializeObject(new NotLayoutNodeModel(new ConditionLayoutNodeModel(new FalseCondition())).GetType());
-            var dtp = JsonConvert.DeserializeObject<Type>(tp);
-
-            var src = new AbstractSerializableType<ConditionalLayoutNodeModel>(
+            AbstractSerializableType<ConditionalLayoutNodeModel> src = new AbstractSerializableType<ConditionalLayoutNodeModel>(
                 new AndLayoutNodeModel
                 (
                     new NotLayoutNodeModel(new ConditionLayoutNodeModel(new FalseCondition())),
@@ -40,16 +28,24 @@ namespace FSM.Runtime
                 )
             );
             var text = JsonConvert.SerializeObject(src, Formatting.None);
+            var serSw = new Stopwatch();
+            serSw.Start();
+            var textObj = ConditionLayoutNodesSerializer.DeserializeAndConvert<AbstractSerializableType<ConditionalLayoutNodeModel>>(text);
+            serSw.Stop();
+            Console.WriteLine($"Ser: {serSw.ElapsedTicks}");
             
-
-            var textObj = JsonConvert.DeserializeObject<AbstractSerializableType<ConditionalLayoutNodeModel>>(text);
+            serSw = new Stopwatch();
+            serSw.Start();
+            textObj = ConditionLayoutNodesSerializer.DeserializeAndConvert<AbstractSerializableType<ConditionalLayoutNodeModel>>(text);
+            serSw.Stop();
+            Console.WriteLine($"Ser: {serSw.ElapsedTicks}");
             
-            FunctionLayoutNode<int> func = new FunctionLayoutNode<int>(default, new IntFunc(){val = 3});
-            Type type = func.GetType(); 
-            string ser = JsonConvert.SerializeObject(func);
-            FunctionLayoutNode deser = (FunctionLayoutNode)JsonConvert.DeserializeObject(ser, type);
-            var res = deser.ExecuteObject();
-
+            // FunctionLayoutNode<int> func = new FunctionLayoutNode<int>(default, new IntFunc(){val = 3});
+            // Type type = func.GetType(); 
+            // string ser = JsonConvert.SerializeObject(func);
+            // FunctionLayoutNode deser = (FunctionLayoutNode)JsonConvert.DeserializeObject(ser, type);
+            // var res = deser.ExecuteObject();
+            
             ActionLayoutNode actions0 =
                 new ActionLayoutNode(new LogAction("actions0_0"),
                     new ActionLayoutNode(new LogAction("actions0_1"), default));
@@ -68,9 +64,7 @@ namespace FSM.Runtime
             StateBase state3 = new StateBase(actions3, default);
             BaseTransition transitionTo1 = new BaseTransition(state1, new ConditionLayoutNode(new TrueCondition())); 
             BaseTransition transitionTo2 = new BaseTransition(state2, new ConditionLayoutNode(new TrueCondition()));
-            BaseTransition transitionTo3 = new BaseTransition(state3, new OrLayoutNode(
-                new ConditionLayoutNode(new FalseCondition()),
-                new ConditionLayoutNode(new TrueCondition())));
+            BaseTransition transitionTo3 = new BaseTransition(state3, textObj);
             BaseTransition transitionTo0 = new BaseTransition(state0, new OrLayoutNode(
                 new ConditionLayoutNode(new FalseCondition()),
                 new ConditionLayoutNode(new TrueCondition())));
@@ -78,7 +72,7 @@ namespace FSM.Runtime
             state1.SetTransitions(new []{transitionTo2});
             state2.SetTransitions(new []{transitionTo3});
             state3.SetTransitions(new []{transitionTo0});
-
+            
             FsmAgentBase agent = new FsmAgentBase(state0);
             FsmData data = new FsmData(new []{agent});
             FsmUpdater updater = new FsmUpdater();
@@ -92,6 +86,12 @@ namespace FSM.Runtime
             }
             sw.Stop();
             Console.WriteLine(sw.ElapsedTicks / 100);
+            
+            
+            
+            
+            
+            
             
             
             // ConditionSolver solver = new ConditionSolver();

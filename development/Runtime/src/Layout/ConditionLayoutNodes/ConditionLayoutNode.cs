@@ -2,7 +2,11 @@
 {
     public sealed class ConditionLayoutNode : IConditionalLayoutNode
     {
-        public ICondition LogicObject { get; }
+        public ICondition LogicObject { get; set; }
+
+        public ConditionLayoutNode()
+        {
+        }
 
         public ConditionLayoutNode(ICondition conditionObject)
         {

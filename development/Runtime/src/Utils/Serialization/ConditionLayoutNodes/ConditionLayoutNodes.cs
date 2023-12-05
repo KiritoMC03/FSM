@@ -1,6 +1,5 @@
 ﻿using System;
 using Newtonsoft.Json;
-using Runtime.Utils.Serialization;
 
 namespace FSM.Runtime.Serialization
 {

@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
-namespace Runtime.Utils.Serialization
+namespace FSM.Runtime.Serialization
 {
     [Serializable]
     public class AbstractSerializableType<T>

@@ -1,8 +1,12 @@
 ﻿namespace FSM.Runtime
 {
-    public class ConditionGateLayoutNode : IConditionalLayoutNode
+    public class ConditionGateLayoutNode : IConditionalLayoutNode, IConditionalLayoutNodeWithLeftBranch
     {
-        public IConditionalLayoutNode Left { get; }
+        public IConditionalLayoutNode Left { get; set; }
+
+        public ConditionGateLayoutNode()
+        {
+        }
 
         public ConditionGateLayoutNode(IConditionalLayoutNode left)
         {

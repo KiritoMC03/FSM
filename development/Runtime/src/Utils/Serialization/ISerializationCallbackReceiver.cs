@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Runtime.Utils.Serialization
+namespace FSM.Runtime.Serialization
 {
     public interface ISerializationCallbackReceiver
     {
