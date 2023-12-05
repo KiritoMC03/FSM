@@ -1,15 +1,13 @@
-﻿using System;
-
-namespace FSM.Runtime.Utils
+﻿namespace FSM.Runtime.Utils
 {
     public static class Logger
     {
-#if UNITY_ENGINE
-        public static void Log(string message) => Debug.Log($"[FSM] {message}");
-        public static void LogError(string message) => Debug.LogError($"[FSM Error] {message}");
+#if UNITY_5_3_OR_NEWER
+        public static void Log(string message) => UnityEngine.Debug.Log($"[FSM] {message}");
+        public static void LogError(string message) => UnityEngine.Debug.LogError($"[FSM Error] {message}");
 #else
-        public static void Log(string message) => Console.WriteLine($"[FSM] {message}");
-        public static void LogError(string message) => Console.WriteLine($"[FSM Error] {message}");
+        public static void Log(string message) => System.Console.WriteLine($"[FSM] {message}");
+        public static void LogError(string message) => System.Console.WriteLine($"[FSM Error] {message}");
 #endif
     }
 }

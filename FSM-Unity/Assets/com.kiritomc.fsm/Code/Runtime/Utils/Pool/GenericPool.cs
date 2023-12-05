@@ -5,8 +5,8 @@ namespace FSM.Runtime.Utils
 {
     public class GenericPool<T> where T: IPoolable
     {
-        private Stack<T> items;
-        private FactoryMethod<T> factoryMethod;
+        private readonly Stack<T> items;
+        private readonly FactoryMethod<T> factoryMethod;
 
         public GenericPool(FactoryMethod<T> factoryMethod, int initialCapacity = 2)
         {

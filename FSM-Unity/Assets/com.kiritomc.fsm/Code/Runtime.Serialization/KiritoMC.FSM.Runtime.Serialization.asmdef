@@ -1,0 +1,16 @@
+{
+    "name": "KiritoMC.FSM.Runtime.Serialization",
+    "rootNamespace": "FSM.Runtime.Serialization",
+    "references": [
+        "GUID:f30f554dd5af55c40af853f0eef302ba"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

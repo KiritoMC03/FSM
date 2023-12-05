@@ -6,33 +6,34 @@ namespace FSM.Runtime
     {
         private readonly ActionsExecutor actionsExecutor = new ActionsExecutor();
         private readonly ActionLayoutNode actions;
+        private IEnumerable<ITransition> outgoingTransitions;
 
         public StateBase(ActionLayoutNode actions, IEnumerable<ITransition> outgoingTransitions)
         {
             this.actions = actions;
-            OutgoingTransitions = outgoingTransitions;
+            this.outgoingTransitions = outgoingTransitions;
         }
 
-        internal void SetTransitions(IEnumerable<ITransition> outgoingTransitions)
+        public void SetTransitions(IEnumerable<ITransition> outgoingTransitions)
         {
-            OutgoingTransitions = outgoingTransitions;
+            this.outgoingTransitions = outgoingTransitions;
         }
 
         #region IState
 
-        public IEnumerable<ITransition> OutgoingTransitions { get; private set; }
+        IEnumerable<ITransition> IState.OutgoingTransitions => outgoingTransitions;
 
-        public void OnEnter()
+        void IState.OnEnter()
         {
             // ToDo:
         }
 
-        public void OnUpdate()
+        void IState.OnUpdate()
         {
             actionsExecutor.Execute(actions);
         }
 
-        public void OnExit()
+        void IState.OnExit()
         {
             // ToDo:
         }

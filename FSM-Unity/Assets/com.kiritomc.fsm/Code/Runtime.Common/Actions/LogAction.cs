@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using FSM.Runtime.Utils;
 
 namespace FSM.Runtime.Common
@@ -12,7 +13,8 @@ namespace FSM.Runtime.Common
         {
             this.message = message;
         }
-        
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Execute()
         {
             Logger.Log(message);
