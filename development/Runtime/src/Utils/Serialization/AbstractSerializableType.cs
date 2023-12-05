@@ -9,10 +9,8 @@ namespace FSM.Runtime.Serialization
     {
         [NonSerialized]
         public T Item;
-        [JsonProperty]
-        private Type type;
-        [JsonProperty]
-        private string serializedText;
+        public Type Type;
+        public string SerializedText;
 
         public AbstractSerializableType()
         {
@@ -21,19 +19,19 @@ namespace FSM.Runtime.Serialization
         public AbstractSerializableType(T item)
         {
             Item = item;
-            type = item.GetType();
+            Type = item.GetType();
         }
 
         [OnSerializing]
         internal void OnSerializing(StreamingContext context)
         {
-            serializedText = JsonConvert.SerializeObject(Item);
+            SerializedText = JsonConvert.SerializeObject(Item);
         }
 
         [OnDeserialized]
         internal void OnDeserialized(StreamingContext context)
         {
-            Item = (T)JsonConvert.DeserializeObject(serializedText, type);
+            Item = (T)JsonConvert.DeserializeObject(SerializedText, Type);
         }
     }
 }

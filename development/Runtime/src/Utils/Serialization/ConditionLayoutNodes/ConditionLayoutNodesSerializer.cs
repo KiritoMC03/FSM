@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace FSM.Runtime.Serialization
 {
@@ -9,11 +10,15 @@ namespace FSM.Runtime.Serialization
         private static readonly Queue<(ConditionalLayoutNodeModel self, ConditionalLayoutNodeModel left, ConditionalLayoutNodeModel right)> OriginalQueue =
                             new Queue<(ConditionalLayoutNodeModel self, ConditionalLayoutNodeModel left, ConditionalLayoutNodeModel right)>(16);
         private static readonly Queue<IConditionalLayoutNode> CopyQueue = new Queue<IConditionalLayoutNode>(16);
+        private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings()
+        {
+            ContractResolver = new DefaultContractResolver() { IgnoreSerializableAttribute = false},
+        };
 
         public static IConditionalLayoutNode DeserializeAndConvert<T>(string json)
             where T: AbstractSerializableType<ConditionalLayoutNodeModel>
         {
-            return Convert(JsonConvert.DeserializeObject<T>(json).Item);
+            return Convert(JsonConvert.DeserializeObject<T>(json, JsonSerializerSettings).Item);
         }
 
         public static IConditionalLayoutNode Convert(ConditionalLayoutNodeModel root)

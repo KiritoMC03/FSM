@@ -1,5 +1,4 @@
 ﻿using System;
-using Newtonsoft.Json;
 
 namespace FSM.Runtime.Serialization
 {
@@ -11,9 +10,7 @@ namespace FSM.Runtime.Serialization
     [Serializable]
     public sealed class AndLayoutNodeModel : ConditionalLayoutNodeModel
     {
-        [JsonProperty]
         public AbstractSerializableType<ConditionalLayoutNodeModel> LeftModel;
-        [JsonProperty]
         public AbstractSerializableType<ConditionalLayoutNodeModel> RightModel;
 
         public AndLayoutNodeModel() { }
@@ -28,9 +25,7 @@ namespace FSM.Runtime.Serialization
     [Serializable]
     public sealed class OrLayoutNodeModel : ConditionalLayoutNodeModel
     {
-        [JsonProperty]
         public AbstractSerializableType<ConditionalLayoutNodeModel> LeftModel;
-        [JsonProperty]
         public AbstractSerializableType<ConditionalLayoutNodeModel> RightModel;
 
         public OrLayoutNodeModel() { }
@@ -45,7 +40,6 @@ namespace FSM.Runtime.Serialization
     [Serializable]
     public sealed class NotLayoutNodeModel : ConditionalLayoutNodeModel
     {
-        [JsonProperty]
         public AbstractSerializableType<ConditionalLayoutNodeModel> LeftModel;
 
         public NotLayoutNodeModel() { }
@@ -59,7 +53,6 @@ namespace FSM.Runtime.Serialization
     [Serializable]
     public sealed class ConditionLayoutNodeModel : ConditionalLayoutNodeModel
     {
-        [JsonProperty]
         public AbstractSerializableType<ICondition> Condition;
         
         public ConditionLayoutNodeModel() { }

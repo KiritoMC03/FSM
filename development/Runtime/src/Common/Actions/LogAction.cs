@@ -1,7 +1,9 @@
-﻿using FSM.Runtime.Utils;
+﻿using System;
+using FSM.Runtime.Utils;
 
 namespace FSM.Runtime.Common
 {
+    [Serializable]
     public class LogAction : IAction
     {
         private readonly string message;

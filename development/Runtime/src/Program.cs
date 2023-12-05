@@ -17,6 +17,31 @@ namespace FSM.Runtime
     {
         public static void Main()
         {
+            var actSrc = new AbstractSerializableType<ActionLayoutNodeModel>(
+                new ActionLayoutNodeModel(new NothingAction(),
+                    new ActionLayoutNodeModel(new LogAction("a"), 
+                        new ActionLayoutNodeModel(new LogAction("b"),
+                            new ActionLayoutNodeModel(new NothingAction(),
+                                new ActionLayoutNodeModel(new LogAction("c"))))))
+            );
+            
+            var actText = JsonConvert.SerializeObject(actSrc);
+            // var actRes = ActionLayoutNodesSerializer.DeserializeAndConvert<AbstractSerializableType<ActionLayoutNodeModel>>(actText);
+            
+            
+            var serSw = new Stopwatch();
+            serSw.Start();
+            var actRes = ActionLayoutNodesSerializer.DeserializeAndConvert<AbstractSerializableType<ActionLayoutNodeModel>>(actText);
+            serSw.Stop();
+            Console.WriteLine($"Ser: {serSw.ElapsedTicks} - {serSw.ElapsedMilliseconds}");
+            
+            serSw = new Stopwatch();
+            serSw.Start();
+            actRes = ActionLayoutNodesSerializer.DeserializeAndConvert<AbstractSerializableType<ActionLayoutNodeModel>>(actText);
+            serSw.Stop();
+            Console.WriteLine($"Ser: {serSw.ElapsedTicks} - {serSw.ElapsedMilliseconds}");
+            
+            
             AbstractSerializableType<ConditionalLayoutNodeModel> src = new AbstractSerializableType<ConditionalLayoutNodeModel>(
                 new AndLayoutNodeModel
                 (
@@ -28,17 +53,18 @@ namespace FSM.Runtime
                 )
             );
             var text = JsonConvert.SerializeObject(src, Formatting.None);
-            var serSw = new Stopwatch();
+
+            serSw = new Stopwatch();
             serSw.Start();
             var textObj = ConditionLayoutNodesSerializer.DeserializeAndConvert<AbstractSerializableType<ConditionalLayoutNodeModel>>(text);
             serSw.Stop();
-            Console.WriteLine($"Ser: {serSw.ElapsedTicks}");
+            Console.WriteLine($"Ser: {serSw.ElapsedTicks} - {serSw.ElapsedMilliseconds}");
             
             serSw = new Stopwatch();
             serSw.Start();
             textObj = ConditionLayoutNodesSerializer.DeserializeAndConvert<AbstractSerializableType<ConditionalLayoutNodeModel>>(text);
             serSw.Stop();
-            Console.WriteLine($"Ser: {serSw.ElapsedTicks}");
+            Console.WriteLine($"Ser: {serSw.ElapsedTicks} - {serSw.ElapsedMilliseconds}");
             
             // FunctionLayoutNode<int> func = new FunctionLayoutNode<int>(default, new IntFunc(){val = 3});
             // Type type = func.GetType(); 
