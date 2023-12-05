@@ -17,17 +17,25 @@ namespace FSM.Runtime
     {
         public static void Main()
         {
+            var innter = new ActionLayoutNodeModel(
+                    new NothingAction(){ParamNode = new ParamNode<int>(
+                        new SerTestFunc() { OtherParam = new ParamNode<int>(
+                            new SerTestFunc2())})});
             var actSrc = new AbstractSerializableType<ActionLayoutNodeModel>(
                 new ActionLayoutNodeModel(new NothingAction(),
-                    new ActionLayoutNodeModel(new LogAction("a"), 
+                    new ActionLayoutNodeModel(new LogAction("a"),
                         new ActionLayoutNodeModel(new LogAction("b"),
                             new ActionLayoutNodeModel(new NothingAction(),
-                                new ActionLayoutNodeModel(new LogAction("c"))))))
-            );
-            
+                                new ActionLayoutNodeModel(new LogAction("c"),
+                                    innter)))))
+                );
+
             var actText = JsonConvert.SerializeObject(actSrc);
             // var actRes = ActionLayoutNodesSerializer.DeserializeAndConvert<AbstractSerializableType<ActionLayoutNodeModel>>(actText);
             
+            var tmp1 = ActionLayoutNodesSerializer.DeserializeAndConvert<AbstractSerializableType<ActionLayoutNodeModel>>(actText);
+            new ActionsExecutor().Execute(tmp1);
+            // var tmp2 = ((NothingAction) tmp1.LogicObject).ParamNode.Execute();
             
             var serSw = new Stopwatch();
             serSw.Start();
