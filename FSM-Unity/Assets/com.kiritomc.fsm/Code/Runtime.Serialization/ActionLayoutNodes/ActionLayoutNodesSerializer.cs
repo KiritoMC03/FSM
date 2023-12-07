@@ -11,7 +11,7 @@ namespace FSM.Runtime.Serialization
         private static readonly Queue<ActionLayoutNode> CopyQueue = new Queue<ActionLayoutNode>(16);
         private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings()
         {
-            ContractResolver = new DefaultContractResolver() { IgnoreSerializableAttribute = false},
+            ContractResolver = new DefaultContractResolver() { IgnoreSerializableAttribute = false },
         };
 
         public static ActionLayoutNode DeserializeAndConvert<T>(string json)

@@ -34,7 +34,7 @@ namespace Tests
         
         public int Execute()
         {
-            return OtherParam.Function.Item.Execute();
+            return OtherParam.Execute();
         }
     }
 
