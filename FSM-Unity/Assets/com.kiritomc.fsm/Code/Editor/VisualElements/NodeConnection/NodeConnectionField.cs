@@ -1,9 +1,14 @@
-﻿using UnityEngine.UIElements;
+﻿using System;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
     public class NodeConnectionField : VisualElement
     {
+        public event Action<MouseDownEvent> OnMouseDown;
+        public NodeConnectionPoint point;
+
         private NodeConnectionField()
         {
         }
@@ -23,7 +28,7 @@ namespace FSM.Editor
                     marginLeft = horizontalMargin,
                 }
             };
-            result.Add(NodeConnectionPoint.Create());
+            result.Add(result.point = NodeConnectionPoint.Create());
             result.Add(new Label(connectionName)
             {
                 style =
@@ -32,7 +37,16 @@ namespace FSM.Editor
                     marginRight = horizontalMargin,
                 },
             });
+
+            result.point.OnMouseDown += evt => result.OnMouseDown?.Invoke(evt);
             return result;
+        }
+
+        public Vector2 AnchorCenter()
+        {
+            return new Vector2(
+                resolvedStyle.top + point.resolvedStyle.height / 2f,
+                resolvedStyle.left + point.resolvedStyle.width / 2f);
         }
     }
 }

@@ -2,15 +2,10 @@
 
 namespace FSM.Editor
 {
-    public class AndNode : ConditionalNode
+    public class AndNode : ConditionGateNode
     {
-        public ConditionalNode Left;
-        public ConditionalNode Right;
-
         public AndNode(AndLayoutNode node) : base(node)
         {
-            Add(NodeConnectionField.Create($"{nameof(Left)}"));
-            Add(NodeConnectionField.Create($"{nameof(Right)}"));
         }
     }
 }

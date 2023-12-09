@@ -1,4 +1,10 @@
-﻿using FSM.Runtime;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using FSM.Runtime;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
@@ -22,7 +28,7 @@ namespace FSM.Editor
             rootVisualElement.Add(DrawNode(new AndNode(new AndLayoutNode())));
             rootVisualElement.Add(DrawNode(new ConditionNode(new ConditionLayoutNode(new FalseCondition()))));
             rootVisualElement.Add(DrawNode(new ConditionNode(new ConditionLayoutNode(new TrueCondition()))));
-            not.Input = or;
+            not.Input.Value = or;
         }
 
         private void Empty()
@@ -131,6 +137,24 @@ namespace FSM.Editor
         public Node DrawNode(Node newNode)
         {
             newNode.AsDraggable();
+            newNode.ConnectionRequestHandledCallback += async () =>
+            {
+                Modifiers.DraggingLocked = true;
+                TaskCompletionSource<bool> completionSource = new TaskCompletionSource<bool>();
+                rootVisualElement.RegisterCallback<MouseUpEvent>(Track);
+                await completionSource.Task;
+                rootVisualElement.UnregisterCallback<MouseUpEvent>(Track);
+                Modifiers.DraggingLocked = false;
+                Vector2 pos = Event.current.mousePosition;
+                List<VisualElement> elements = new List<VisualElement>(10);
+                rootVisualElement.panel.PickAll(pos, elements);
+                foreach (VisualElement element in elements)
+                    if (element is Node node)
+                        return node;
+                return default;
+
+                void Track(MouseUpEvent _) => completionSource.SetResult(true);
+            };
             return newNode;
         }
     }

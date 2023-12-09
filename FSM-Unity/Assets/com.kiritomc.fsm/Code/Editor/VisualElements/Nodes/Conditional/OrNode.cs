@@ -2,15 +2,10 @@
 
 namespace FSM.Editor
 {
-    public class OrNode : ConditionalNode
+    public class OrNode : ConditionGateNode
     {
-        public ConditionalNode Left;
-        public ConditionalNode Right;
-
         public OrNode(OrLayoutNode node) : base(node)
         {
-            Add(NodeConnectionField.Create($"{nameof(Left)}"));
-            Add(NodeConnectionField.Create($"{nameof(Right)}"));
         }
     }
 }

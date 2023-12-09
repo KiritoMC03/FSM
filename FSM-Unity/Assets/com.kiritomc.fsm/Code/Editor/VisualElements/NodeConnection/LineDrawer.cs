@@ -20,9 +20,10 @@ namespace FSM.Editor
             Vector2 startTangent = new Vector2((end.x - StartPos.x) / 2f, StartPos.y);
             Vector2 endTangent = new Vector2((end.x - StartPos.x) / 2f, end.y);
             paint2D.lineWidth = 8.0f;
-            paint2D.strokeColor = Colors.NodeConnectionColor;
+            // paint2D.strokeColor = Colors.NodeConnectionColor;
             paint2D.lineCap = LineCap.Round;
             paint2D.lineJoin = LineJoin.Round;
+            paint2D.strokeGradient = Colors.NodeConnectionGradient;
             paint2D.BeginPath();
             paint2D.MoveTo(StartPos);
             paint2D.BezierCurveTo(startTangent, endTangent, end);

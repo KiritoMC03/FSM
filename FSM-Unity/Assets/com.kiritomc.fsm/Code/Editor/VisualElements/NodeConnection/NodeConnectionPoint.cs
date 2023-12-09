@@ -1,16 +1,19 @@
-﻿using UnityEngine.UIElements;
+﻿using System;
+using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
     public class NodeConnectionPoint : VisualElement
     {
+        public event Action<MouseDownEvent> OnMouseDown;
+
         private NodeConnectionPoint()
         {
         }
         
         public static NodeConnectionPoint Create()
         {
-            return new NodeConnectionPoint()
+            NodeConnectionPoint result = new NodeConnectionPoint()
             {
                 style =
                 {
@@ -23,6 +26,8 @@ namespace FSM.Editor
                     backgroundColor = Colors.NodeConnectionBackground,
                 },
             };
+            result.RegisterCallback<MouseDownEvent>(evt => result.OnMouseDown?.Invoke(evt));
+            return result;
         }
     }
 }

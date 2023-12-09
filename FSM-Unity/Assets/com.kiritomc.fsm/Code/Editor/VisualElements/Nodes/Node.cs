@@ -1,12 +1,21 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
-    public abstract class Node : VisualElement, ICustomRepaintHandler
+    public abstract class Node : VisualElement, ICustomRepaintHandler, IDisposable
     {
+        public event ConnectionRequestHandledCallback ConnectionRequestHandledCallback; 
+
+        internal readonly List<IDisposable> Disposables = new List<IDisposable>(100);
+        internal readonly List<ICustomRepaintHandler> ChildrenRepaintHandler = new List<ICustomRepaintHandler>(2);
         protected Label Label;
-        protected VisualElement Connection;
+        protected NodeConnectionPoint Connection;
+
+        public ConnectionToken ConnectionToken { get; protected set; }
 
         protected Node(string nodeName)
         {
@@ -26,13 +35,17 @@ namespace FSM.Editor
                 },
             });
             header.Add(Connection = NodeConnectionPoint.Create());
-            
             Add(header);
             ApplyStyle();
         }
 
+        public abstract string GetMetadataForSerialization();
+        public abstract void HandleDeserializedMetadata(string metadata);
+
         public virtual void Repaint()
         {
+            MarkDirtyRepaint();
+            ChildrenRepaintHandler.Repaint();
         }
 
         public virtual Vector2 GetAbsoluteConnectionPos()
@@ -50,6 +63,18 @@ namespace FSM.Editor
             style.minWidth = 200;
             style.minHeight = 50;
             style.backgroundColor = Colors.NodeBackground;
+        }
+
+        protected async Task<Node> RequestConnection()
+        {
+            if (ConnectionRequestHandledCallback != null)
+                return await ConnectionRequestHandledCallback.Invoke();
+            return default;
+        }
+
+        public void Dispose()
+        {
+            foreach (IDisposable disposable in Disposables) disposable.Dispose();
         }
     }
 }

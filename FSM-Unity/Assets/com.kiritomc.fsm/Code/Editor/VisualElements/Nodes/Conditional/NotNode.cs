@@ -1,35 +1,26 @@
 ﻿using FSM.Runtime;
-using UnityEngine;
-using UnityEngine.UIElements;
+using Newtonsoft.Json;
 
 namespace FSM.Editor
 {
     public class NotNode : ConditionalNode
     {
-        public ConditionalNode Input;
-        private readonly LineDrawer drawer;
+        public FieldWrapper<ConditionalNode> Input = new FieldWrapper<ConditionalNode>();
 
         public NotNode(NotLayoutNode node) : base(node)
         {
-            NodeConnectionField con;
-            Add(con = NodeConnectionField.Create($"{nameof(Input)}"));
-            Add(drawer = new LineDrawer());
-            generateVisualContent += _ =>
-            {
-                drawer.style.position = Position.Absolute;
-                drawer.style.top = con.resolvedStyle.top;
-                drawer.style.left = con.resolvedStyle.left;
-                if (Input != null)
-                {
-                    drawer.EndPos = Input.GetAbsoluteConnectionPos();
-                    drawer.StartPos = new Vector2(15 / 2f, 15 / 2f);
-                }
-            };
+            this.BindAsConnectionField(nameof(Input), Input, RequestConnection);
         }
 
-        public override void Repaint()
+        public override string GetMetadataForSerialization()
         {
-            drawer.MarkDirtyRepaint();
+            return JsonConvert.SerializeObject(Input);
+        }
+
+        public override void HandleDeserializedMetadata(string metadata)
+        {
+            if (string.IsNullOrWhiteSpace(metadata)) return;
+            Input.Value = JsonConvert.DeserializeObject<ConditionalNode>(metadata);
         }
     }
 }
