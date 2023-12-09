@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
+using FSM.Editor.Manipulators;
 using FSM.Runtime;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
     public class FsmEditorWindow : UnityEditor.EditorWindow
     {
+        private EditorState editorState = new EditorState();
+        
         [UnityEditor.MenuItem("FSM/Editor")]
         private static void ShowWindow()
         {
@@ -136,25 +136,26 @@ namespace FSM.Editor
 
         public Node DrawNode(Node newNode)
         {
-            newNode.AsDraggable();
-            newNode.ConnectionRequestHandledCallback += async () =>
-            {
-                Modifiers.DraggingLocked = true;
-                TaskCompletionSource<bool> completionSource = new TaskCompletionSource<bool>();
-                rootVisualElement.RegisterCallback<MouseUpEvent>(Track);
-                await completionSource.Task;
-                rootVisualElement.UnregisterCallback<MouseUpEvent>(Track);
-                Modifiers.DraggingLocked = false;
-                Vector2 pos = Event.current.mousePosition;
-                List<VisualElement> elements = new List<VisualElement>(10);
-                rootVisualElement.panel.PickAll(pos, elements);
-                foreach (VisualElement element in elements)
-                    if (element is Node node)
-                        return node;
-                return default;
-
-                void Track(MouseUpEvent _) => completionSource.SetResult(true);
-            };
+            newNode.AddManipulator(new DraggerManipulator(editorState.DraggingLocked));
+            newNode.AddManipulator(new RouteConnectionManipulator(editorState, rootVisualElement));
+            // newNode.ConnectionRequestHandledCallback += async () =>
+            // {
+            //     editorState.DraggingLocked.Value = true;
+            //     TaskCompletionSource<bool> completionSource = new TaskCompletionSource<bool>();
+            //     rootVisualElement.RegisterCallback<MouseUpEvent>(Track);
+            //     await completionSource.Task;
+            //     rootVisualElement.UnregisterCallback<MouseUpEvent>(Track);
+            //     editorState.DraggingLocked.Value = false;
+            //     Vector2 pos = Event.current.mousePosition;
+            //     List<VisualElement> elements = new List<VisualElement>(10);
+            //     rootVisualElement.panel.PickAll(pos, elements);
+            //     foreach (VisualElement element in elements)
+            //         if (element is Node node)
+            //             return node;
+            //     return default;
+            //
+            //     void Track(MouseUpEvent _) => completionSource.SetResult(true);
+            // };
             return newNode;
         }
     }

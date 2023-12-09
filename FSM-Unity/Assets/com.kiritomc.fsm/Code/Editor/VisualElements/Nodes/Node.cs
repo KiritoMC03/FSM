@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FSM.Editor.Events;
+using FSM.Editor.Extensions;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -8,8 +10,6 @@ namespace FSM.Editor
 {
     public abstract class Node : VisualElement, ICustomRepaintHandler, IDisposable
     {
-        public event ConnectionRequestHandledCallback ConnectionRequestHandledCallback; 
-
         internal readonly List<IDisposable> Disposables = new List<IDisposable>(100);
         internal readonly List<ICustomRepaintHandler> ChildrenRepaintHandler = new List<ICustomRepaintHandler>(2);
         protected Label Label;
@@ -65,11 +65,14 @@ namespace FSM.Editor
             style.backgroundColor = Colors.NodeBackground;
         }
 
-        protected async Task<Node> RequestConnection()
+        protected Task<Node> RequestConnection()
         {
-            if (ConnectionRequestHandledCallback != null)
-                return await ConnectionRequestHandledCallback.Invoke();
-            return default;
+            TaskCompletionSource<Node> completionSource = new TaskCompletionSource<Node>();
+            ConnectionRequestEvent @event = ConnectionRequestEvent.GetPooled();
+            @event.target = this;
+            @event.SetConnectionCallback = node => completionSource.SetResult(node);
+            SendEvent(@event);
+            return completionSource.Task;
         }
 
         public void Dispose()

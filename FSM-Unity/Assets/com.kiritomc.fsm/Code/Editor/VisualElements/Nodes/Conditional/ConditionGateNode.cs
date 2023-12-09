@@ -1,4 +1,5 @@
-﻿using FSM.Runtime;
+﻿using FSM.Editor.Extensions;
+using FSM.Runtime;
 using Newtonsoft.Json;
 
 namespace FSM.Editor
@@ -10,8 +11,8 @@ namespace FSM.Editor
 
         public ConditionGateNode(ConditionGateLayoutNode node) : base(node)
         {
-            this.BindAsConnectionField(nameof(Left), Left, RequestConnection);
-            this.BindAsConnectionField(nameof(Right), Right, RequestConnection);
+            this.BindConnectionField(nameof(Left), Left, RequestConnection);
+            this.BindConnectionField(nameof(Right), Right, RequestConnection);
         }
 
         public override string GetMetadataForSerialization()
