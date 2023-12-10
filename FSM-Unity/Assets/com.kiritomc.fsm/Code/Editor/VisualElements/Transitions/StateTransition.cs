@@ -30,6 +30,7 @@ namespace FSM.Editor
 
         public void Repaint()
         {
+            MarkDirtyRepaint();
             lineDrawerRegistration?.Repaint();
         }
     }
