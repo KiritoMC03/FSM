@@ -5,8 +5,8 @@ namespace FSM.Editor
 {
     public class LineDrawer : VisualElement
     {
-        public Vector2 StartPos;
-        public Vector2 EndPos;
+        public Vector2? LocalStartOffset;
+        public Vector2? WorldEndPos;
 
         public LineDrawer()
         {
@@ -15,7 +15,9 @@ namespace FSM.Editor
 
         private void OnGenerateVisualContent(MeshGenerationContext ctx)
         {
-            Vector2 end = EndPos - new Vector2(worldBound.x, worldBound.y);
+            if (!LocalStartOffset.HasValue || !WorldEndPos.HasValue) return;
+            Vector2 start = LocalStartOffset.Value;
+            Vector2 end = WorldEndPos.Value - new Vector2(worldBound.x, worldBound.y);
             Painter2D paint2D = ctx.painter2D;
             Vector2 startTangent;
             Vector2 endTangent;
@@ -23,8 +25,8 @@ namespace FSM.Editor
         
             // if (Mathf.Abs(offset.x) < Mathf.Abs(offset.y))
             {
-                startTangent = new Vector2(StartPos.x + (end.x - StartPos.x) / 2f, StartPos.y);
-                endTangent = new Vector2(end.x - (end.x - StartPos.x) / 2f, end.y);
+                startTangent = new Vector2(start.x + (end.x - start.x) / 2f, start.y);
+                endTangent = new Vector2(end.x - (end.x - start.x) / 2f, end.y);
             }
             // else
             // {
@@ -36,9 +38,9 @@ namespace FSM.Editor
             paint2D.lineJoin = LineJoin.Round;
             paint2D.strokeGradient = Colors.NodeConnectionGradient;
             paint2D.BeginPath();
-            paint2D.Arc(startTangent, 10, 180, -180);
-            paint2D.Arc(endTangent, 10, 180, -180);
-            paint2D.MoveTo(StartPos);
+            // paint2D.Arc(startTangent, 10, 180, -180);
+            // paint2D.Arc(endTangent, 10, 180, -180);
+            paint2D.MoveTo(start);
             paint2D.BezierCurveTo(startTangent, endTangent, end);
             paint2D.Stroke();
         }

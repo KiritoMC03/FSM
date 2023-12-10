@@ -33,7 +33,11 @@ namespace FSM.Editor.Extensions
 
             Vector2? GetInputPosition() => connectionField.AnchorCenter();
             T GetFieldValue() => targetField.Value;
-            void RepaintNode() => node.Repaint();
+            void RepaintNode()
+            {
+                node.Repaint();
+                node.BringToFront();
+            }
         }
 
         public static async Task<StateTransition> CrateTransitionAsync<T>(this StateNode node, Func<Task<T>> asyncTargetGetter, Predicate<T> checkValid) where T : StateNode

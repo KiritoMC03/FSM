@@ -1,5 +1,6 @@
-﻿using FSM.Editor.Manipulators;
-using FSM.Runtime;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using FSM.Editor.Manipulators;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
@@ -16,17 +17,23 @@ namespace FSM.Editor
             window.Show();
         }
 
-        private void CreateGUI()
+        private async void CreateGUI()
         {
+            NodesFabric fabric = new NodesFabric(editorState);
+            StateNode sn;
+            rootVisualElement.Add(DrawNode(sn = new StateNode("New state")));
+            rootVisualElement.Add(DrawNode(new StateNode("New state")));
+
+            while (sn.transitions.Count == 0)
+            {
+                await Task.Yield();
+            }
+            rootVisualElement.Add(new TransitionContext(sn.transitions.First(), editorState, fabric));
             // rootVisualElement.Add(DrawNode(new NotNode(new NotLayoutNode())));
             // rootVisualElement.Add(DrawNode(new OrNode(new OrLayoutNode())));
             // rootVisualElement.Add(DrawNode(new AndNode(new AndLayoutNode())));
             // rootVisualElement.Add(DrawNode(new ConditionNode(new ConditionLayoutNode(new FalseCondition()))));
             // rootVisualElement.Add(DrawNode(new ConditionNode(new ConditionLayoutNode(new TrueCondition()))));
-            rootVisualElement.Add(DrawNode(new StateNode("New state")));
-            rootVisualElement.Add(DrawNode(new StateNode("New state")));
-            rootVisualElement.Add(DrawNode(new StateNode("New state")));
-            rootVisualElement.Add(DrawNode(new StateNode("New state")));
         }
 
         private void Empty()

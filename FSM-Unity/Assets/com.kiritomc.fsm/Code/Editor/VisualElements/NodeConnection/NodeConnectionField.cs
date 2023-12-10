@@ -6,25 +6,26 @@ namespace FSM.Editor
 {
     public class NodeConnectionField : VisualElement
     {
+        private const int HorizontalMargin = 10;
+        public const int VerticalMargin = 5;
+
         public event Action<MouseDownEvent> OnMouseDown;
         private NodeConnectionPoint point;
 
         public NodeConnectionField(string connectionName)
         {
-            const int horizontalMargin = 10;
-            const int verticalMargin = 5;
             style.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
-            style.marginTop = verticalMargin;
-            style.marginBottom = verticalMargin;
-            style.marginRight = horizontalMargin;
-            style.marginLeft = horizontalMargin;
+            style.marginTop = VerticalMargin;
+            style.marginBottom = VerticalMargin;
+            style.marginRight = HorizontalMargin;
+            style.marginLeft = HorizontalMargin;
             Add(point = NodeConnectionPoint.Create());
             Add(new Label(connectionName)
             {
                 style =
                 {
-                    marginLeft = horizontalMargin,
-                    marginRight = horizontalMargin,
+                    marginLeft = HorizontalMargin,
+                    marginRight = HorizontalMargin,
                 },
             });
 
@@ -33,9 +34,7 @@ namespace FSM.Editor
 
         public Vector2 AnchorCenter()
         {
-            return new Vector2(
-                resolvedStyle.top + point.resolvedStyle.height / 2f,
-                resolvedStyle.left + point.resolvedStyle.width / 2f);
+            return new Vector2(HorizontalMargin + point.resolvedStyle.width / 2f, VerticalMargin + point.resolvedStyle.height / 2f);
         }
     }
 }

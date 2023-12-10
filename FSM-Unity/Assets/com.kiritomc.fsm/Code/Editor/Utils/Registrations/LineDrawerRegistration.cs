@@ -35,9 +35,9 @@ namespace FSM.Editor
         private void Redraw(MeshGenerationContext meshGenerationContext)
         {
             Vector2? start = startGetter.Invoke();
-            if (start.HasValue) Drawer.StartPos = start.Value;
+            if (start.HasValue) Drawer.LocalStartOffset = start.Value;
             Vector2? end = endGetter.Invoke();
-            if (end.HasValue) Drawer.EndPos = end.Value;
+            if (end.HasValue) Drawer.WorldEndPos = end.Value;
         }
 
         public void Repaint()

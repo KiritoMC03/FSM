@@ -11,7 +11,7 @@ namespace FSM.Editor
     public class StateNode : Node
     {
         protected string StateName;
-        private readonly List<StateTransition> transitions = new List<StateTransition>();
+        public readonly List<StateTransition> transitions = new List<StateTransition>();
 
         public StateNode(string nodeName) : base(nodeName)
         {
