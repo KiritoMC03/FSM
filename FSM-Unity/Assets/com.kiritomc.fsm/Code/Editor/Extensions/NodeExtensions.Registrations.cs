@@ -14,7 +14,7 @@ namespace FSM.Editor.Extensions
             Vector2? GetEndPosition() => targetFieldGetter.Invoke()?.GetAbsoluteConnectionPos();
         }
 
-        public static LineDrawerRegistration AddLineDrawerForTransition<T>(this Node target, Func<Vector2?> startGetter, Func<T> targetFieldGetter) 
+        public static LineDrawerRegistration AddLineDrawerForTransition<T>(this StateTransition target, Func<Vector2?> startGetter, Func<T> targetFieldGetter) 
             where T: StateNode
         {
             LineDrawer drawer;

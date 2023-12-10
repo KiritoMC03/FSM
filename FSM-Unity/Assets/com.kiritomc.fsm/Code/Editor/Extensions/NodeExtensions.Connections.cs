@@ -11,7 +11,7 @@ namespace FSM.Editor.Extensions
             FieldWrapper<T> targetField,
             Func<Task<Node>> asyncTargetGetter) where T : NodeWithConnection
         {
-            NodeConnectionField connectionField = NodeConnectionField.Create($"{fieldName}");
+            NodeConnectionField connectionField = new NodeConnectionField($"{fieldName}");
             LineDrawerRegistration lineDrawerRegistration = node.AddLineDrawerForConnection(GetInputPosition, GetFieldValue);
             NodeChangingListeningRegistration changingRegistration = default;
             connectionField.OnMouseDown += async _ =>
@@ -36,13 +36,22 @@ namespace FSM.Editor.Extensions
             void RepaintNode() => node.Repaint();
         }
 
-        public static async Task CrateTransitionAsync<T>(this StateNode node, Func<Task<T>> asyncTargetGetter) where T: StateNode
+        public static async Task<StateTransition> CrateTransitionAsync<T>(this StateNode node, Func<Task<T>> asyncTargetGetter) where T : StateNode
         {
             T target = await asyncTargetGetter.Invoke();
-            LineDrawerRegistration lineDrawerRegistration = node.AddLineDrawerForTransition(NodePosition, GetFieldValue);
-            return;
-            Vector2? NodePosition() => Vector2.zero;
+            if (target == null || target == node) return default;
+
+            StateTransition transition = new StateTransition(target);
+            transition.SetLineDrawerRegistrationLink(transition.AddLineDrawerForTransition(NodePosition, GetFieldValue)); 
+            node.Add(transition);
+            node.Disposables.Add(transition);
+            node.Disposables.Add(target.ListenChanges(RepaintTransition));
+            node.ChildrenRepaintHandler.Add(transition);
+            return transition;
+
+            Vector2? NodePosition() => new Vector2(node.resolvedStyle.width / 2f, node.resolvedStyle.height / 2f);
             T GetFieldValue() => target;
+            void RepaintTransition() => transition.Repaint();
         }
     }
 }

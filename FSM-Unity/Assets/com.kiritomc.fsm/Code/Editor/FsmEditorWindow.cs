@@ -135,7 +135,8 @@ namespace FSM.Editor
         public Node DrawNode(Node newNode)
         {
             newNode.AddManipulator(new DraggerManipulator(editorState.DraggingLocked));
-            newNode.AddManipulator(new RouteConnectionManipulator(editorState, rootVisualElement));
+            newNode.AddManipulator(new CreateTransitionManipulator(editorState, rootVisualElement));
+            // newNode.AddManipulator(new RouteConnectionManipulator(editorState, rootVisualElement));
             // newNode.ConnectionRequestHandledCallback += async () =>
             // {
             //     editorState.DraggingLocked.Value = true;

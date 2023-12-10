@@ -9,27 +9,17 @@ namespace FSM.Editor
         public event Action<MouseDownEvent> OnMouseDown;
         private NodeConnectionPoint point;
 
-        private NodeConnectionField()
-        {
-        }
-        
-        public static NodeConnectionField Create(string connectionName)
+        public NodeConnectionField(string connectionName)
         {
             const int horizontalMargin = 10;
             const int verticalMargin = 5;
-            NodeConnectionField result = new NodeConnectionField()
-            {
-                style =
-                {
-                    flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row),
-                    marginTop = verticalMargin,
-                    marginBottom = verticalMargin,
-                    marginRight = horizontalMargin,
-                    marginLeft = horizontalMargin,
-                }
-            };
-            result.Add(result.point = NodeConnectionPoint.Create());
-            result.Add(new Label(connectionName)
+            style.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
+            style.marginTop = verticalMargin;
+            style.marginBottom = verticalMargin;
+            style.marginRight = horizontalMargin;
+            style.marginLeft = horizontalMargin;
+            Add(point = NodeConnectionPoint.Create());
+            Add(new Label(connectionName)
             {
                 style =
                 {
@@ -38,8 +28,7 @@ namespace FSM.Editor
                 },
             });
 
-            result.point.OnMouseDown += evt => result.OnMouseDown?.Invoke(evt);
-            return result;
+            point.OnMouseDown += evt => OnMouseDown?.Invoke(evt);
         }
 
         public Vector2 AnchorCenter()

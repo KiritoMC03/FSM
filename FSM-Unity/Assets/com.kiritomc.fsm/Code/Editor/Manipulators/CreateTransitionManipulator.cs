@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 namespace FSM.Editor.Manipulators
 {
-    public class RouteConnectionManipulator : Manipulator
+    public class CreateTransitionManipulator : Manipulator
     {
         private readonly EditorState editorState;
         private readonly VisualElement mousePressTrackingElement;
@@ -14,7 +14,7 @@ namespace FSM.Editor.Manipulators
         private bool isPressed;
         private Vector2 lastMousePosition;
 
-        public RouteConnectionManipulator(EditorState editorState, VisualElement mousePressTrackingElement)
+        public CreateTransitionManipulator(EditorState editorState, VisualElement mousePressTrackingElement)
         {
             this.editorState = editorState;
             this.mousePressTrackingElement = mousePressTrackingElement;
@@ -23,23 +23,23 @@ namespace FSM.Editor.Manipulators
         protected override void RegisterCallbacksOnTarget()
         {
             mousePressTrackingElement.RegisterCallback<MouseUpEvent>(HandleMouseUp);
-            target.RegisterCallback<ConnectionRequestEvent>(HandleConnectionRequest);
+            target.RegisterCallback<TransitionRequestEvent>(HandleTransitionRequest);
         }
 
         protected override void UnregisterCallbacksFromTarget()
         {
-            mousePressTrackingElement.UnregisterCallback<MouseUpEvent>(HandleMouseUp);
-            target.UnregisterCallback<ConnectionRequestEvent>(HandleConnectionRequest);
+            mousePressTrackingElement.RegisterCallback<MouseUpEvent>(HandleMouseUp);
+            target.UnregisterCallback<TransitionRequestEvent>(HandleTransitionRequest);
         }
 
         private void HandleMouseUp(MouseUpEvent e)
         {
-            if (e.button != 0) return;
+            if (e.button != 1) return;
             isPressed = false;
             lastMousePosition = e.mousePosition;
         }
 
-        private async void HandleConnectionRequest(ConnectionRequestEvent e)
+        private async void HandleTransitionRequest(TransitionRequestEvent e)
         {
             isPressed = true;
             editorState.DraggingLocked.Value = true;
@@ -48,10 +48,10 @@ namespace FSM.Editor.Manipulators
 
             mousePressTrackingElement.panel.PickAll(lastMousePosition, buffer);
             foreach (VisualElement element in buffer)
-                if (element is Node node)
+                if (element is StateNode node)
                 {
-                    e.SetConnectionCallback.Invoke(node);
-                    e.SetConnectionCallback = default;
+                    e.SetTransitionCallback.Invoke(node);
+                    e.SetTransitionCallback = default;
                     return;
                 }
         }
