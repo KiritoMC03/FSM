@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FSM.Editor.Events;
 using FSM.Editor.Extensions;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
@@ -12,31 +11,13 @@ namespace FSM.Editor
     {
         internal readonly List<IDisposable> Disposables = new List<IDisposable>(100);
         internal readonly List<ICustomRepaintHandler> ChildrenRepaintHandler = new List<ICustomRepaintHandler>(2);
-        protected Label Label;
-        protected NodeConnectionPoint Connection;
-
-        public ConnectionToken ConnectionToken { get; protected set; }
+        internal VisualElement Header;
+        internal Label Label;
 
         protected Node(string nodeName)
         {
-            VisualElement header = new VisualElement()
-            {
-                style =
-                {
-                    flexDirection = FlexDirection.Row,
-                },
-            };
-            header.Add(Label = new Label(nodeName)
-            {
-                style =
-                {
-                    unityTextAlign = TextAnchor.MiddleCenter,
-                    width = new StyleLength(new Length(90, LengthUnit.Percent)),
-                },
-            });
-            header.Add(Connection = NodeConnectionPoint.Create());
-            Add(header);
-            ApplyStyle();
+            this.DefaultHeader(nodeName);
+            ApplyBaseStyle();
         }
 
         public abstract string GetMetadataForSerialization();
@@ -48,12 +29,7 @@ namespace FSM.Editor
             ChildrenRepaintHandler.Repaint();
         }
 
-        public virtual Vector2 GetAbsoluteConnectionPos()
-        {
-            return new Vector2(Connection.worldBound.x + Sizes.ConnectionNodePoint / 2f, Connection.worldBound.y + Sizes.ConnectionNodePoint / 2f);
-        }
-
-        private void ApplyStyle()
+        protected void ApplyBaseStyle()
         {
             style.paddingTop = style.paddingBottom = style.paddingLeft = style.paddingRight = 8;
             style.borderTopColor = style.borderBottomColor = style.borderLeftColor = style.borderRightColor = Colors.NodeBorderColor;
@@ -65,7 +41,7 @@ namespace FSM.Editor
             style.backgroundColor = Colors.NodeBackground;
         }
 
-        protected Task<Node> RequestConnection()
+        protected virtual Task<Node> RequestConnection()
         {
             TaskCompletionSource<Node> completionSource = new TaskCompletionSource<Node>();
             ConnectionRequestEvent @event = ConnectionRequestEvent.GetPooled();
@@ -75,7 +51,7 @@ namespace FSM.Editor
             return completionSource.Task;
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             foreach (IDisposable disposable in Disposables) disposable.Dispose();
         }

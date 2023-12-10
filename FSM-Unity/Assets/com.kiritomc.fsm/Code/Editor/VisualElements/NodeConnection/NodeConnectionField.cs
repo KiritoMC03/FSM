@@ -7,7 +7,7 @@ namespace FSM.Editor
     public class NodeConnectionField : VisualElement
     {
         public event Action<MouseDownEvent> OnMouseDown;
-        public NodeConnectionPoint point;
+        private NodeConnectionPoint point;
 
         private NodeConnectionField()
         {

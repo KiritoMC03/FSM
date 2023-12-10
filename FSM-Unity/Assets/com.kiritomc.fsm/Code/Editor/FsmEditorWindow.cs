@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using FSM.Editor.Manipulators;
+﻿using FSM.Editor.Manipulators;
 using FSM.Runtime;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
@@ -21,14 +18,15 @@ namespace FSM.Editor
 
         private void CreateGUI()
         {
-            NotNode not;
-            OrNode or;
-            rootVisualElement.Add(DrawNode(not = new NotNode(new NotLayoutNode())));
-            rootVisualElement.Add(DrawNode(or = new OrNode(new OrLayoutNode())));
-            rootVisualElement.Add(DrawNode(new AndNode(new AndLayoutNode())));
-            rootVisualElement.Add(DrawNode(new ConditionNode(new ConditionLayoutNode(new FalseCondition()))));
-            rootVisualElement.Add(DrawNode(new ConditionNode(new ConditionLayoutNode(new TrueCondition()))));
-            not.Input.Value = or;
+            // rootVisualElement.Add(DrawNode(new NotNode(new NotLayoutNode())));
+            // rootVisualElement.Add(DrawNode(new OrNode(new OrLayoutNode())));
+            // rootVisualElement.Add(DrawNode(new AndNode(new AndLayoutNode())));
+            // rootVisualElement.Add(DrawNode(new ConditionNode(new ConditionLayoutNode(new FalseCondition()))));
+            // rootVisualElement.Add(DrawNode(new ConditionNode(new ConditionLayoutNode(new TrueCondition()))));
+            rootVisualElement.Add(DrawNode(new StateNode("New state")));
+            rootVisualElement.Add(DrawNode(new StateNode("New state")));
+            rootVisualElement.Add(DrawNode(new StateNode("New state")));
+            rootVisualElement.Add(DrawNode(new StateNode("New state")));
         }
 
         private void Empty()
