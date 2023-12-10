@@ -16,6 +16,11 @@ namespace FSM.Editor
                 new GradientColorKey(new Color(0.99f, 0.96f, 0.9f), 0),
                 new GradientColorKey(new Color(1, 0.84f, 0f), 1),
             },
+            alphaKeys = new []
+            {
+                new GradientAlphaKey(0.65f, 0),
+                new GradientAlphaKey(1f, 1),
+            },
         };
     }
 }

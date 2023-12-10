@@ -34,17 +34,10 @@ namespace FSM.Editor
 
         private void Redraw(MeshGenerationContext meshGenerationContext)
         {
-            Drawer.style.position = Position.Absolute;
             Vector2? start = startGetter.Invoke();
-            if (start == null) return;
-            Drawer.style.left = start.Value.x;
-            Drawer.style.top = start.Value.y;
+            if (start.HasValue) Drawer.StartPos = start.Value;
             Vector2? end = endGetter.Invoke();
-            if (end != null)
-            {
-                Drawer.EndPos = end.Value;
-                Drawer.StartPos = new Vector2(0f, 0f);
-            }
+            if (end.HasValue) Drawer.EndPos = end.Value;
         }
 
         public void Repaint()

@@ -14,13 +14,11 @@ namespace FSM.Editor.Extensions
             Vector2? GetEndPosition() => targetFieldGetter.Invoke()?.GetAbsoluteConnectionPos();
         }
 
-        public static LineDrawerRegistration AddLineDrawerForTransition<T>(this StateTransition target, Func<Vector2?> startGetter, Func<T> targetFieldGetter) 
-            where T: StateNode
+        public static LineDrawerRegistration AddLineDrawerForTransition(this StateTransition target, Func<Vector2?> startGetter, Func<Vector2?> targetGetter)
         {
             LineDrawer drawer;
             target.Add(drawer = new LineDrawer());
-            return new LineDrawerRegistration(drawer, target, startGetter, GetEndPosition);
-            Vector2? GetEndPosition() => targetFieldGetter.Invoke()?.GetNearestAbsoluteEdgePoint(target.worldBound.center);
+            return new LineDrawerRegistration(drawer, target, startGetter, targetGetter);
         }
 
         public static LineDrawerRegistration AddLineDrawerFor(this Node parent, Func<Vector2?> startGetter, Func<Vector2?> endGetter)
