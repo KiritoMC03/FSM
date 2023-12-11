@@ -1,12 +1,24 @@
-﻿using UnityEngine.UIElements;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine.UIElements;
 
 namespace FSM.Editor.Manipulators
 {
-    public class CreateNodeManipulator : Manipulator
-    {
-        private readonly NodesFabric fabric;
+    public delegate Dictionary<string, Func<TNode>> GetAvailableNodesDelegate<TNode>() where TNode: Node;
 
-        public CreateNodeManipulator(NodesFabric fabric)
+    public class CreateNodeManipulator<TNode> : Manipulator
+        where TNode: Node
+    {
+        private readonly Fabric fabric;
+        private readonly GetAvailableNodesDelegate<TNode> nodeTypesList;
+
+        public CreateNodeManipulator(Fabric fabric, GetAvailableNodesDelegate<TNode> nodeTypesList)
+        {
+            this.fabric = fabric;
+            this.nodeTypesList = nodeTypesList;
+        }
+
+        public CreateNodeManipulator(Fabric fabric)
         {
             this.fabric = fabric;
         }
@@ -25,8 +37,15 @@ namespace FSM.Editor.Manipulators
         {
             if (e.keyCode == Keys.CreateNode)
             {
-                target.Add(fabric.TestConditional(target));
+                Dictionary<string, Func<TNode>> nodes = nodeTypesList.Invoke();
+                fabric.CreateSelectNodePopup(nodes.Keys, CreateNodeLocal);
+                void CreateNodeLocal(string selected) => CreateNode(nodes[selected]);
             }
+        }
+
+        private void CreateNode(Func<TNode> createFunc)
+        {
+            createFunc?.Invoke();
         }
     }
 }

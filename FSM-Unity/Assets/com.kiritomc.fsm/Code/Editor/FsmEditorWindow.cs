@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using FSM.Editor.Manipulators;
+﻿using FSM.Editor.Manipulators;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
@@ -19,21 +17,36 @@ namespace FSM.Editor
 
         private async void CreateGUI()
         {
-            NodesFabric fabric = new NodesFabric(editorState);
-            StateNode sn;
-            rootVisualElement.Add(DrawNode(sn = new StateNode("New state")));
-            rootVisualElement.Add(DrawNode(new StateNode("New state")));
-
-            while (sn.transitions.Count == 0)
+            VisualElement root = new VisualElement()
             {
-                await Task.Yield();
-            }
-            rootVisualElement.Add(new TransitionContext(sn.transitions.First(), editorState, fabric));
-            // rootVisualElement.Add(DrawNode(new NotNode(new NotLayoutNode())));
-            // rootVisualElement.Add(DrawNode(new OrNode(new OrLayoutNode())));
-            // rootVisualElement.Add(DrawNode(new AndNode(new AndLayoutNode())));
-            // rootVisualElement.Add(DrawNode(new ConditionNode(new ConditionLayoutNode(new FalseCondition()))));
-            // rootVisualElement.Add(DrawNode(new ConditionNode(new ConditionLayoutNode(new TrueCondition()))));
+                focusable = true,
+                style =
+                {
+                    width = new StyleLength(new Length(100, LengthUnit.Percent)),
+                    height = new StyleLength(new Length(100, LengthUnit.Percent)),
+                },
+            };
+            rootVisualElement.Add(root);
+            root.focusable = true;
+            root.RegisterCallback<PointerMoveEvent>(e =>
+            {
+                editorState.PointerPosition.Value = root.LocalToWorld(e.position);
+            });
+            Fabric fabric = new Fabric(editorState, root);
+            root.Add(new StatesContext(editorState, fabric));
+            // root.Add(DrawNode(sn = new StateNode("New state")));
+            // root.Add(DrawNode(new StateNode("New state")));
+
+            // while (sn.transitions.Count == 0)
+            // {
+            //     await Task.Yield();
+            // }
+            // root.Add(new TransitionContext(sn.transitions.First(), editorState, fabric));
+            // root.Add(DrawNode(new NotNode(new NotLayoutNode())));
+            // root.Add(DrawNode(new OrNode(new OrLayoutNode())));
+            // root.Add(DrawNode(new AndNode(new AndLayoutNode())));
+            // root.Add(DrawNode(new ConditionNode(new ConditionLayoutNode(new FalseCondition()))));
+            // root.Add(DrawNode(new ConditionNode(new ConditionLayoutNode(new TrueCondition()))));
         }
 
         private void Empty()
@@ -141,20 +154,20 @@ namespace FSM.Editor
 
         public Node DrawNode(Node newNode)
         {
-            newNode.AddManipulator(new DraggerManipulator(editorState.DraggingLocked));
-            newNode.AddManipulator(new CreateTransitionManipulator(editorState, rootVisualElement));
-            // newNode.AddManipulator(new RouteConnectionManipulator(editorState, rootVisualElement));
+            // newNode.AddManipulator(new DraggerManipulator(editorState.DraggingLocked));
+            // newNode.AddManipulator(new CreateTransitionManipulator(editorState, root));
+            // newNode.AddManipulator(new RouteConnectionManipulator(editorState, root));
             // newNode.ConnectionRequestHandledCallback += async () =>
             // {
             //     editorState.DraggingLocked.Value = true;
             //     TaskCompletionSource<bool> completionSource = new TaskCompletionSource<bool>();
-            //     rootVisualElement.RegisterCallback<MouseUpEvent>(Track);
+            //     root.RegisterCallback<MouseUpEvent>(Track);
             //     await completionSource.Task;
-            //     rootVisualElement.UnregisterCallback<MouseUpEvent>(Track);
+            //     root.UnregisterCallback<MouseUpEvent>(Track);
             //     editorState.DraggingLocked.Value = false;
             //     Vector2 pos = Event.current.mousePosition;
             //     List<VisualElement> elements = new List<VisualElement>(10);
-            //     rootVisualElement.panel.PickAll(pos, elements);
+            //     root.panel.PickAll(pos, elements);
             //     foreach (VisualElement element in elements)
             //         if (element is Node node)
             //             return node;

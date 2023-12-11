@@ -20,10 +20,16 @@ namespace FSM.Editor
             {
                 if (e.button == 1)
                 {
-                    StateTransition transition = await this.CrateTransitionAsync(RequestTransition, target => transitions.All(item => item.Target != target));
+                    StateTransition transition = await this.CrateTransitionAsync(RequestTransition, CheckValid);
                     if (transition != null) transitions.Add(transition);
+                    bool CheckValid(StateNode stateNode) => transitions.All(item => item.Target != stateNode);
                 }
             });
+        }
+
+        public override bool ContainsPoint(Vector2 localPoint)
+        {
+            return base.ContainsPoint(localPoint);
         }
 
         protected virtual Task<StateNode> RequestTransition()

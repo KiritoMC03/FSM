@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
@@ -6,9 +7,9 @@ namespace FSM.Editor
     public class StateTransition : VisualElement, IDisposable, ICustomRepaintHandler
     {
         public readonly StateNode Target;
-        private LineDrawerRegistration lineDrawerRegistration;
+        private TransitionDrawer drawer;
 
-        public StateTransition(StateNode target)
+        public StateTransition(StateNode source, StateNode target)
         {
             this.Target = target;
             style.position = Position.Absolute;
@@ -17,22 +18,21 @@ namespace FSM.Editor
             style.alignSelf = Align.Center;
             style.flexDirection = FlexDirection.Column;
             style.justifyContent = Justify.Center;
-        }
-
-        public void SetLineDrawerRegistrationLink(LineDrawerRegistration registration)
-        {
-            lineDrawerRegistration = registration;
+            Add(drawer = new TransitionDrawer(source, target, () =>
+            {
+                Debug.Log("EditClicked");
+            }));
         }
 
         public void Dispose()
         {
-            lineDrawerRegistration?.Dispose();
+            drawer?.Dispose();
         }
 
         public void Repaint()
         {
             MarkDirtyRepaint();
-            lineDrawerRegistration?.Repaint();
+            drawer.Repaint();
         }
     }
 }
