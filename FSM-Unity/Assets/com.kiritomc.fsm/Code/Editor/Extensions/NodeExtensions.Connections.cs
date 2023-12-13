@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace FSM.Editor.Extensions
 {
@@ -39,21 +38,6 @@ namespace FSM.Editor.Extensions
                 node.Repaint();
                 node.BringToFront();
             }
-        }
-
-        public static async Task<StateTransition> CrateTransitionAsync<T>(this StateNode node, Func<Task<T>> asyncTargetGetter, Predicate<T> checkValid)
-            where T : StateNode
-        {
-            T target = await asyncTargetGetter.Invoke();
-            if (target == null || target == node || !checkValid.Invoke(target)) return default;
-
-            StateTransition transition = new StateTransition(node, target);
-            node.Add(transition);
-            node.Disposables.Add(transition);
-            node.Disposables.Add(target.ListenChanges(RepaintTransition));
-            node.ChildrenRepaintHandler.Add(transition);
-            return transition;
-            void RepaintTransition() => transition.Repaint();
         }
     }
 }

@@ -1,11 +1,24 @@
-﻿using FSM.Editor.Manipulators;
+﻿using System.Collections.Generic;
+using System.Linq;
+using FSM.Editor.Serialization;
+using Newtonsoft.Json;
+using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
     public class FsmEditorWindow : UnityEditor.EditorWindow
     {
-        private EditorState editorState = new EditorState();
+        private readonly EditorState editorState = new EditorState();
+        private Fabric fabric;
+        private StatesContext rootContext;
+
+        [MenuItem("FSM/Reset Save")]
+        public static void ResetPrefs()
+        {
+            PlayerPrefs.DeleteAll();
+        }
         
         [UnityEditor.MenuItem("FSM/Editor")]
         private static void ShowWindow()
@@ -17,6 +30,9 @@ namespace FSM.Editor
 
         private async void CreateGUI()
         {
+            string json = PlayerPrefs.GetString("FsmEditorKey", default);
+            StatesContextModel statesContextModel = json == null ? new StatesContextModel() : JsonConvert.DeserializeObject<StatesContextModel>(json);
+            PlayerPrefs.SetString("FsmEditorKey", json);
             VisualElement root = new VisualElement()
             {
                 focusable = true,
@@ -32,8 +48,8 @@ namespace FSM.Editor
             {
                 editorState.PointerPosition.Value = root.LocalToWorld(e.position);
             });
-            Fabric fabric = new Fabric(editorState, root);
-            root.Add(new StatesContext(editorState, fabric));
+            fabric = new Fabric(editorState, root);
+            root.Add(rootContext = CreateRootContext(statesContextModel));
             // root.Add(DrawNode(sn = new StateNode("New state")));
             // root.Add(DrawNode(new StateNode("New state")));
 
@@ -47,6 +63,57 @@ namespace FSM.Editor
             // root.Add(DrawNode(new AndNode(new AndLayoutNode())));
             // root.Add(DrawNode(new ConditionNode(new ConditionLayoutNode(new FalseCondition()))));
             // root.Add(DrawNode(new ConditionNode(new ConditionLayoutNode(new TrueCondition()))));
+        }
+
+        private StatesContext CreateRootContext(StatesContextModel model)
+        {
+            StatesContext root = new StatesContext(editorState, fabric);
+            List<StateNode> states = model?.StateNodeModels.Select(nodeModel =>
+            {
+                StateNode node = fabric.CreateStateNode(nodeModel.Name, root, nodeModel.Position);
+                root.Add(node);
+                return node;
+            }).ToList();
+            if (states != null)
+            {
+                root.StateNodes = states;
+                for (int i = 0; i < states.Count; i++)
+                {
+                    StateNode state = states[i];
+                    state.Transitions = model.StateNodeModels[i].OutgoingTransitions.Select(transitionModel =>
+                    {
+                        StateNode target = states.Find(targetState => targetState.StateName == transitionModel.TargetName);
+                        StateTransition transition = fabric.CreateTransition(state, target);
+                        return transition;
+                    }).ToList();
+                }
+            }
+
+            return root;
+        }
+
+        private void OnDestroy()
+        {
+            StatesContextModel rootContextModel = new StatesContextModel
+            {
+                StateNodeModels = rootContext.StateNodes.Select(node =>
+                {
+                    return new StateNodeModel
+                    (
+                        node.StateName,
+                        new Vector2Model(node.resolvedStyle.left, node.resolvedStyle.top),
+                        node.Transitions.Select(CreateStateTransitionModel).ToArray()
+                    );
+
+                    StateTransitionModel CreateStateTransitionModel(StateTransition transition)
+                    {
+                        return new StateTransitionModel(node.StateName, transition.Target.StateName, default);
+                    }
+                }).ToArray(),
+            };
+
+            string json = JsonConvert.SerializeObject(rootContextModel);
+            PlayerPrefs.SetString("FsmEditorKey", json);
         }
 
         private void Empty()

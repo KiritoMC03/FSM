@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FSM.Editor.Events;
-using FSM.Editor.Extensions;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -10,19 +10,22 @@ namespace FSM.Editor
 {
     public class StateNode : Node
     {
-        protected string StateName;
-        public readonly List<StateTransition> transitions = new List<StateTransition>();
+        public readonly string StateName;
+        public List<StateTransition> Transitions;
 
-        public StateNode(string nodeName) : base(nodeName)
+        public StateNode(string nodeName, Vector2 position, IEnumerable<StateTransition> transitions = default) : base(nodeName)
         {
             StateName = nodeName;
+            style.left = position.x;
+            style.top = position.y;
+            Transitions = new List<StateTransition>(transitions ?? ArraySegment<StateTransition>.Empty);
             RegisterCallback<PointerDownEvent>(async e =>
             {
                 if (e.button == 1)
                 {
-                    StateTransition transition = await this.CrateTransitionAsync(RequestTransition, CheckValid);
-                    if (transition != null) transitions.Add(transition);
-                    bool CheckValid(StateNode stateNode) => transitions.All(item => item.Target != stateNode);
+                    StateTransition transition = await Fabric.Instance.RouteTransitionAsync(this, RequestTransition, CheckValid);
+                    if (transition != null) Transitions.Add(transition);
+                    bool CheckValid(StateNode stateNode) => Transitions.All(item => item.Target != stateNode);
                 }
             });
         }
@@ -74,7 +77,7 @@ namespace FSM.Editor
         public override void Repaint()
         {
             base.Repaint();
-            foreach (StateTransition transition in transitions) transition.SendToBack();
+            foreach (StateTransition transition in Transitions) transition.SendToBack();
         }
     }
 }

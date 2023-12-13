@@ -7,7 +7,7 @@ namespace FSM.Editor
 {
     public class StatesContext : Context
     {
-        private readonly List<StateNode> stateNodes = new List<StateNode>();
+        public List<StateNode> StateNodes = new List<StateNode>();
         private readonly EditorState editorState;
         private readonly Fabric fabric;
 
@@ -27,9 +27,12 @@ namespace FSM.Editor
             {
                 {"Simple State", () =>
                     {
-                        StateNode node = fabric.CreateStateNode("Simple State", this);
+                        const string nodeName = "Simple state";
+                        int num = 0;
+                        while (StateNodes.Exists(i => i.StateName == $"{nodeName} {num}")) num++;
+                        StateNode node = fabric.CreateStateNode($"{nodeName} {num}", this);
                         Add(node);
-                        stateNodes.Add(node);
+                        StateNodes.Add(node);
                         return node;
                     }
                 },
