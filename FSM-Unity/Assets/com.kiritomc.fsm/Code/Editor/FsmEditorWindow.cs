@@ -1,18 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using FSM.Editor.Serialization;
-using Newtonsoft.Json;
+﻿using FSM.Editor.Serialization;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
-    public class FsmEditorWindow : UnityEditor.EditorWindow
+    public class FsmEditorWindow : EditorWindow
     {
         private readonly EditorState editorState = new EditorState();
         private Fabric fabric;
-        private StatesContext rootContext;
+        private FsmContext rootContext;
+        private EditorSerializer editorSerializer;
 
         [MenuItem("FSM/Reset Save")]
         public static void ResetPrefs()
@@ -20,19 +18,16 @@ namespace FSM.Editor
             PlayerPrefs.DeleteAll();
         }
         
-        [UnityEditor.MenuItem("FSM/Editor")]
+        [MenuItem("FSM/Editor")]
         private static void ShowWindow()
         {
             FsmEditorWindow window = GetWindow<FsmEditorWindow>();
-            window.titleContent = new UnityEngine.GUIContent("Fsm Editor sWindow");
+            window.titleContent = new GUIContent("Fsm Editor sWindow");
             window.Show();
         }
 
-        private async void CreateGUI()
+        private void CreateGUI()
         {
-            string json = PlayerPrefs.GetString("FsmEditorKey", default);
-            StatesContextModel statesContextModel = json == null ? new StatesContextModel() : JsonConvert.DeserializeObject<StatesContextModel>(json);
-            PlayerPrefs.SetString("FsmEditorKey", json);
             VisualElement root = new VisualElement()
             {
                 focusable = true,
@@ -49,70 +44,18 @@ namespace FSM.Editor
                 editorState.PointerPosition.Value = root.LocalToWorld(e.position);
             });
             fabric = new Fabric(editorState, root);
-            root.Add(rootContext = CreateRootContext(statesContextModel));
-            // root.Add(DrawNode(sn = new StateNode("New state")));
-            // root.Add(DrawNode(new StateNode("New state")));
-
-            // while (sn.transitions.Count == 0)
-            // {
-            //     await Task.Yield();
-            // }
-            // root.Add(new TransitionContext(sn.transitions.First(), editorState, fabric));
-            // root.Add(DrawNode(new NotNode(new NotLayoutNode())));
-            // root.Add(DrawNode(new OrNode(new OrLayoutNode())));
-            // root.Add(DrawNode(new AndNode(new AndLayoutNode())));
-            // root.Add(DrawNode(new ConditionNode(new ConditionLayoutNode(new FalseCondition()))));
-            // root.Add(DrawNode(new ConditionNode(new ConditionLayoutNode(new TrueCondition()))));
-        }
-
-        private StatesContext CreateRootContext(StatesContextModel model)
-        {
-            StatesContext root = new StatesContext(editorState, fabric);
-            List<StateNode> states = model?.StateNodeModels.Select(nodeModel =>
+            editorSerializer = new EditorSerializer(editorState, fabric);
+            string json = PlayerPrefs.GetString("FsmEditorKey", default);
+            rootContext = new FsmContext
             {
-                StateNode node = fabric.CreateStateNode(nodeModel.Name, root, nodeModel.Position);
-                root.Add(node);
-                return node;
-            }).ToList();
-            if (states != null)
-            {
-                root.StateNodes = states;
-                for (int i = 0; i < states.Count; i++)
-                {
-                    StateNode state = states[i];
-                    state.Transitions = model.StateNodeModels[i].OutgoingTransitions.Select(transitionModel =>
-                    {
-                        StateNode target = states.Find(targetState => targetState.StateName == transitionModel.TargetName);
-                        StateTransition transition = fabric.CreateTransition(state, target);
-                        return transition;
-                    }).ToList();
-                }
-            }
-
-            return root;
+                StatesContext = editorSerializer.Deserialize(json).StatesContext,
+            };
+            root.Add(rootContext.StatesContext);
         }
 
         private void OnDestroy()
         {
-            StatesContextModel rootContextModel = new StatesContextModel
-            {
-                StateNodeModels = rootContext.StateNodes.Select(node =>
-                {
-                    return new StateNodeModel
-                    (
-                        node.StateName,
-                        new Vector2Model(node.resolvedStyle.left, node.resolvedStyle.top),
-                        node.Transitions.Select(CreateStateTransitionModel).ToArray()
-                    );
-
-                    StateTransitionModel CreateStateTransitionModel(StateTransition transition)
-                    {
-                        return new StateTransitionModel(node.StateName, transition.Target.StateName, default);
-                    }
-                }).ToArray(),
-            };
-
-            string json = JsonConvert.SerializeObject(rootContextModel);
+            string json = editorSerializer?.Serialize(rootContext);
             PlayerPrefs.SetString("FsmEditorKey", json);
         }
 
@@ -217,32 +160,6 @@ namespace FSM.Editor
                     wordSpacing = default,
                 },
             };
-        }
-
-        public Node DrawNode(Node newNode)
-        {
-            // newNode.AddManipulator(new DraggerManipulator(editorState.DraggingLocked));
-            // newNode.AddManipulator(new CreateTransitionManipulator(editorState, root));
-            // newNode.AddManipulator(new RouteConnectionManipulator(editorState, root));
-            // newNode.ConnectionRequestHandledCallback += async () =>
-            // {
-            //     editorState.DraggingLocked.Value = true;
-            //     TaskCompletionSource<bool> completionSource = new TaskCompletionSource<bool>();
-            //     root.RegisterCallback<MouseUpEvent>(Track);
-            //     await completionSource.Task;
-            //     root.UnregisterCallback<MouseUpEvent>(Track);
-            //     editorState.DraggingLocked.Value = false;
-            //     Vector2 pos = Event.current.mousePosition;
-            //     List<VisualElement> elements = new List<VisualElement>(10);
-            //     root.panel.PickAll(pos, elements);
-            //     foreach (VisualElement element in elements)
-            //         if (element is Node node)
-            //             return node;
-            //     return default;
-            //
-            //     void Track(MouseUpEvent _) => completionSource.SetResult(true);
-            // };
-            return newNode;
         }
     }
 }

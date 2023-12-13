@@ -6,6 +6,15 @@ namespace FSM.Editor.Serialization
     public class StatesContextModel
     {
         public StateNodeModel[] StateNodeModels;
+
+        public StatesContextModel()
+        {
+        }
+
+        public StatesContextModel(StateNodeModel[] stateNodeModels)
+        {
+            StateNodeModels = stateNodeModels;
+        }
     }
 
     [Serializable]

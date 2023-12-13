@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using FSM.Editor.Extensions;
 using FSM.Editor.Manipulators;
 using FSM.Runtime;
-using PlasticGui;
 using UnityEngine;
 using UnityEngine.UIElements;
 
