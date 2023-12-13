@@ -12,7 +12,11 @@ namespace FSM.Editor
         internal readonly List<IDisposable> Disposables = new List<IDisposable>(100);
         internal readonly List<ICustomRepaintHandler> ChildrenRepaintHandler = new List<ICustomRepaintHandler>(2);
         internal VisualElement Header;
-        internal Label Label;
+        internal TextElement Label;
+
+        protected Node()
+        {
+        }
 
         protected Node(string nodeName)
         {

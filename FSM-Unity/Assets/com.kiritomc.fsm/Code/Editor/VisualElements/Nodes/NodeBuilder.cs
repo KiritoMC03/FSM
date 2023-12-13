@@ -37,6 +37,22 @@ namespace FSM.Editor
             return (header, label);
         }
 
+        public static TextInputBaseField<string> WithInputLabel(this VisualElement parent, string nodeName)
+        {
+            TextField field = new TextField()
+            {
+                value = nodeName,
+                style =
+                {
+                    alignContent = Align.Center,
+                    unityTextAlign = TextAnchor.MiddleCenter,
+                    width = new StyleLength(new Length(90, LengthUnit.Percent)),
+                },
+            };
+            parent.Add(field);
+            return field;
+        }
+
         public static NodeConnectionPoint ConnectionPoint(this VisualElement parent)
         {
             NodeConnectionPoint connection;

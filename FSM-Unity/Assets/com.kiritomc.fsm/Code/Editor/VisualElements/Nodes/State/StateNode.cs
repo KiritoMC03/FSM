@@ -10,15 +10,20 @@ namespace FSM.Editor
 {
     public class StateNode : Node
     {
-        public readonly string StateName;
+        public string StateName;
         public List<StateTransition> Transitions;
+        public readonly TextInputBaseField<string> LabelInputField;
 
-        public StateNode(string nodeName, Vector2 position, IEnumerable<StateTransition> transitions = default) : base(nodeName)
+        public StateNode(string nodeName, Vector2 position) : base(nodeName)
         {
+            LabelInputField = Header.WithInputLabel(nodeName);
+            LabelInputField.style.display = DisplayStyle.None;
+            ApplyBaseStyle();
             StateName = nodeName;
             style.left = position.x;
             style.top = position.y;
-            Transitions = new List<StateTransition>(transitions ?? ArraySegment<StateTransition>.Empty);
+
+            Transitions = new List<StateTransition>();
             RegisterCallback<PointerDownEvent>(async e =>
             {
                 if (e.button == 1)
@@ -28,11 +33,6 @@ namespace FSM.Editor
                     bool CheckValid(StateNode stateNode) => Transitions.All(item => item.Target != stateNode);
                 }
             });
-        }
-
-        public override bool ContainsPoint(Vector2 localPoint)
-        {
-            return base.ContainsPoint(localPoint);
         }
 
         protected virtual Task<StateNode> RequestTransition()

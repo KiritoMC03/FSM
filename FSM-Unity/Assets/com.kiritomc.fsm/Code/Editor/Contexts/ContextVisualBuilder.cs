@@ -2,7 +2,7 @@
 
 namespace FSM.Editor
 {
-    public static class ContextBuilder
+    public static class ContextVisualBuilder
     {
         public static Context DefaultLayout(this Context ctx)
         {

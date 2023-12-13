@@ -41,11 +41,19 @@ namespace FSM.Editor
             return result;
         }
 
-        public StateNode CreateStateNode(string name, VisualElement pointerTrackingElement, Vector2 position = default)
+        public StateNode CreateStateNode(string name, StatesContext statesContext, Vector2 position = default)
         {
             StateNode node = new StateNode(name, position);
+            node.AddManipulator(new StateNodeLabelManipulator(node, editorState.DraggingLocked, changed =>
+            {
+                string newName = changed.newValue;
+                int num = 1;
+                if (!statesContext.StateNodes.Exists(i => i.StateName == newName)) return newName;
+                while (statesContext.StateNodes.Exists(i => i.StateName == $"{newName} {num}")) num++;
+                return $"{newName} {num}";
+            }));
             node.AddManipulator(new DraggerManipulator(editorState.DraggingLocked));
-            node.AddManipulator(new CreateTransitionManipulator(editorState, pointerTrackingElement));
+            node.AddManipulator(new CreateTransitionManipulator(editorState, statesContext));
             return node;
         }
 
