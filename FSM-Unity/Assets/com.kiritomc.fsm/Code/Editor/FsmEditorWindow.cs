@@ -8,9 +8,10 @@ namespace FSM.Editor
     public class FsmEditorWindow : EditorWindow
     {
         private readonly EditorState editorState = new EditorState();
-        private Fabric fabric;
-        private FsmContext rootContext;
         private EditorSerializer editorSerializer;
+        private FsmContext rootContext;
+        private VisualElement root;
+        private Fabric fabric;
 
         [MenuItem("FSM/Reset Save")]
         public static void ResetPrefs()
@@ -28,22 +29,20 @@ namespace FSM.Editor
 
         private void CreateGUI()
         {
-            VisualElement root = new VisualElement()
-            {
-                focusable = true,
-                style =
-                {
-                    width = new StyleLength(new Length(100, LengthUnit.Percent)),
-                    height = new StyleLength(new Length(100, LengthUnit.Percent)),
-                },
-            };
-            rootVisualElement.Add(root);
-            root.focusable = true;
-            root.RegisterCallback<PointerMoveEvent>(e =>
-            {
-                editorState.PointerPosition.Value = root.LocalToWorld(e.position);
-            });
-            fabric = new Fabric(editorState, root);
+            (fabric, root) = Fabric.WithRoot(rootVisualElement);
+            ServiceLocator.Instance.Set(fabric);
+            ServiceLocator.Instance.Set(editorState);
+            LoadEditor();
+        }
+
+        private void OnDestroy()
+        {
+            string json = editorSerializer?.Serialize(rootContext);
+            PlayerPrefs.SetString("FsmEditorKey", json);
+        }
+
+        private void LoadEditor()
+        {
             editorSerializer = new EditorSerializer(editorState, fabric);
             string json = PlayerPrefs.GetString("FsmEditorKey", default);
             rootContext = new FsmContext
@@ -51,12 +50,7 @@ namespace FSM.Editor
                 StatesContext = editorSerializer.Deserialize(json).StatesContext,
             };
             root.Add(rootContext.StatesContext);
-        }
-
-        private void OnDestroy()
-        {
-            string json = editorSerializer?.Serialize(rootContext);
-            PlayerPrefs.SetString("FsmEditorKey", json);
+            editorState.CurrentContext.Value = rootContext.StatesContext;
         }
 
         private void Empty()

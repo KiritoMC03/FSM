@@ -8,10 +8,13 @@ namespace FSM.Editor
     {
         public readonly StateNode Target;
         private TransitionDrawer drawer;
+        private TransitionContext context;
+
+        protected Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
         public StateTransition(StateNode source, StateNode target)
         {
-            this.Target = target;
+            Target = target;
             style.position = Position.Absolute;
             style.top = 0;
             style.bottom = 0;
@@ -21,6 +24,7 @@ namespace FSM.Editor
             Add(drawer = new TransitionDrawer(source, target, () =>
             {
                 Debug.Log("EditClicked");
+                Fabric.CreateTransitionContext(this);
             }));
         }
 

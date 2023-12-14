@@ -6,6 +6,7 @@ namespace FSM.Editor
     {
         public readonly EditorStateProperty<bool> DraggingLocked = new EditorStateProperty<bool>();
         public readonly EditorStateProperty<Vector3> PointerPosition = new EditorStateProperty<Vector3>();
+        public readonly EditorStateProperty<Context> CurrentContext = new EditorStateProperty<Context>();
     }
 
     public class EditorStateProperty<T>

@@ -11,22 +11,36 @@ namespace FSM.Editor
 {
     public class Fabric
     {
-        public static Fabric Instance { get; private set; } 
-        private readonly EditorState editorState;
         private VisualElement root;
+        private EditorState EditorState => ServiceLocator.Instance.Get<EditorState>();
 
-        public Fabric(EditorState editorState, VisualElement root)
+        public Fabric(VisualElement root)
         {
-            Instance = this;
-            this.editorState = editorState;
             this.root = root;
         }
-        
+
+        public static (Fabric Fabric, VisualElement Root) WithRoot(VisualElement rootVisualElement)
+        {
+            VisualElement result = new VisualElement()
+            {
+                focusable = true,
+                style =
+                {
+                    width = new StyleLength(new Length(100, LengthUnit.Percent)),
+                    height = new StyleLength(new Length(100, LengthUnit.Percent)),
+                },
+            };
+            rootVisualElement.Add(result);
+            result.focusable = true;
+            result.AddManipulator(new SaveWorldPointerPositionManipulator());
+            return (new Fabric(result), result);
+        }
+
         public OrNode TestConditional(VisualElement pointerTrackingElement)
         {
             OrNode node = new OrNode(new OrLayoutNode());
-            node.AddManipulator(new DraggerManipulator(editorState.DraggingLocked));
-            node.AddManipulator(new RouteConnectionManipulator(editorState, pointerTrackingElement));
+            node.AddManipulator(new DraggerManipulator(EditorState.DraggingLocked));
+            node.AddManipulator(new RouteConnectionManipulator(EditorState, pointerTrackingElement));
             return node;
         }
 
@@ -34,7 +48,7 @@ namespace FSM.Editor
         {
             SelectNodePopup result = new SelectNodePopup(availableNodes, selectedHandler);
             root.Add(result);
-            Vector2 position = result.WorldToLocal(editorState.PointerPosition.Value);
+            Vector2 position = result.WorldToLocal(EditorState.PointerPosition.Value);
             result.style.position = Position.Absolute;
             result.style.left = position.x;
             result.style.top = position.y;
@@ -44,7 +58,7 @@ namespace FSM.Editor
         public StateNode CreateStateNode(string name, StatesContext statesContext, Vector2 position = default)
         {
             StateNode node = new StateNode(name, position);
-            node.AddManipulator(new StateNodeLabelManipulator(node, editorState.DraggingLocked, changed =>
+            node.AddManipulator(new StateNodeLabelManipulator(node, EditorState.DraggingLocked, changed =>
             {
                 string newName = changed.newValue;
                 int num = 1;
@@ -52,8 +66,8 @@ namespace FSM.Editor
                 while (statesContext.StateNodes.Exists(i => i.StateName == $"{newName} {num}")) num++;
                 return $"{newName} {num}";
             }));
-            node.AddManipulator(new DraggerManipulator(editorState.DraggingLocked));
-            node.AddManipulator(new CreateTransitionManipulator(editorState, statesContext));
+            node.AddManipulator(new DraggerManipulator(EditorState.DraggingLocked));
+            node.AddManipulator(new CreateTransitionManipulator(EditorState, statesContext));
             return node;
         }
 
@@ -77,6 +91,19 @@ namespace FSM.Editor
             source.ChildrenRepaintHandler.Add(transition);
             return transition;
             void RepaintTransition() => transition.Repaint();
+        }
+
+        #endregion
+
+        #region Contexts
+
+        public TransitionContext CreateTransitionContext(StateTransition target)
+        {
+            Context current = EditorState.CurrentContext.Value;
+            current?.parent.Remove(current);
+            TransitionContext result;
+            root.Add(result = new TransitionContext(target));
+            return result;
         }
 
         #endregion

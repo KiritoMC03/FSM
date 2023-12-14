@@ -14,6 +14,8 @@ namespace FSM.Editor
         internal VisualElement Header;
         internal TextElement Label;
 
+        protected Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
+
         protected Node()
         {
         }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FSM.Editor.Events;
@@ -28,7 +27,7 @@ namespace FSM.Editor
             {
                 if (e.button == 1)
                 {
-                    StateTransition transition = await Fabric.Instance.RouteTransitionAsync(this, RequestTransition, CheckValid);
+                    StateTransition transition = await Fabric.RouteTransitionAsync(this, RequestTransition, CheckValid);
                     if (transition != null) Transitions.Add(transition);
                     bool CheckValid(StateNode stateNode) => Transitions.All(item => item.Target != stateNode);
                 }
