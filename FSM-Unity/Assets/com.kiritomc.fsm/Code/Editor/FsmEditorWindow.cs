@@ -32,6 +32,8 @@ namespace FSM.Editor
             (fabric, root) = Fabric.WithRoot(rootVisualElement);
             ServiceLocator.Instance.Set(fabric);
             ServiceLocator.Instance.Set(editorState);
+            LeftPanel leftPanel = fabric.LeftPanel();
+            leftPanel.Add(fabric.NavigationPanel());
             LoadEditor();
         }
 
@@ -50,7 +52,7 @@ namespace FSM.Editor
                 StatesContext = editorSerializer.Deserialize(json).StatesContext,
             };
             root.Add(rootContext.StatesContext);
-            editorState.CurrentContext.Value = rootContext.StatesContext;
+            editorState.CurrentContext.Value = editorState.RootContext.Value = rootContext.StatesContext;
         }
 
         private void Empty()

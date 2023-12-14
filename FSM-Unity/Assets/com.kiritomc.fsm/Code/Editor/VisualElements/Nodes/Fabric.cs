@@ -32,8 +32,23 @@ namespace FSM.Editor
             };
             rootVisualElement.Add(result);
             result.focusable = true;
+            result.style.flexDirection = FlexDirection.Row;
             result.AddManipulator(new SaveWorldPointerPositionManipulator());
             return (new Fabric(result), result);
+        }
+
+        public LeftPanel LeftPanel()
+        {
+            LeftPanel result = new LeftPanel();
+            root.Add(result);
+            return result;
+        }
+
+        public NavigationPanel NavigationPanel()
+        {
+            NavigationPanel result = new NavigationPanel();
+            root.Add(result);
+            return result;
         }
 
         public OrNode TestConditional(VisualElement pointerTrackingElement)
@@ -97,12 +112,35 @@ namespace FSM.Editor
 
         #region Contexts
 
+        public StatesContext CreateRootContext()
+        {
+            Context current = EditorState.CurrentContext.Value;
+            current?.parent.Remove(current);
+            EditorState.RootContext.Value ??= new StatesContext("Root");
+            EditorState.RootContext.Value.style.display = DisplayStyle.Flex;
+            EditorState.CurrentContext.Value = EditorState.RootContext.Value;
+            root.Add(EditorState.RootContext.Value);
+            return EditorState.RootContext.Value;
+        }
+
+        public StatesContext CreateStateContext(StateNode target)
+        {
+            EditorState.RootContext.Value.style.display = DisplayStyle.None;
+            Context current = EditorState.CurrentContext.Value;
+            current?.parent.Remove(current);
+            StatesContext result;
+            root.Add(result = new StatesContext(target.StateName));
+            EditorState.CurrentContext.Value = result;
+            return result;
+        }
+
         public TransitionContext CreateTransitionContext(StateTransition target)
         {
             Context current = EditorState.CurrentContext.Value;
             current?.parent.Remove(current);
             TransitionContext result;
-            root.Add(result = new TransitionContext(target));
+            root.Add(result = new TransitionContext(target, $"{target.Source.StateName} -> {target.Target.StateName}"));
+            EditorState.CurrentContext.Value = result;
             return result;
         }
 

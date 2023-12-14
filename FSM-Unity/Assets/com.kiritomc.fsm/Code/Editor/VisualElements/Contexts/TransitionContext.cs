@@ -6,10 +6,12 @@ namespace FSM.Editor
     {
         private readonly StateTransition target;
         private readonly List<ConditionalNode> nodes = new List<ConditionalNode>();
+        public readonly string Name;
 
-        public TransitionContext(StateTransition target)
+        public TransitionContext(StateTransition target, string name)
         {
             this.target = target;
+            Name = name;
             this.DefaultLayout()
                 .DefaultColors()
                 .DefaultInteractions();

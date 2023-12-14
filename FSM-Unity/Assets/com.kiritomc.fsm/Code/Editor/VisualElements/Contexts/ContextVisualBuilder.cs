@@ -7,8 +7,8 @@ namespace FSM.Editor
         public static Context DefaultLayout(this Context ctx)
         {
             ctx.style.alignSelf = Align.FlexEnd;
-            ctx.style.width = new StyleLength(new Length(80f, LengthUnit.Percent));
-            ctx.style.height = new StyleLength(new Length(100f, LengthUnit.Percent));
+            ctx.style.width = new StyleLength(new Length(Sizes.ContextWidth, Sizes.ContextWidthUnits));
+            ctx.style.height = new StyleLength(new Length(Sizes.ContextHeight, Sizes.ContextHeightUnits));
             return ctx;
         }
 

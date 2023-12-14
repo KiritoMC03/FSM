@@ -7,18 +7,19 @@ namespace FSM.Editor
 {
     public class StatesContext : Context
     {
-        public List<StateNode> StateNodes = new List<StateNode>();
-        private readonly EditorState editorState;
-        private readonly Fabric fabric;
+        private EditorState EditorState => ServiceLocator.Instance.Get<EditorState>();
+        private Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
-        public StatesContext(EditorState editorState, Fabric fabric)
+        public List<StateNode> StateNodes = new List<StateNode>();
+        public readonly string Name;
+
+        public StatesContext(string name)
         {
-            this.editorState = editorState;
-            this.fabric = fabric;
+            Name = name;
             this.DefaultLayout()
                 .DefaultColors()
                 .DefaultInteractions();
-            this.AddManipulator(new CreateNodeManipulator<StateNode>(fabric, GetAvailableNodes));
+            this.AddManipulator(new CreateNodeManipulator<StateNode>(Fabric, GetAvailableNodes));
         }
 
         public Dictionary<string, Func<StateNode>> GetAvailableNodes()
@@ -30,7 +31,7 @@ namespace FSM.Editor
                         const string nodeName = "Simple state";
                         int num = 0;
                         while (StateNodes.Exists(i => i.StateName == $"{nodeName} {num}")) num++;
-                        StateNode node = fabric.CreateStateNode($"{nodeName} {num}", this);
+                        StateNode node = Fabric.CreateStateNode($"{nodeName} {num}", this);
                         Add(node);
                         StateNodes.Add(node);
                         return node;

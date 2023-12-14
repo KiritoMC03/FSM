@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace FSM.Editor
 {
@@ -6,11 +7,23 @@ namespace FSM.Editor
     {
         public readonly EditorStateProperty<bool> DraggingLocked = new EditorStateProperty<bool>();
         public readonly EditorStateProperty<Vector3> PointerPosition = new EditorStateProperty<Vector3>();
+        public readonly EditorStateProperty<StatesContext> RootContext = new EditorStateProperty<StatesContext>();
         public readonly EditorStateProperty<Context> CurrentContext = new EditorStateProperty<Context>();
     }
 
     public class EditorStateProperty<T>
     {
-        public T Value { get; set; }
+        private T value;
+        public event Action<T> ValueChanged;
+
+        public T Value
+        {
+            get => value;
+            set
+            {
+                this.value = value;
+                ValueChanged?.Invoke(value);
+            }
+        }
     }
 }

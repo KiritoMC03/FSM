@@ -6,6 +6,7 @@ namespace FSM.Editor
 {
     public class StateTransition : VisualElement, IDisposable, ICustomRepaintHandler
     {
+        public readonly StateNode Source;
         public readonly StateNode Target;
         private TransitionDrawer drawer;
         private TransitionContext context;
@@ -14,6 +15,7 @@ namespace FSM.Editor
 
         public StateTransition(StateNode source, StateNode target)
         {
+            Source = source;
             Target = target;
             style.position = Position.Absolute;
             style.top = 0;
@@ -21,11 +23,7 @@ namespace FSM.Editor
             style.alignSelf = Align.Center;
             style.flexDirection = FlexDirection.Column;
             style.justifyContent = Justify.Center;
-            Add(drawer = new TransitionDrawer(source, target, () =>
-            {
-                Debug.Log("EditClicked");
-                Fabric.CreateTransitionContext(this);
-            }));
+            Add(drawer = new TransitionDrawer(source, target, () => Fabric.CreateTransitionContext(this)));
         }
 
         public void Dispose()
