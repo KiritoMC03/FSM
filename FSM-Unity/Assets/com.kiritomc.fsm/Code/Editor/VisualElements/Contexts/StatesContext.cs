@@ -19,7 +19,7 @@ namespace FSM.Editor
             this.DefaultLayout()
                 .DefaultColors()
                 .DefaultInteractions();
-            this.AddManipulator(new CreateNodeManipulator<StateNode>(Fabric, GetAvailableNodes));
+            this.AddManipulator(new CreateNodeManipulator<StateNode>(GetAvailableNodes));
         }
 
         public Dictionary<string, Func<StateNode>> GetAvailableNodes()

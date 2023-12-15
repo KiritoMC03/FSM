@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using FSM.Editor.Manipulators;
+using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
@@ -7,6 +10,7 @@ namespace FSM.Editor
         private readonly StateTransition target;
         private readonly List<ConditionalNode> nodes = new List<ConditionalNode>();
         public readonly string Name;
+        private Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
         public TransitionContext(StateTransition target, string name)
         {
@@ -14,8 +18,23 @@ namespace FSM.Editor
             Name = name;
             this.DefaultLayout()
                 .DefaultColors()
-                .DefaultInteractions();
-            // this.AddManipulator(new CreateNodeManipulator(fabric));
+                .DefaultInteractions()
+                .AddManipulator(new CreateNodeManipulator<ConditionalNode>(GetAvailableNodes));
+        }
+
+        public Dictionary<string, Func<ConditionalNode>> GetAvailableNodes()
+        {
+            return new Dictionary<string, Func<ConditionalNode>>
+            {
+                {"Or", () =>
+                    {
+                        OrNode node = Fabric.TestConditional(this);
+                        Add(node);
+                        nodes.Add(node);
+                        return node;
+                    }
+                },
+            };
         }
     }
 }

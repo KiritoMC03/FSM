@@ -9,18 +9,16 @@ namespace FSM.Editor.Manipulators
     public class CreateNodeManipulator<TNode> : Manipulator
         where TNode: Node
     {
-        private readonly Fabric fabric;
         private readonly GetAvailableNodesDelegate<TNode> nodeTypesList;
+        private static Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
-        public CreateNodeManipulator(Fabric fabric, GetAvailableNodesDelegate<TNode> nodeTypesList)
+        public CreateNodeManipulator()
         {
-            this.fabric = fabric;
-            this.nodeTypesList = nodeTypesList;
         }
 
-        public CreateNodeManipulator(Fabric fabric)
+        public CreateNodeManipulator(GetAvailableNodesDelegate<TNode> nodeTypesList)
         {
-            this.fabric = fabric;
+            this.nodeTypesList = nodeTypesList;
         }
 
         protected override void RegisterCallbacksOnTarget()
@@ -38,7 +36,7 @@ namespace FSM.Editor.Manipulators
             if (e.keyCode == Keys.CreateNode)
             {
                 Dictionary<string, Func<TNode>> nodes = nodeTypesList.Invoke();
-                fabric.CreateSelectNodePopup(nodes.Keys, CreateNodeLocal);
+                Fabric.CreateSelectNodePopup(nodes.Keys, CreateNodeLocal);
                 void CreateNodeLocal(string selected) => CreateNode(nodes[selected]);
             }
         }

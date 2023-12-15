@@ -51,11 +51,11 @@ namespace FSM.Editor
             return result;
         }
 
-        public OrNode TestConditional(VisualElement pointerTrackingElement)
+        public OrNode TestConditional(TransitionContext transitionContext)
         {
             OrNode node = new OrNode(new OrLayoutNode());
             node.AddManipulator(new DraggerManipulator(EditorState.DraggingLocked));
-            node.AddManipulator(new RouteConnectionManipulator(EditorState, pointerTrackingElement));
+            node.AddManipulator(new RouteConnectionManipulator(EditorState, transitionContext));
             return node;
         }
 
