@@ -22,9 +22,9 @@ namespace FSM.Editor
             this.AddManipulator(new CreateNodeManipulator<StateNode>(GetAvailableNodes));
         }
 
-        public Dictionary<string, Func<StateNode>> GetAvailableNodes()
+        public Dictionary<string, Action> GetAvailableNodes()
         {
-            return new Dictionary<string, Func<StateNode>>
+            return new Dictionary<string, Action>
             {
                 {"Simple State", () =>
                     {
@@ -34,7 +34,6 @@ namespace FSM.Editor
                         StateNode node = Fabric.CreateStateNode($"{nodeName} {num}", this);
                         Add(node);
                         StateNodes.Add(node);
-                        return node;
                     }
                 },
             };

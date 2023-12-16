@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
-    public class Fabric
+    public partial class Fabric
     {
         private VisualElement root;
         private EditorState EditorState => ServiceLocator.Instance.Get<EditorState>();
@@ -49,14 +49,6 @@ namespace FSM.Editor
             NavigationPanel result = new NavigationPanel();
             root.Add(result);
             return result;
-        }
-
-        public OrNode TestConditional(TransitionContext transitionContext)
-        {
-            OrNode node = new OrNode(new OrLayoutNode());
-            node.AddManipulator(new DraggerManipulator(EditorState.DraggingLocked));
-            node.AddManipulator(new RouteConnectionManipulator(EditorState, transitionContext));
-            return node;
         }
 
         public SelectNodePopup CreateSelectNodePopup(IEnumerable<string> availableNodes, Action<string> selectedHandler)

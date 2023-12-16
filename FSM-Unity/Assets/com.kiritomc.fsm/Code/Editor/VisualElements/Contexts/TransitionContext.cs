@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
 using FSM.Editor.Manipulators;
 using UnityEngine.UIElements;
 
@@ -22,19 +24,20 @@ namespace FSM.Editor
                 .AddManipulator(new CreateNodeManipulator<ConditionalNode>(GetAvailableNodes));
         }
 
-        public Dictionary<string, Func<ConditionalNode>> GetAvailableNodes()
+        private Dictionary<string, Action> GetAvailableNodes()
         {
-            return new Dictionary<string, Func<ConditionalNode>>
+            return new Dictionary<string, Action>
             {
-                {"Or", () =>
-                    {
-                        OrNode node = Fabric.TestConditional(this);
-                        Add(node);
-                        nodes.Add(node);
-                        return node;
-                    }
-                },
+                {"Not", () => ProcessNewNode(Fabric.ConditionalNotNode(this)) },
+                {"Or", () => ProcessNewNode(Fabric.ConditionalOrNode(this)) },
+                {"And", () => ProcessNewNode(Fabric.ConditionalAndNode(this)) },
             };
+        }
+
+        private void ProcessNewNode<T>(T node) where T: ConditionalNode
+        {
+            Add(node);
+            nodes.Add(node);
         }
     }
 }

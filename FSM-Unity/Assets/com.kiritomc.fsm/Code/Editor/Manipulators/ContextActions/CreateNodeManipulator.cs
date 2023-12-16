@@ -4,21 +4,24 @@ using UnityEngine.UIElements;
 
 namespace FSM.Editor.Manipulators
 {
-    public delegate Dictionary<string, Func<TNode>> GetAvailableNodesDelegate<TNode>() where TNode: Node;
+    /// <summary>
+    /// Action - createRequestedCallback
+    /// </summary>
+    public delegate Dictionary<string, Action> GetAvailableNodesAndCallbacksDelegate();
 
     public class CreateNodeManipulator<TNode> : Manipulator
         where TNode: Node
     {
-        private readonly GetAvailableNodesDelegate<TNode> nodeTypesList;
+        private readonly GetAvailableNodesAndCallbacksDelegate nodeAndCallbacksList;
         private static Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
         public CreateNodeManipulator()
         {
         }
 
-        public CreateNodeManipulator(GetAvailableNodesDelegate<TNode> nodeTypesList)
+        public CreateNodeManipulator(GetAvailableNodesAndCallbacksDelegate nodeAndCallbacksList)
         {
-            this.nodeTypesList = nodeTypesList;
+            this.nodeAndCallbacksList = nodeAndCallbacksList;
         }
 
         protected override void RegisterCallbacksOnTarget()
@@ -35,15 +38,15 @@ namespace FSM.Editor.Manipulators
         {
             if (e.keyCode == Keys.CreateNode)
             {
-                Dictionary<string, Func<TNode>> nodes = nodeTypesList.Invoke();
-                Fabric.CreateSelectNodePopup(nodes.Keys, CreateNodeLocal);
-                void CreateNodeLocal(string selected) => CreateNode(nodes[selected]);
+                Dictionary<string, Action> nodesCreating = nodeAndCallbacksList.Invoke();
+                Fabric.CreateSelectNodePopup(nodesCreating.Keys, CreateNodeLocal);
+                void CreateNodeLocal(string selected) => RequestCreate(nodesCreating[selected]);
             }
         }
 
-        private void CreateNode(Func<TNode> createFunc)
+        private void RequestCreate(Action createRequestedCallback)
         {
-            createFunc?.Invoke();
+            createRequestedCallback?.Invoke();
         }
     }
 }
