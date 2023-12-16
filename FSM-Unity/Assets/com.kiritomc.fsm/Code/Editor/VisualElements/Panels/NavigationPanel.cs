@@ -52,8 +52,8 @@ namespace FSM.Editor
 
         private void MoveToContext(StateNode stateNode)
         {
-            if (stateNode == null) Fabric.CreateRootContext();
-            else Fabric.CreateStateContext(stateNode);
+            if (stateNode == null) Fabric.Contexts.CreateRootContext();
+            else Fabric.Contexts.CreateStateContext(stateNode);
         }
     }
 }

@@ -23,16 +23,16 @@ namespace FSM.Editor.Manipulators
         
         protected override void RegisterCallbacksOnTarget()
         {
-            target.Label.RegisterCallback<PointerDownEvent>(HandleClick);
-            target.LabelInputField.RegisterCallback<KeyDownEvent>(HandleKeys);
+            target.Label.RegisterCallback<PointerUpEvent>(HandleClick);
+            target.LabelInputField.RegisterCallback<KeyUpEvent>(HandleKeys);
             target.LabelInputField.RegisterCallback<FocusOutEvent>(UnFocusForSubscription);
             target.LabelInputField.RegisterValueChangedCallback(HandleTextInput);
         }
 
         protected override void UnregisterCallbacksFromTarget()
         {
-            target.Label.UnregisterCallback<PointerDownEvent>(HandleClick);
-            target.LabelInputField.UnregisterCallback<KeyDownEvent>(HandleKeys);
+            target.Label.UnregisterCallback<PointerUpEvent>(HandleClick);
+            target.LabelInputField.UnregisterCallback<KeyUpEvent>(HandleKeys);
             target.LabelInputField.UnregisterCallback<FocusOutEvent>(UnFocusForSubscription);
             target.LabelInputField.UnregisterValueChangedCallback(HandleTextInput);
         }
@@ -42,15 +42,15 @@ namespace FSM.Editor.Manipulators
             currentValue = validateNameDelegate.Invoke(changeEvent);
         }
 
-        private void HandleKeys(KeyDownEvent keyDownEvent)
+        private void HandleKeys(KeyUpEvent keyUpEvent)
         {
-            if (keyDownEvent.keyCode == Keys.ApplyNodeRename)
+            if (keyUpEvent.keyCode == Keys.ApplyNodeRename)
             {
                 target.Label.text = currentValue;
                 target.Name = currentValue;
                 UnFocus(false);
             }
-            else if (keyDownEvent.keyCode == KeyCode.Escape)
+            else if (keyUpEvent.keyCode == KeyCode.Escape)
             {
                 UnFocus();
             }
@@ -77,7 +77,7 @@ namespace FSM.Editor.Manipulators
             draggingLocked.Value = false;
         }
 
-        private async void HandleClick(PointerDownEvent pointerDownEvent)
+        private async void HandleClick(PointerUpEvent pointerUpEvent)
         {
             isEditing = true;
             currentValue = prevValue = target.Label.text;

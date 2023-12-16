@@ -2,7 +2,7 @@
 
 namespace FSM.Editor
 {
-    public static class DrawerUtils
+    public static class DrawingUtils
     {
         public static void CalculateBezierCurve(Vector2 startPoint, Vector2 startTangent, Vector2 endTangent, Vector2 endPoint, Vector2[] buffer, int pointsNumber)
         {

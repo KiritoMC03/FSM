@@ -25,7 +25,7 @@ namespace FSM.Editor
             {
                 if (e.button == 1)
                 {
-                    StateTransition transition = await Fabric.RouteTransitionAsync(this, RequestTransition, CheckValid);
+                    StateTransition transition = await Fabric.Transitions.RouteTransitionAsync(this, RequestTransition, CheckValid);
                     if (transition != null) Transitions.Add(transition);
                     bool CheckValid(StateNode stateNode) => Transitions.All(item => item.Target != stateNode);
                 }
@@ -50,25 +50,6 @@ namespace FSM.Editor
         public override void HandleDeserializedMetadata(string metadata)
         {
             throw new System.NotImplementedException();
-        }
-
-        public Vector2 GetNearestAbsoluteEdgePoint(Vector2 target)
-        {
-            Vector2 size = new Vector2(resolvedStyle.width / 2f, resolvedStyle.height / 2f);
-            Vector2 dir = target - worldBound.center;
-            Vector2 edge = PointOnBoundsA(size, dir.normalized);
-            Vector2 PointOnBoundsA(Vector2 bounds, Vector2 direction)
-            {
-                float y = bounds.x * direction.y / direction.x;
-                float xSign = Mathf.Sign(direction.x);
-                float ySign = Mathf.Sign(direction.y);
-                if (Mathf.Abs(y) < bounds.y)
-                {
-                    return new Vector2(bounds.x * xSign, xSign < 0 ? -y : y);
-                }
-                return new Vector2(bounds.y * direction.x / direction.y * ySign, bounds.y * ySign);
-            }
-            return worldBound.center + edge;
         }
 
         public override void Repaint()

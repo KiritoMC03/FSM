@@ -27,9 +27,9 @@ namespace FSM.Editor
         {
             return new Dictionary<string, Action>
             {
-                {"Not", () => ProcessNewNode(Fabric.ConditionalNotNode(this)) },
-                {"Or", () => ProcessNewNode(Fabric.ConditionalOrNode(this)) },
-                {"And", () => ProcessNewNode(Fabric.ConditionalAndNode(this)) },
+                {"Not", () => ProcessNewNode(Fabric.Nodes.ConditionalNotNode(this)) },
+                {"Or", () => ProcessNewNode(Fabric.Nodes.ConditionalOrNode(this)) },
+                {"And", () => ProcessNewNode(Fabric.Nodes.ConditionalAndNode(this)) },
             };
         }
 

@@ -11,8 +11,8 @@ namespace FSM.Editor
 
         public ConditionGateNode(ConditionGateLayoutNode node) : base(node)
         {
-            this.BindConnectionField(nameof(Left), Left, RequestConnection);
-            this.BindConnectionField(nameof(Right), Right, RequestConnection);
+            this.BuildConnectionField(nameof(Left), Left, RequestConnection);
+            this.BuildConnectionField(nameof(Right), Right, RequestConnection);
         }
 
         public override string GetMetadataForSerialization()

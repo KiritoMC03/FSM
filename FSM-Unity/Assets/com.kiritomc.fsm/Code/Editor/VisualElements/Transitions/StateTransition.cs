@@ -23,7 +23,7 @@ namespace FSM.Editor
             style.flexDirection = FlexDirection.Column;
             style.justifyContent = Justify.Center;
             Context = new TransitionContext(this, $"{source.Name} -> {target.Name}");
-            Add(drawer = new TransitionDrawer(source, target, () => Fabric.OpenTransitionContext(Context)));
+            Add(drawer = new TransitionDrawer(source, target, () => Fabric.Contexts.OpenTransitionContext(Context)));
         }
 
         public void Dispose()

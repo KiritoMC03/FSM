@@ -1,5 +1,4 @@
-﻿using FSM.Editor.Extensions;
-using FSM.Runtime;
+﻿using FSM.Runtime;
 using Newtonsoft.Json;
 
 namespace FSM.Editor
@@ -10,7 +9,7 @@ namespace FSM.Editor
 
         public NotNode(NotLayoutNode node) : base(node)
         {
-            this.BindConnectionField(nameof(Input), Input, RequestConnection);
+            BuildConnectionField(nameof(Input), Input, RequestConnection);
         }
 
         public override string GetMetadataForSerialization()

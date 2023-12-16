@@ -39,7 +39,7 @@ namespace FSM.Editor.Manipulators
             if (e.keyCode == Keys.CreateNode)
             {
                 Dictionary<string, Action> nodesCreating = nodeAndCallbacksList.Invoke();
-                Fabric.CreateSelectNodePopup(nodesCreating.Keys, CreateNodeLocal);
+                Fabric.Popups.CreateSelectNodePopup(nodesCreating.Keys, CreateNodeLocal);
                 void CreateNodeLocal(string selected) => RequestCreate(nodesCreating[selected]);
             }
         }

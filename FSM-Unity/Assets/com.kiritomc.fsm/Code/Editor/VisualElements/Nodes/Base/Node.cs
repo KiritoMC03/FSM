@@ -28,6 +28,12 @@ namespace FSM.Editor
             ApplyBaseStyle();
         }
 
+        public NodeChangingListeningRegistration OnChanged(Action onChanged)
+        {
+            if (onChanged == null) return default;
+            return new NodeChangingListeningRegistration(this, onChanged);
+        }
+
         public abstract string GetMetadataForSerialization();
         public abstract void HandleDeserializedMetadata(string metadata);
 

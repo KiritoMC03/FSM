@@ -7,14 +7,8 @@ namespace FSM.Editor.Serialization
 {
     public class EditorSerializer
     {
-        private readonly EditorState editorState;
-        private readonly Fabric fabric;
-
-        public EditorSerializer(EditorState editorState, Fabric fabric)
-        {
-            this.editorState = editorState;
-            this.fabric = fabric;
-        }
+        private EditorState EditorState;
+        private Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
         #region Seriaization
 
@@ -73,15 +67,15 @@ namespace FSM.Editor.Serialization
             FsmContextModel fsmContextModel = JsonConvert.DeserializeObject<FsmContextModel>(json);
             FsmContext fsmContext = new FsmContext
             {
-                StatesContext = fsmContextModel == null ? fabric.CreateRootContext() : ReadStatesContext(fsmContextModel.StatesContextModel, isRoot: true),
+                StatesContext = fsmContextModel == null ? Fabric.Contexts.CreateRootContext() : ReadStatesContext(fsmContextModel.StatesContextModel, isRoot: true),
             };
             return fsmContext;
         }
 
         private StatesContext ReadStatesContext(StatesContextModel statesContextModel, StateNode target = default, bool isRoot = false)
         {            
-            if (statesContextModel == null) return fabric.CreateRootContext();
-            StatesContext statesContext = isRoot ? fabric.CreateRootContext() : fabric.CreateStateContext(target);
+            if (statesContextModel == null) return Fabric.Contexts.CreateRootContext();
+            StatesContext statesContext = isRoot ? Fabric.Contexts.CreateRootContext() : Fabric.Contexts.CreateStateContext(target);
             List<StateNode> states = statesContextModel.StateNodeModels.Select(nodeModel => ReadStateNode(statesContext, nodeModel)).ToList();
             statesContext.StateNodes = states;
             for (int i = 0; i < states.Count; i++) AppendTransitionsToStateNode(states[i], statesContextModel.StateNodeModels[i], states);
@@ -91,7 +85,7 @@ namespace FSM.Editor.Serialization
 
         private StateNode ReadStateNode(StatesContext context, StateNodeModel stateNodeModel)
         {
-            StateNode node = fabric.CreateStateNode(stateNodeModel.Name, context, stateNodeModel.Position);
+            StateNode node = Fabric.Nodes.CreateStateNode(stateNodeModel.Name, context, stateNodeModel.Position);
             context.Add(node);
             return node;
         }
@@ -101,7 +95,7 @@ namespace FSM.Editor.Serialization
             node.Transitions = nodeModel.OutgoingTransitions.Select(transitionModel =>
             {
                 StateNode target = otherStates.First(targetState => targetState.Name == transitionModel.TargetName);
-                StateTransition transition = fabric.CreateTransition(node, target);
+                StateTransition transition = Fabric.Transitions.CreateTransition(node, target);
                 ReadTransitionContext(transition, transitionModel.ContextModel);
                 return transition;
             }).ToList();
@@ -113,10 +107,10 @@ namespace FSM.Editor.Serialization
             {
                 ConditionalNode node = conditionalNodeModel.NodeKind switch
                 {
-                    nameof(NotNode) => fabric.ConditionalNotNode(transition.Context, conditionalNodeModel.Position),
-                    nameof(OrNode) => fabric.ConditionalOrNode(transition.Context, conditionalNodeModel.Position),
-                    nameof(AndNode) => fabric.ConditionalAndNode(transition.Context, conditionalNodeModel.Position),
-                    nameof(ConditionNode) => fabric.ConditionalConditionNode(transition.Context, default), // ToDo
+                    nameof(NotNode) => Fabric.Nodes.ConditionalNotNode(transition.Context, conditionalNodeModel.Position),
+                    nameof(OrNode) => Fabric.Nodes.ConditionalOrNode(transition.Context, conditionalNodeModel.Position),
+                    nameof(AndNode) => Fabric.Nodes.ConditionalAndNode(transition.Context, conditionalNodeModel.Position),
+                    nameof(ConditionNode) => Fabric.Nodes.ConditionalConditionNode(transition.Context, default), // ToDo
                     _ => throw new ArgumentOutOfRangeException(),
                 };
                 transition.Context.ProcessNewNode(node);

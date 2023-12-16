@@ -53,13 +53,6 @@ namespace FSM.Editor
             return field;
         }
 
-        public static NodeConnectionPoint ConnectionPoint(this VisualElement parent)
-        {
-            NodeConnectionPoint connection;
-            parent.Add(connection = NodeConnectionPoint.Create());
-            return connection;
-        }
-
         public static NodeConnectionPoint ConnectionPointRelativeTo(this VisualElement parent, VisualElement relative, ConnectionPosition position)
         {
             NodeConnectionPoint connection;

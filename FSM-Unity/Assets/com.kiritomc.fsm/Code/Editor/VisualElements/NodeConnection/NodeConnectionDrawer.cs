@@ -61,15 +61,15 @@ namespace FSM.Editor
             paint2D.Stroke();
 
             currentPointsNumber = Mathf.Clamp(Mathf.RoundToInt(Vector2.Distance(end, start) / LengthForMaxPoints * MaxPoints), 0, MaxPoints);
-            DrawerUtils.CalculateBezierCurve(start, startTangent, endTangent, end, points, currentPointsNumber);
-            for (int i = 1; i < currentPointsNumber; i++)
-            {
-                paint2D.BeginPath();
-                paint2D.MoveTo(points[i-1]);
-                paint2D.LineTo(points[i]);
-                paint2D.strokeColor = i % 2 ==0 ? Color.black : Color.white;
-                paint2D.Stroke();
-            }
+            DrawingUtils.CalculateBezierCurve(start, startTangent, endTangent, end, points, currentPointsNumber);
+            // for (int i = 1; i < currentPointsNumber; i++)
+            // {
+            //     paint2D.BeginPath();
+            //     paint2D.MoveTo(points[i-1]);
+            //     paint2D.LineTo(points[i]);
+            //     paint2D.strokeColor = i % 2 ==0 ? Color.black : Color.white;
+            //     paint2D.Stroke();
+            // }
         }
     }
 }

@@ -43,8 +43,8 @@ namespace FSM.Editor
             Vector2 start = GetStartPoint();
             Vector2 end = GetTargetPint();
             float isTooCloseMult = target.worldBound.height / 2f > Mathf.Abs(TargetCenterLocal.y) ? 1 : -1;
-            float startAddTangent = (MinimalTangentDistance + source.resolvedStyle.width / 2f) * Mathf.Sign(start.x);
-            float endAddTangent = (MinimalTangentDistance + target.resolvedStyle.height / 2f) * Mathf.Sign(end.y) * isTooCloseMult;
+            float startAddTangent = 0;//(MinimalTangentDistance + source.resolvedStyle.width / 2f) * Mathf.Sign(start.x);
+            float endAddTangent = 0;//(MinimalTangentDistance + target.resolvedStyle.height / 2f) * Mathf.Sign(end.y) * isTooCloseMult;
             Painter2D paint2D = ctx.painter2D;
             Vector2 startTangent = new Vector2(start.x + (end.x - start.x) / 2f + startAddTangent, start.y);
             Vector2 endTangent = new Vector2(end.x, end.y + (end.y - start.y) * isTooCloseMult / 2f + endAddTangent);
@@ -58,16 +58,16 @@ namespace FSM.Editor
             paint2D.Stroke();
 
             currentPointsNumber = Mathf.Clamp(Mathf.RoundToInt(Vector2.Distance(end, start) / LengthForMaxPoints * BezierCurveMaxPoints), 3, BezierCurveMaxPoints);
-            DrawerUtils.CalculateBezierCurve(start, startTangent, endTangent, end, points, currentPointsNumber);
+            DrawingUtils.CalculateBezierCurve(start, startTangent, endTangent, end, points, currentPointsNumber);
             UpdateEditButtonPosition();
-            for (int i = 1; i < currentPointsNumber; i++)
-            {
-                paint2D.BeginPath();
-                paint2D.MoveTo(points[i-1]);
-                paint2D.LineTo(points[i]);
-                paint2D.strokeColor = i % 2 ==0 ? Color.black : Color.white;
-                paint2D.Stroke();
-            }
+            // for (int i = 1; i < currentPointsNumber; i++)
+            // {
+            //     paint2D.BeginPath();
+            //     paint2D.MoveTo(points[i-1]);
+            //     paint2D.LineTo(points[i]);
+            //     paint2D.strokeColor = i % 2 ==0 ? Color.black : Color.white;
+            //     paint2D.Stroke();
+            // }
         }
 
         private void UpdateEditButtonPosition()

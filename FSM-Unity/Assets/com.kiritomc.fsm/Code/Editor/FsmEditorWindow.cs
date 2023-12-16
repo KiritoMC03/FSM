@@ -29,11 +29,11 @@ namespace FSM.Editor
 
         private void CreateGUI()
         {
-            (fabric, root) = Fabric.WithRoot(rootVisualElement);
+            (fabric, root) = Fabric.Build(rootVisualElement);
             ServiceLocator.Instance.Set(fabric);
             ServiceLocator.Instance.Set(editorState);
-            LeftPanel leftPanel = fabric.LeftPanel();
-            leftPanel.Add(fabric.NavigationPanel());
+            LeftPanel leftPanel = fabric.Panels.LeftPanel();
+            leftPanel.Add(fabric.Panels.NavigationPanel());
             LoadEditor();
         }
 
@@ -45,7 +45,7 @@ namespace FSM.Editor
 
         private void LoadEditor()
         {
-            editorSerializer = new EditorSerializer(editorState, fabric);
+            editorSerializer = new EditorSerializer();
             string json = PlayerPrefs.GetString("FsmEditorKey", default);
             rootContext = new FsmContext
             {
