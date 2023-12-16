@@ -47,7 +47,7 @@ namespace FSM.Editor.Manipulators
             if (keyDownEvent.keyCode == Keys.ApplyNodeRename)
             {
                 target.Label.text = currentValue;
-                target.StateName = currentValue;
+                target.Name = currentValue;
                 UnFocus(false);
             }
             else if (keyDownEvent.keyCode == KeyCode.Escape)
@@ -69,7 +69,7 @@ namespace FSM.Editor.Manipulators
             if (resetValue)
             {
                 target.Label.text = prevValue;
-                target.StateName = prevValue;
+                target.Name = prevValue;
                 target.LabelInputField.value = prevValue;
             }
             target.Label.style.display = DisplayStyle.Flex; 

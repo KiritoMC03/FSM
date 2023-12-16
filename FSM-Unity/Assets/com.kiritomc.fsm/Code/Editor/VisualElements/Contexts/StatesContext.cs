@@ -30,7 +30,7 @@ namespace FSM.Editor
                     {
                         const string nodeName = "Simple state";
                         int num = 0;
-                        while (StateNodes.Exists(i => i.StateName == $"{nodeName} {num}")) num++;
+                        while (StateNodes.Exists(i => i.Name == $"{nodeName} {num}")) num++;
                         StateNode node = Fabric.CreateStateNode($"{nodeName} {num}", this);
                         Add(node);
                         StateNodes.Add(node);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
@@ -35,7 +36,7 @@ namespace FSM.Editor.Serialization
         {
             return new StateNodeModel
             (
-                stateNode.StateName,
+                stateNode.Name,
                 new Vector2Model(stateNode.resolvedStyle.left, stateNode.resolvedStyle.top),
                 stateNode.Transitions.Select(transition => WriteStateTransition(stateNode, transition)).ToArray()
             );
@@ -43,7 +44,24 @@ namespace FSM.Editor.Serialization
 
         private StateTransitionModel WriteStateTransition(StateNode sourceNode, StateTransition transition)
         {
-            return new StateTransitionModel(sourceNode.StateName, transition.Target.StateName, default); // ToDo
+            ConditionalNodeModel[] conditionalNodeModels = new ConditionalNodeModel[transition.Context.Nodes.Count];
+            for (int i = 0; i < transition.Context.Nodes.Count; i++)
+            {
+                ConditionalNode conditionalNode = transition.Context.Nodes[i];
+                (string kind, string left, string right) = conditionalNode switch
+                {
+                    NotNode not => (nameof(NotNode), not.Input.Value?.Name, default),
+                    OrNode or => (nameof(OrNode), or.Left.Value?.Name, or.Right.Value?.Name),
+                    AndNode and => (nameof(AndNode), and.Left.Value?.Name, and.Right.Value?.Name),
+                    _ => (nameof(ConditionNode), default, default),
+                };
+
+                Vector2Model position = new Vector2Model(conditionalNode.resolvedStyle.left, conditionalNode.resolvedStyle.top);
+                conditionalNodeModels[i] = new ConditionalNodeModel(conditionalNode.Name, position, kind, left, right);
+            }
+
+            TransitionContextModel contextModel = new TransitionContextModel(conditionalNodeModels);
+            return new StateTransitionModel(sourceNode.Name, transition.Target.Name, contextModel);
         }
 
         #endregion
@@ -55,7 +73,7 @@ namespace FSM.Editor.Serialization
             FsmContextModel fsmContextModel = JsonConvert.DeserializeObject<FsmContextModel>(json);
             FsmContext fsmContext = new FsmContext
             {
-                StatesContext = ReadStatesContext(fsmContextModel.StatesContextModel, isRoot: true),
+                StatesContext = fsmContextModel == null ? fabric.CreateRootContext() : ReadStatesContext(fsmContextModel.StatesContextModel, isRoot: true),
             };
             return fsmContext;
         }
@@ -82,10 +100,27 @@ namespace FSM.Editor.Serialization
         {
             node.Transitions = nodeModel.OutgoingTransitions.Select(transitionModel =>
             {
-                StateNode target = otherStates.First(targetState => targetState.StateName == transitionModel.TargetName);
+                StateNode target = otherStates.First(targetState => targetState.Name == transitionModel.TargetName);
                 StateTransition transition = fabric.CreateTransition(node, target);
+                ReadTransitionContext(transition, transitionModel.ContextModel);
                 return transition;
             }).ToList();
+        }
+
+        private void ReadTransitionContext(StateTransition transition, TransitionContextModel transitionContextModel)
+        {
+            foreach (ConditionalNodeModel conditionalNodeModel in transitionContextModel.ConditionalNodeModels)
+            {
+                ConditionalNode node = conditionalNodeModel.NodeKind switch
+                {
+                    nameof(NotNode) => fabric.ConditionalNotNode(transition.Context, conditionalNodeModel.Position),
+                    nameof(OrNode) => fabric.ConditionalOrNode(transition.Context, conditionalNodeModel.Position),
+                    nameof(AndNode) => fabric.ConditionalAndNode(transition.Context, conditionalNodeModel.Position),
+                    nameof(ConditionNode) => fabric.ConditionalConditionNode(transition.Context, default), // ToDo
+                    _ => throw new ArgumentOutOfRangeException(),
+                };
+                transition.Context.ProcessNewNode(node);
+            }
         }
 
         #endregion

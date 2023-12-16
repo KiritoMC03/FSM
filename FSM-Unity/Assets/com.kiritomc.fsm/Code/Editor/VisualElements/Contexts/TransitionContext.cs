@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
 using FSM.Editor.Manipulators;
 using UnityEngine.UIElements;
 
@@ -9,9 +7,10 @@ namespace FSM.Editor
 {
     public class TransitionContext : Context
     {
-        private readonly StateTransition target;
-        private readonly List<ConditionalNode> nodes = new List<ConditionalNode>();
         public readonly string Name;
+        public readonly List<ConditionalNode> Nodes = new List<ConditionalNode>();
+        private readonly StateTransition target;
+
         private Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
         public TransitionContext(StateTransition target, string name)
@@ -34,10 +33,10 @@ namespace FSM.Editor
             };
         }
 
-        private void ProcessNewNode<T>(T node) where T: ConditionalNode
+        public void ProcessNewNode<T>(T node) where T: ConditionalNode
         {
             Add(node);
-            nodes.Add(node);
+            Nodes.Add(node);
         }
     }
 }

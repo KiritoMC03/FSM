@@ -69,8 +69,8 @@ namespace FSM.Editor
             {
                 string newName = changed.newValue;
                 int num = 1;
-                if (!statesContext.StateNodes.Exists(i => i.StateName == newName)) return newName;
-                while (statesContext.StateNodes.Exists(i => i.StateName == $"{newName} {num}")) num++;
+                if (!statesContext.StateNodes.Exists(i => i.Name == newName)) return newName;
+                while (statesContext.StateNodes.Exists(i => i.Name == $"{newName} {num}")) num++;
                 return $"{newName} {num}";
             }));
             node.AddManipulator(new DraggerManipulator(EditorState.DraggingLocked));
@@ -121,19 +121,17 @@ namespace FSM.Editor
             Context current = EditorState.CurrentContext.Value;
             current?.parent.Remove(current);
             StatesContext result;
-            root.Add(result = new StatesContext(target.StateName));
+            root.Add(result = new StatesContext(target.Name));
             EditorState.CurrentContext.Value = result;
             return result;
         }
 
-        public TransitionContext CreateTransitionContext(StateTransition target)
+        public void OpenTransitionContext(TransitionContext transitionContext)
         {
             Context current = EditorState.CurrentContext.Value;
             current?.parent.Remove(current);
-            TransitionContext result;
-            root.Add(result = new TransitionContext(target, $"{target.Source.StateName} -> {target.Target.StateName}"));
-            EditorState.CurrentContext.Value = result;
-            return result;
+            root.Add(transitionContext);
+            EditorState.CurrentContext.Value = transitionContext;
         }
 
         #endregion

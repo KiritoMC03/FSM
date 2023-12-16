@@ -9,7 +9,6 @@ namespace FSM.Editor
 {
     public class StateNode : Node
     {
-        public string StateName;
         public List<StateTransition> Transitions;
         public readonly TextInputBaseField<string> LabelInputField;
 
@@ -18,7 +17,6 @@ namespace FSM.Editor
             LabelInputField = Header.WithInputLabel(nodeName);
             LabelInputField.style.display = DisplayStyle.None;
             ApplyBaseStyle();
-            StateName = nodeName;
             style.left = position.x;
             style.top = position.y;
 

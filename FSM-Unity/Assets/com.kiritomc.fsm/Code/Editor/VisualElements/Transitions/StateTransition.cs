@@ -7,8 +7,8 @@ namespace FSM.Editor
     {
         public readonly StateNode Source;
         public readonly StateNode Target;
+        public readonly TransitionContext Context;
         private TransitionDrawer drawer;
-        private TransitionContext context;
 
         protected Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
@@ -22,7 +22,8 @@ namespace FSM.Editor
             style.alignSelf = Align.Center;
             style.flexDirection = FlexDirection.Column;
             style.justifyContent = Justify.Center;
-            Add(drawer = new TransitionDrawer(source, target, () => Fabric.CreateTransitionContext(this)));
+            Context = new TransitionContext(this, $"{source.Name} -> {target.Name}");
+            Add(drawer = new TransitionDrawer(source, target, () => Fabric.OpenTransitionContext(Context)));
         }
 
         public void Dispose()

@@ -9,6 +9,7 @@ namespace FSM.Editor
 {
     public abstract class Node : VisualElement, ICustomRepaintHandler, IDisposable
     {
+        public string Name;
         internal readonly List<IDisposable> Disposables = new List<IDisposable>(100);
         internal readonly List<ICustomRepaintHandler> ChildrenRepaintHandler = new List<ICustomRepaintHandler>(2);
         internal VisualElement Header;
@@ -22,6 +23,7 @@ namespace FSM.Editor
 
         protected Node(string nodeName)
         {
+            Name = nodeName;
             this.DefaultHeader(nodeName);
             ApplyBaseStyle();
         }
