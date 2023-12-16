@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FSM.Editor.Events;
 using FSM.Editor.Extensions;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
@@ -15,6 +16,8 @@ namespace FSM.Editor
         internal VisualElement Header;
         internal TextElement Label;
 
+        public Vector2 ResolvedPlacement => new Vector2(resolvedStyle.left, resolvedStyle.top);
+        public Vector2 Placement => new Vector2(style.left.value.value, style.top.value.value);
         protected Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
         protected Node()

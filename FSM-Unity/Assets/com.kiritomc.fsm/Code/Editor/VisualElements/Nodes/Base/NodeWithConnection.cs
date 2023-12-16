@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
@@ -26,25 +27,28 @@ namespace FSM.Editor
             NodeConnectionField connectionField = new NodeConnectionField($"{fieldName}");
             LineDrawerRegistration lineDrawerRegistration = LineDrawerForConnection(GetInputPosition, GetFieldValue);
             NodeChangingListeningRegistration changingRegistration = default;
-            connectionField.OnMouseDown += async _ =>
-            {
-                Node target = await asyncTargetGetter.Invoke();
-                if (target is T correct && target != this)
-                {
-                    targetField.Value = correct;
-                    RepaintNode();
-                    changingRegistration?.Dispose();
-                    changingRegistration = correct.OnChanged(RepaintNode);
-                }
-            };
 
             ChildrenRepaintHandler.Add(lineDrawerRegistration);
             Disposables.Add(lineDrawerRegistration);
+            Disposables.Add(connectionField.SubscribeMouseDown(MouseDownHandler));
+            Disposables.Add(targetField.Subscribe(newValue =>
+            {
+                if (newValue == null) return;
+                RepaintNode();
+                changingRegistration?.Dispose();
+                changingRegistration = newValue.OnChanged(RepaintNode);
+            }));
+
             Add(connectionField);
             return connectionField;
 
             Vector2? GetInputPosition() => connectionField.AnchorCenter();
             T GetFieldValue() => targetField.Value;
+            async void MouseDownHandler(MouseDownEvent _)
+            {
+                Node target = await asyncTargetGetter.Invoke();
+                if (target is T correct && target != this) targetField.Value = correct;
+            }
             void RepaintNode()
             {
                 Repaint();

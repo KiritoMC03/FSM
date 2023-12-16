@@ -39,26 +39,39 @@ namespace FSM.Editor
 
         private void OnGenerateVisualContent(MeshGenerationContext ctx)
         {
+            const float sideLength = 20f;
             if (source == null || target == null) return;
             Vector2 start = GetStartPoint();
-            Vector2 end = GetTargetPint();
+            Vector2 initialEnd = GetTargetPoint();
+            Vector2 bezierEnd = new Vector2(initialEnd.x, initialEnd.y + (TargetCenterLocal.y < 0 ? 10 : -10));
             float isTooCloseMult = target.worldBound.height / 2f > Mathf.Abs(TargetCenterLocal.y) ? 1 : -1;
-            float startAddTangent = 0;//(MinimalTangentDistance + source.resolvedStyle.width / 2f) * Mathf.Sign(start.x);
-            float endAddTangent = 0;//(MinimalTangentDistance + target.resolvedStyle.height / 2f) * Mathf.Sign(end.y) * isTooCloseMult;
+            float startAddTangent = (MinimalTangentDistance + source.resolvedStyle.width / 2f) * Mathf.Sign(start.x);
+            float endAddTangent = (MinimalTangentDistance + target.resolvedStyle.height / 2f) * Mathf.Sign(initialEnd.y) * isTooCloseMult;
             Painter2D paint2D = ctx.painter2D;
-            Vector2 startTangent = new Vector2(start.x + (end.x - start.x) / 2f + startAddTangent, start.y);
-            Vector2 endTangent = new Vector2(end.x, end.y + (end.y - start.y) * isTooCloseMult / 2f + endAddTangent);
+            Vector2 startTangent = new Vector2(start.x + (initialEnd.x - start.x) / 2f + startAddTangent, start.y);
+            Vector2 endTangent = new Vector2(initialEnd.x, initialEnd.y + (initialEnd.y - start.y) * isTooCloseMult / 2f + endAddTangent);
             paint2D.lineWidth = 8.0f;
             paint2D.lineCap = LineCap.Round;
             paint2D.lineJoin = LineJoin.Round;
             paint2D.strokeGradient = Colors.NodeConnectionGradient;
             paint2D.BeginPath();
             paint2D.MoveTo(start);
-            paint2D.BezierCurveTo(startTangent, endTangent, end);
+            paint2D.BezierCurveTo(startTangent, endTangent, bezierEnd);
             paint2D.Stroke();
 
-            currentPointsNumber = Mathf.Clamp(Mathf.RoundToInt(Vector2.Distance(end, start) / LengthForMaxPoints * BezierCurveMaxPoints), 3, BezierCurveMaxPoints);
-            DrawingUtils.CalculateBezierCurve(start, startTangent, endTangent, end, points, currentPointsNumber);
+            int sign = TargetCenterLocal.y < 0 ? 1 : -1;
+            paint2D.BeginPath();
+            paint2D.MoveTo(initialEnd);
+            paint2D.LineTo(initialEnd + new Vector2(sideLength / 2f, sideLength) * sign);
+            paint2D.LineTo(initialEnd + new Vector2(-sideLength / 2f, sideLength) * sign);
+            paint2D.LineTo(initialEnd);
+            paint2D.fillColor = Color.yellow;
+            paint2D.Fill();
+            
+            
+
+            currentPointsNumber = Mathf.Clamp(Mathf.RoundToInt(Vector2.Distance(bezierEnd, start) / LengthForMaxPoints * BezierCurveMaxPoints), 3, BezierCurveMaxPoints);
+            DrawingUtils.CalculateBezierCurve(start, startTangent, endTangent, bezierEnd, points, currentPointsNumber);
             UpdateEditButtonPosition();
             // for (int i = 1; i < currentPointsNumber; i++)
             // {
@@ -86,7 +99,7 @@ namespace FSM.Editor
             return result;
         }
         
-        private Vector2 GetTargetPint()
+        private Vector2 GetTargetPoint()
         {
             Vector2 targetCenter = TargetCenterLocal;
             float halfHeight = target.worldBound.height / 2f;

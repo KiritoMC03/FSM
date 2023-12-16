@@ -8,20 +8,20 @@ namespace FSM.Editor.Serialization
         public string Name;
         public Vector2Model Position;
         public string NodeKind;
-        public string LeftConnectionName;
-        public string RightConnectionName;
+        public int LeftConnectionId;
+        public int RightConnectionId;
 
         public ConditionalNodeModel()
         {
         }
 
-        public ConditionalNodeModel(string name, Vector2Model position, string nodeKind, string leftConnectionName, string rightConnectionName)
+        public ConditionalNodeModel(string name, Vector2Model position, string nodeKind, int leftConnectionId, int rightConnectionId)
         {
             Name = name;
             Position = position;
             NodeKind = nodeKind;
-            LeftConnectionName = leftConnectionName;
-            RightConnectionName = rightConnectionName;
+            LeftConnectionId = leftConnectionId;
+            RightConnectionId = rightConnectionId;
         }
     }
 }

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FSM.Editor.Extensions;
 using Newtonsoft.Json;
 
 namespace FSM.Editor.Serialization
 {
     public class EditorSerializer
     {
-        private EditorState EditorState;
+        private EditorState EditorState => ServiceLocator.Instance.Get<EditorState>();
         private Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
         #region Seriaization
@@ -31,7 +32,7 @@ namespace FSM.Editor.Serialization
             return new StateNodeModel
             (
                 stateNode.Name,
-                new Vector2Model(stateNode.resolvedStyle.left, stateNode.resolvedStyle.top),
+                (Vector2Model)stateNode.ResolvedPlacement,
                 stateNode.Transitions.Select(transition => WriteStateTransition(stateNode, transition)).ToArray()
             );
         }
@@ -42,16 +43,17 @@ namespace FSM.Editor.Serialization
             for (int i = 0; i < transition.Context.Nodes.Count; i++)
             {
                 ConditionalNode conditionalNode = transition.Context.Nodes[i];
-                (string kind, string left, string right) = conditionalNode switch
+                (string kind, ConditionalNode left, ConditionalNode right) = conditionalNode switch
                 {
-                    NotNode not => (nameof(NotNode), not.Input.Value?.Name, default),
-                    OrNode or => (nameof(OrNode), or.Left.Value?.Name, or.Right.Value?.Name),
-                    AndNode and => (nameof(AndNode), and.Left.Value?.Name, and.Right.Value?.Name),
+                    NotNode not => (nameof(NotNode), not.Input.Value, default),
+                    OrNode or => (nameof(OrNode), or.Left.Value, or.Right.Value),
+                    AndNode and => (nameof(AndNode), and.Left.Value, and.Right.Value),
                     _ => (nameof(ConditionNode), default, default),
                 };
 
-                Vector2Model position = new Vector2Model(conditionalNode.resolvedStyle.left, conditionalNode.resolvedStyle.top);
-                conditionalNodeModels[i] = new ConditionalNodeModel(conditionalNode.Name, position, kind, left, right);
+                int leftIndex = transition.Context.Nodes.IndexOf(left);
+                int rightIndex = transition.Context.Nodes.IndexOf(right);
+                conditionalNodeModels[i] = new ConditionalNodeModel(conditionalNode.Name, (Vector2Model)conditionalNode.ResolvedPlacement, kind, leftIndex, rightIndex);
             }
 
             TransitionContextModel contextModel = new TransitionContextModel(conditionalNodeModels);
@@ -115,6 +117,25 @@ namespace FSM.Editor.Serialization
                 };
                 transition.Context.ProcessNewNode(node);
             }
+
+            for (int i = 0; i < transition.Context.Nodes.Count; i++)
+            {
+                ConditionalNode node = transition.Context.Nodes[i];
+                int leftId = transitionContextModel.ConditionalNodeModels[i].LeftConnectionId;
+                int rightId = transitionContextModel.ConditionalNodeModels[i].RightConnectionId;
+                switch (node)
+                {
+                    case NotNode not:
+                        not.Input.Value = leftId == -1 ? default : transition.Context.Nodes[leftId];
+                        break;
+                    case ConditionGateNode gate:
+                        gate.Left.Value = leftId == -1 ? default : transition.Context.Nodes[leftId];
+                        gate.Right.Value = rightId == -1 ? default : transition.Context.Nodes[rightId];
+                        break;
+                }
+                node.Repaint();
+            }
+            return;
         }
 
         #endregion

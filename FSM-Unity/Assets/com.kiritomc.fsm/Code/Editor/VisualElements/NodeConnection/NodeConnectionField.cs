@@ -9,7 +9,7 @@ namespace FSM.Editor
         private const int HorizontalMargin = 10;
         public const int VerticalMargin = 5;
 
-        public event Action<MouseDownEvent> OnMouseDown;
+        private event Action<MouseDownEvent> OnMouseDown;
         private NodeConnectionPoint point;
 
         public NodeConnectionField(string connectionName)
@@ -35,6 +35,12 @@ namespace FSM.Editor
         public Vector2 AnchorCenter()
         {
             return new Vector2(HorizontalMargin + point.resolvedStyle.width / 2f, VerticalMargin + point.resolvedStyle.height / 2f);
+        }
+
+        public Subscription SubscribeMouseDown(Action<MouseDownEvent> mouseDownEvent)
+        {
+            OnMouseDown += mouseDownEvent;
+            return new Subscription(() => OnMouseDown -= mouseDownEvent);
         }
     }
 }
