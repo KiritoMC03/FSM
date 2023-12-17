@@ -1,5 +1,4 @@
-﻿using FSM.Editor.Extensions;
-using FSM.Runtime;
+﻿using FSM.Runtime;
 using Newtonsoft.Json;
 
 namespace FSM.Editor
