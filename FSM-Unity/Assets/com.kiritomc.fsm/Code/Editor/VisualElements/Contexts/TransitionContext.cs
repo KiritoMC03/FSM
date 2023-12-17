@@ -5,10 +5,8 @@ using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
-    public class TransitionContext : Context
+    public class TransitionContext : NodesContext<ConditionalNode>
     {
-        public readonly string Name;
-        public readonly List<ConditionalNode> Nodes = new List<ConditionalNode>();
         private readonly StateTransition target;
 
         private Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();

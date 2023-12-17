@@ -19,8 +19,8 @@ namespace FSM.Editor
             {
                 string newName = changed.newValue;
                 int num = 1;
-                if (!statesContext.StateNodes.Exists(i => i.Name == newName)) return newName;
-                while (statesContext.StateNodes.Exists(i => i.Name == $"{newName} {num}")) num++;
+                if (!statesContext.Nodes.Exists(i => i.Name == newName)) return newName;
+                while (statesContext.Nodes.Exists(i => i.Name == $"{newName} {num}")) num++;
                 return $"{newName} {num}";
             }));
             node.AddManipulator(new DraggerManipulator(EditorState.DraggingLocked));

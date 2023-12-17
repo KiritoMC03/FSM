@@ -48,10 +48,10 @@ namespace FSM.Editor
 
         protected void ApplyBaseStyle()
         {
-            style.paddingTop = style.paddingBottom = style.paddingLeft = style.paddingRight = 8;
+            style.paddingTop = style.paddingBottom = style.paddingLeft = style.paddingRight = Sizes.NodePadding;
             style.borderTopColor = style.borderBottomColor = style.borderLeftColor = style.borderRightColor = Colors.NodeBorderColor;
             style.borderTopWidth = style.borderBottomWidth = style.borderLeftWidth = style.borderRightWidth = Sizes.NodeBorderWidth;
-            style.borderTopLeftRadius = style.borderTopRightRadius = style.borderBottomLeftRadius = style.borderBottomRightRadius = 8;
+            style.borderTopLeftRadius = style.borderTopRightRadius = style.borderBottomLeftRadius = style.borderBottomRightRadius = Sizes.NodeBorderRadius;
             style.position = new StyleEnum<Position>(Position.Absolute);
             style.minWidth = 200;
             style.minHeight = 50;

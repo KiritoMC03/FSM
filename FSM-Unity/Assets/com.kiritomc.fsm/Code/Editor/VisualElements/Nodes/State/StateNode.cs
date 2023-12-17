@@ -57,5 +57,12 @@ namespace FSM.Editor
             base.Repaint();
             foreach (StateTransition transition in Transitions) transition.SendToBack();
         }
+
+        public void RemoveTransitionAt(int index)
+        {
+            StateTransition transition = Transitions[index];
+            Transitions.RemoveAt(index);
+            Fabric.Transitions.DestroyTransition(this, transition);
+        }
     }
 }

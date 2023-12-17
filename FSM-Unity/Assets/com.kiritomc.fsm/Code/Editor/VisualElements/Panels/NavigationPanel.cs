@@ -19,7 +19,7 @@ namespace FSM.Editor
             EditorState.CurrentContext.ValueChanged += Redraw;
         }
 
-        private void Redraw(Context currentContext)
+        private void Redraw(NodesContext currentContext)
         {
             while (currentHierarchy.Count > 0)
             {

@@ -24,7 +24,7 @@ namespace FSM.Editor.Serialization
 
         private StatesContextModel WriteStateContext(StatesContext statesContext)
         {
-            return new StatesContextModel(statesContext.StateNodes.Select(WriteStateNode).ToArray(), statesContext.Name);
+            return new StatesContextModel(statesContext.Nodes.Select(WriteStateNode).ToArray(), statesContext.Name);
         }
 
         private StateNodeModel WriteStateNode(StateNode stateNode)
@@ -79,7 +79,7 @@ namespace FSM.Editor.Serialization
             if (statesContextModel == null) return Fabric.Contexts.CreateRootContext();
             StatesContext statesContext = isRoot ? Fabric.Contexts.CreateRootContext() : Fabric.Contexts.CreateStateContext(target);
             List<StateNode> states = statesContextModel.StateNodeModels.Select(nodeModel => ReadStateNode(statesContext, nodeModel)).ToList();
-            statesContext.StateNodes = states;
+            statesContext.Nodes = states;
             for (int i = 0; i < states.Count; i++) AppendTransitionsToStateNode(states[i], statesContextModel.StateNodeModels[i], states);
 
             return statesContext;

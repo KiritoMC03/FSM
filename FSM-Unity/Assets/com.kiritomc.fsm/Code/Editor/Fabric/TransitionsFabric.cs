@@ -25,5 +25,11 @@ namespace FSM.Editor
             return transition;
             void RepaintTransition() => transition.Repaint();
         }
+
+        public void DestroyTransition<T>(T parent, StateTransition transition)
+            where T : StateNode
+        {
+            parent.Remove(transition);
+        }
     }
 }

@@ -8,6 +8,7 @@ namespace FSM.Editor
         public static Color NodeBackground => new Color(0.15f, 0.15f, 0.15f);
         public static Color NodeConnectionBackground => new Color(0.1f, 0.1f, 0.1f);
         public static Color NodeConnectionColor => new Color(1, 0.84f, 0f);
+        public static Color SelectedNodeBorderColor => new Color(0.1f, 0.5f, 0.7f);
         public static Color NodeBorderColor => new Color(0.5f, 0.5f, 0.5f);
         public static Color ContextBackground => new Color(0.11f, 0.11f, 0.11f);
 
@@ -30,6 +31,5 @@ namespace FSM.Editor
                 new GradientAlphaKey(1f, 1),
             },
         };
-
     }
 }

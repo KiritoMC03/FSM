@@ -6,5 +6,6 @@ namespace FSM.Editor
     {
         public const KeyCode CreateNode = KeyCode.Space;
         public const KeyCode ApplyNodeRename = KeyCode.Return;
+        public const KeyCode DeleteNode = KeyCode.Delete;
     }
 }
