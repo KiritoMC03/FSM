@@ -52,23 +52,5 @@ namespace FSM.Editor
             parent.Add(field);
             return field;
         }
-
-        public static NodeConnectionPoint ConnectionPointRelativeTo(this VisualElement parent, VisualElement relative, ConnectionPosition position)
-        {
-            NodeConnectionPoint connection;
-            parent.Add(connection = NodeConnectionPoint.Create());
-            switch (position)
-            {
-                case ConnectionPosition.Left:
-                    connection.PlaceBehind(relative);
-                    break;
-                case ConnectionPosition.Right:
-                    connection.PlaceInFront(relative);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(position), position, null);
-            }
-            return connection;
-        }
     }
 }

@@ -10,13 +10,13 @@ namespace FSM.Editor
         private const float LengthForMaxPoints = 1000;
         private const float MinimalTangentDistance = 6;
 
-        private readonly StateNode source;
-        private readonly StateNode target;
+        private readonly VisualStateNode source;
+        private readonly VisualStateNode target;
         private readonly Button editButton;
         private readonly Vector2[] points = new Vector2[BezierCurveMaxPoints];
         private int currentPointsNumber;
 
-        public TransitionDrawer(StateNode source, StateNode target, Action onEditClicked)
+        public TransitionDrawer(VisualStateNode source, VisualStateNode target, Action onEditClicked)
         {
             this.source = source;
             this.target = target;

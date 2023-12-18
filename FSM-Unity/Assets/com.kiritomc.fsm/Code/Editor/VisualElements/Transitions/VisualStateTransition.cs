@@ -3,16 +3,16 @@ using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
-    public class StateTransition : VisualElement, IDisposable, ICustomRepaintHandler
+    public class VisualStateTransition : VisualElement, IDisposable, ICustomRepaintHandler
     {
-        public readonly StateNode Source;
-        public readonly StateNode Target;
+        public readonly VisualStateNode Source;
+        public readonly VisualStateNode Target;
         public readonly TransitionContext Context;
         private TransitionDrawer drawer;
 
         protected Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
-        public StateTransition(StateNode source, StateNode target)
+        public VisualStateTransition(VisualStateNode source, VisualStateNode target)
         {
             Source = source;
             Target = target;

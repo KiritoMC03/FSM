@@ -4,22 +4,22 @@ using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
-    public class NodeConnectionField : VisualElement
+    public class NodeLinkFieldView : VisualElement
     {
         private const int HorizontalMargin = 10;
         public const int VerticalMargin = 5;
 
         private event Action<MouseDownEvent> OnMouseDown;
-        private NodeConnectionPoint point;
+        private NodeLinkPoint point;
 
-        public NodeConnectionField(string connectionName)
+        public NodeLinkFieldView(string connectionName)
         {
             style.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
             style.marginTop = VerticalMargin;
             style.marginBottom = VerticalMargin;
             style.marginRight = HorizontalMargin;
             style.marginLeft = HorizontalMargin;
-            Add(point = NodeConnectionPoint.Create());
+            Add(point = new NodeLinkPoint());
             Add(new Label(connectionName)
             {
                 style =
@@ -37,10 +37,10 @@ namespace FSM.Editor
             return new Vector2(HorizontalMargin + point.resolvedStyle.width / 2f, VerticalMargin + point.resolvedStyle.height / 2f);
         }
 
-        public Subscription SubscribeMouseDown(Action<MouseDownEvent> mouseDownEvent)
+        public Subscription SubscribeMouseDown(Action<MouseDownEvent> mouseDownHandler)
         {
-            OnMouseDown += mouseDownEvent;
-            return new Subscription(() => OnMouseDown -= mouseDownEvent);
+            OnMouseDown += mouseDownHandler;
+            return new Subscription(() => OnMouseDown -= mouseDownHandler);
         }
     }
 }

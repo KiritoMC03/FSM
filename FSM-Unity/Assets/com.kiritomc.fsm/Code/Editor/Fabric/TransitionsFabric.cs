@@ -6,18 +6,18 @@ namespace FSM.Editor
 {
     public class TransitionsFabric
     {
-        public async Task<StateTransition> RouteTransitionAsync<T>(T source, Func<Task<T>> asyncTargetGetter, Predicate<T> checkValid)
-            where T : StateNode
+        public async Task<VisualStateTransition> RouteTransitionAsync<T>(T source, Func<Task<T>> asyncTargetGetter, Predicate<T> checkValid)
+            where T : VisualStateNode
         {
             T target = await asyncTargetGetter.Invoke();
             if (target == null || target == source || !checkValid.Invoke(target)) return default;
             return CreateTransition(source, target);
         }
 
-        public StateTransition CreateTransition<T>(T source, T target)
-            where T : StateNode
+        public VisualStateTransition CreateTransition<T>(T source, T target)
+            where T : VisualStateNode
         {
-            StateTransition transition = new StateTransition(source, target);
+            VisualStateTransition transition = new VisualStateTransition(source, target);
             source.Add(transition);
             source.Disposables.Add(transition);
             source.Disposables.Add(target.OnChanged(RepaintTransition));
@@ -26,7 +26,7 @@ namespace FSM.Editor
             void RepaintTransition() => transition.Repaint();
         }
 
-        public void DestroyTransition<T>(T parent, StateTransition transition)
+        public void DestroyTransition<T>(T parent, VisualStateTransition transition)
             where T : StateNode
         {
             parent.Remove(transition);

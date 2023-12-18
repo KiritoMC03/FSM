@@ -37,7 +37,7 @@ namespace FSM.Editor.Serialization
             );
         }
 
-        private StateTransitionModel WriteStateTransition(StateNode sourceNode, StateTransition transition)
+        private StateTransitionModel WriteStateTransition(StateNode sourceNode, VisualStateTransition transition)
         {
             ConditionalNodeModel[] conditionalNodeModels = new ConditionalNodeModel[transition.Context.Nodes.Count];
             for (int i = 0; i < transition.Context.Nodes.Count; i++)
@@ -97,13 +97,13 @@ namespace FSM.Editor.Serialization
             node.Transitions = nodeModel.OutgoingTransitions.Select(transitionModel =>
             {
                 StateNode target = otherStates.First(targetState => targetState.Name == transitionModel.TargetName);
-                StateTransition transition = Fabric.Transitions.CreateTransition(node, target);
+                VisualStateTransition transition = Fabric.Transitions.CreateTransition(node, target);
                 ReadTransitionContext(transition, transitionModel.ContextModel);
                 return transition;
             }).ToList();
         }
 
-        private void ReadTransitionContext(StateTransition transition, TransitionContextModel transitionContextModel)
+        private void ReadTransitionContext(VisualStateTransition transition, TransitionContextModel transitionContextModel)
         {
             foreach (ConditionalNodeModel conditionalNodeModel in transitionContextModel.ConditionalNodeModels)
             {

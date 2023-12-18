@@ -8,11 +8,11 @@ namespace FSM.Editor
 {
     public class TransitionContext : NodesContext<ConditionalNode>
     {
-        private readonly StateTransition target;
+        private readonly VisualStateTransition target;
 
         private Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
-        public TransitionContext(StateTransition target, string name)
+        public TransitionContext(VisualStateTransition target, string name)
         {
             this.target = target;
             Name = name;

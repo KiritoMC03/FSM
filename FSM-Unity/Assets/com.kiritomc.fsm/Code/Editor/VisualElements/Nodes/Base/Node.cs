@@ -46,18 +46,6 @@ namespace FSM.Editor
             ChildrenRepaintHandler.Repaint();
         }
 
-        protected void ApplyBaseStyle()
-        {
-            style.paddingTop = style.paddingBottom = style.paddingLeft = style.paddingRight = Sizes.NodePadding;
-            style.borderTopColor = style.borderBottomColor = style.borderLeftColor = style.borderRightColor = Colors.NodeBorderColor;
-            style.borderTopWidth = style.borderBottomWidth = style.borderLeftWidth = style.borderRightWidth = Sizes.NodeBorderWidth;
-            style.borderTopLeftRadius = style.borderTopRightRadius = style.borderBottomLeftRadius = style.borderBottomRightRadius = Sizes.NodeBorderRadius;
-            style.position = new StyleEnum<Position>(Position.Absolute);
-            style.minWidth = 200;
-            style.minHeight = 50;
-            style.backgroundColor = Colors.NodeBackground;
-        }
-
         protected virtual Task<Node> RequestConnection()
         {
             TaskCompletionSource<Node> completionSource = new TaskCompletionSource<Node>();
@@ -68,18 +56,18 @@ namespace FSM.Editor
             return completionSource.Task;
         }
 
-        protected NodeConnectionField BuildConnectionField<T>(
+        protected NodeLinkFieldView BuildConnectionField<T>(
             string fieldName,
             FieldWrapper<T> targetField,
             Func<Task<Node>> asyncTargetGetter) where T : NodeWithConnection
         {
-            NodeConnectionField connectionField = new NodeConnectionField($"{fieldName}");
+            NodeLinkFieldView linkFieldView = new NodeLinkFieldView($"{fieldName}");
             LineDrawerRegistration lineDrawerRegistration = LineDrawerForConnection(GetInputPosition, GetFieldValue);
             NodeChangingListeningRegistration changingRegistration = default;
 
             ChildrenRepaintHandler.Add(lineDrawerRegistration);
             Disposables.Add(lineDrawerRegistration);
-            Disposables.Add(connectionField.SubscribeMouseDown(MouseDownHandler));
+            Disposables.Add(linkFieldView.SubscribeMouseDown(MouseDownHandler));
             Disposables.Add(targetField.Subscribe(newValue =>
             {
                 if (newValue == null) return;
@@ -88,10 +76,10 @@ namespace FSM.Editor
                 changingRegistration = newValue.OnChanged(RepaintNode);
             }));
 
-            Add(connectionField);
-            return connectionField;
+            Add(linkFieldView);
+            return linkFieldView;
 
-            Vector2? GetInputPosition() => connectionField.AnchorCenter();
+            Vector2? GetInputPosition() => linkFieldView.AnchorCenter();
             T GetFieldValue() => targetField.Value;
             async void MouseDownHandler(MouseDownEvent _)
             {
