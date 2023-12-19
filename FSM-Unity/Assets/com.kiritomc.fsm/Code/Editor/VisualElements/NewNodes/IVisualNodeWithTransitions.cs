@@ -7,4 +7,9 @@ namespace FSM.Editor
     {
         List<VisualStateTransition> Transitions { get; }
     }
+
+    public interface IVisualNodeWithConnection : IEventHandler
+    {
+        VisualNodeWithLinkExit
+    }
 }

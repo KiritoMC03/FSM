@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using FSM.Editor.Manipulators;
+using FSM.Runtime;
+using FSM.Runtime.Serialization;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -107,7 +111,29 @@ namespace FSM.Editor
         {
             VisualStateTransition transition = Transitions[index];
             Transitions.RemoveAt(index);
-            Fabric.Transitions.DestroyTransition(this, transition);
+            Remove(transition);
+        }
+    }
+
+    public class VisualConditionalNode : VisualNodeWithLinkExit
+    {
+        public VisualConditionalNode(ConditionLayoutNode node) : this(node.LogicObject.GetType())
+        {
+        }
+
+        public VisualConditionalNode(Type conditionType)
+        {
+            IEnumerable<FieldInfo> fields = conditionType
+                .GetFields()
+                .Where(field => field.FieldType.IsGenericType && 
+                                field.FieldType.GetGenericTypeDefinition() == typeof(ParamNode<>));
+            foreach (FieldInfo fieldInfo in fields)
+            {
+                FieldWrapper<FunctionNode> fieldWrapper = new FieldWrapper<FunctionNode>();
+                // object instance = Activator.CreateInstance(fieldWrapperType.MakeGenericType(returnedType));
+                new VisualNodeLinkRegistration(this, fieldInfo.Name, )
+                NodeLinkFieldView(fieldInfo.Name, fieldWrapper, RequestConnection);
+            }
         }
     }
 
