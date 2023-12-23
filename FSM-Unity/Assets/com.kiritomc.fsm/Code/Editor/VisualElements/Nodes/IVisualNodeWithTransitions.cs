@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
@@ -8,8 +9,8 @@ namespace FSM.Editor
         List<VisualStateTransition> Transitions { get; }
     }
 
-    public interface IVisualNodeWithConnection : IEventHandler
+    public interface IVisualNodeWithLinkExit : IEventHandler
     {
-        VisualNodeWithLinkExit
+        Vector2 GetAbsoluteLinkPointPos();
     }
 }

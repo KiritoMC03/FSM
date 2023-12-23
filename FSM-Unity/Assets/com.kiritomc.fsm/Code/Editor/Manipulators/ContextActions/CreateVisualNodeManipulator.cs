@@ -9,17 +9,17 @@ namespace FSM.Editor.Manipulators
     /// </summary>
     public delegate Dictionary<string, Action> GetAvailableNodesAndCallbacksDelegate();
 
-    public class CreateNodeManipulator<TNode> : Manipulator
-        where TNode: Node
+    public class CreateVisualNodeManipulator<TNode> : Manipulator
+        where TNode: VisualNode
     {
         private readonly GetAvailableNodesAndCallbacksDelegate nodeAndCallbacksList;
         private static Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
-        public CreateNodeManipulator()
+        public CreateVisualNodeManipulator()
         {
         }
 
-        public CreateNodeManipulator(GetAvailableNodesAndCallbacksDelegate nodeAndCallbacksList)
+        public CreateVisualNodeManipulator(GetAvailableNodesAndCallbacksDelegate nodeAndCallbacksList)
         {
             this.nodeAndCallbacksList = nodeAndCallbacksList;
         }

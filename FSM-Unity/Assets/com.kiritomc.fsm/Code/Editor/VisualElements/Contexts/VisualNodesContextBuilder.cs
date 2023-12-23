@@ -2,10 +2,10 @@
 
 namespace FSM.Editor
 {
-    public static class ContextVisualBuilder
+    public static class VisualNodesContextBuilder
     {
-        public static NodesContext<T> DefaultLayout<T>(this NodesContext<T> ctx)
-            where T: Node
+        public static VisualNodesContext<T> DefaultLayout<T>(this VisualNodesContext<T> ctx)
+            where T: VisualNode
         {
             ctx.style.alignSelf = Align.FlexEnd;
             ctx.style.width = new StyleLength(new Length(Sizes.ContextWidth, Sizes.ContextWidthUnits));
@@ -13,15 +13,15 @@ namespace FSM.Editor
             return ctx;
         }
 
-        public static NodesContext<T> DefaultColors<T>(this NodesContext<T> ctx)
-            where T: Node
+        public static VisualNodesContext<T> DefaultColors<T>(this VisualNodesContext<T> ctx)
+            where T: VisualNode
         {
             ctx.style.backgroundColor = Colors.ContextBackground;
             return ctx;
         }
 
-        public static NodesContext<T> DefaultInteractions<T>(this NodesContext<T> ctx)
-            where T: Node
+        public static VisualNodesContext<T> DefaultInteractions<T>(this VisualNodesContext<T> ctx)
+            where T: VisualNode
         {
             ctx.focusable = true;
             return ctx;

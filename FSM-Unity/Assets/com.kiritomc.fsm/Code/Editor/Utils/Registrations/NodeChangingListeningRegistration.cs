@@ -5,10 +5,10 @@ namespace FSM.Editor
 {
     public class NodeChangingListeningRegistration : IDisposable
     {
-        private readonly Node node;
+        private readonly VisualNode node;
         private readonly Action onChanged;
 
-        public NodeChangingListeningRegistration(Node node, Action onChanged)
+        public NodeChangingListeningRegistration(VisualNode node, Action onChanged)
         {
             this.node = node;
             this.onChanged = onChanged;

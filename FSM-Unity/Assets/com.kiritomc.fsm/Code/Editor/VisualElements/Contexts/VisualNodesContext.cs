@@ -3,12 +3,12 @@ using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
-    public abstract class NodesContext : VisualElement
+    public abstract class VisualNodesContext : VisualElement
     {
         
     }
-    public abstract class NodesContext<T> : NodesContext
-        where T: Node
+    public abstract class VisualNodesContext<T> : VisualNodesContext
+        where T: VisualNode
     {
         public string Name;
         public List<T> Nodes = new List<T>();

@@ -23,13 +23,13 @@ namespace FSM.Editor.Manipulators
         protected override void RegisterCallbacksOnTarget()
         {
             mousePressTrackingElement.RegisterCallback<MouseUpEvent>(HandleMouseUp);
-            target.RegisterCallback<ConnectionRequestEvent>(HandleConnectionRequest);
+            target.RegisterCallback<VisualNodeLinkRequestEvent>(HandleConnectionRequest);
         }
 
         protected override void UnregisterCallbacksFromTarget()
         {
             mousePressTrackingElement.UnregisterCallback<MouseUpEvent>(HandleMouseUp);
-            target.UnregisterCallback<ConnectionRequestEvent>(HandleConnectionRequest);
+            target.UnregisterCallback<VisualNodeLinkRequestEvent>(HandleConnectionRequest);
         }
 
         private void HandleMouseUp(MouseUpEvent e)
@@ -39,7 +39,7 @@ namespace FSM.Editor.Manipulators
             lastMousePosition = e.mousePosition;
         }
 
-        private async void HandleConnectionRequest(ConnectionRequestEvent e)
+        private async void HandleConnectionRequest(VisualNodeLinkRequestEvent e)
         {
             isPressed = true;
             draggingLocked.Value = true;
@@ -48,10 +48,10 @@ namespace FSM.Editor.Manipulators
 
             mousePressTrackingElement.panel.PickAll(lastMousePosition, buffer);
             foreach (VisualElement element in buffer)
-                if (element is Node node)
+                if (element is IVisualNodeWithLinkExit node)
                 {
-                    e.SetConnectionCallback.Invoke(node);
-                    e.SetConnectionCallback = default;
+                    e.TargetGotCallback.Invoke(node);
+                    e.TargetGotCallback = default;
                     return;
                 }
         }

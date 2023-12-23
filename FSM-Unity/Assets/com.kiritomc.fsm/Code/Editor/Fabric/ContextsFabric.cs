@@ -15,7 +15,7 @@ namespace FSM.Editor
 
         public StatesContext CreateRootContext()
         {
-            NodesContext current = EditorState.CurrentContext.Value;
+            VisualNodesContext current = EditorState.CurrentContext.Value;
             current?.parent.Remove(current);
             EditorState.RootContext.Value ??= new StatesContext("Root");
             EditorState.RootContext.Value.style.display = DisplayStyle.Flex;
@@ -24,10 +24,10 @@ namespace FSM.Editor
             return EditorState.RootContext.Value;
         }
 
-        public StatesContext CreateStateContext(StateNode target)
+        public StatesContext CreateStateContext(VisualStateNode target)
         {
             EditorState.RootContext.Value.style.display = DisplayStyle.None;
-            NodesContext current = EditorState.CurrentContext.Value;
+            VisualNodesContext current = EditorState.CurrentContext.Value;
             current?.parent.Remove(current);
             StatesContext result;
             root.Add(result = new StatesContext(target.Name));
@@ -37,7 +37,7 @@ namespace FSM.Editor
 
         public void OpenTransitionContext(TransitionContext transitionContext)
         {
-            NodesContext current = EditorState.CurrentContext.Value;
+            VisualNodesContext current = EditorState.CurrentContext.Value;
             current?.parent.Remove(current);
             root.Add(transitionContext);
             EditorState.CurrentContext.Value = transitionContext;

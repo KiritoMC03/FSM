@@ -24,6 +24,16 @@ namespace FSM.Editor
             style.justifyContent = Justify.Center;
             Context = new TransitionContext(this, $"{source.Name} -> {target.Name}");
             Add(drawer = new TransitionDrawer(source, target, () => Fabric.Contexts.OpenTransitionContext(Context)));
+            target.OnChanged(Repaint);
+            
+            
+            
+            source.Add(transition);
+            source.Disposables.Add(transition);
+            source.Disposables.Add(target.OnChanged(RepaintTransition));
+            source.ChildrenRepaintHandler.Add(transition);
+            return transition;
+            void RepaintTransition() => transition.Repaint();
         }
 
         public void Dispose()

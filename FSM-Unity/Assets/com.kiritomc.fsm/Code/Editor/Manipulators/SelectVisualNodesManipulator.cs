@@ -4,10 +4,10 @@ using UnityEngine.UIElements;
 
 namespace FSM.Editor.Manipulators
 {
-    public class SelectNodesManipulator<T> : Manipulator
-        where T: Node
+    public class SelectVisualNodesManipulator<T> : Manipulator
+        where T: VisualNode
     {
-        private readonly NodesContext<T> context;
+        private readonly VisualNodesContext<T> context;
         private Vector3 downPoint;
         private bool isPressed;
         private VisualElement selectionMarker = new VisualElement()
@@ -41,7 +41,7 @@ namespace FSM.Editor.Manipulators
             },
         };
 
-        public SelectNodesManipulator(NodesContext<T> context)
+        public SelectVisualNodesManipulator(VisualNodesContext<T> context)
         {
             this.context = context;
         }

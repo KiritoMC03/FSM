@@ -2,12 +2,12 @@
 
 namespace FSM.Editor.Manipulators
 {
-    public class DeleteStateNodeManipulator<T> : Manipulator
-        where T: Node
+    public class DeleteVisualStateNodeManipulator<T> : Manipulator
+        where T: VisualNode
     {
-        private readonly NodesContext<T> context;
+        private readonly VisualNodesContext<T> context;
 
-        public DeleteStateNodeManipulator(NodesContext<T> context)
+        public DeleteVisualStateNodeManipulator(VisualNodesContext<T> context)
         {
             this.context = context;
         }

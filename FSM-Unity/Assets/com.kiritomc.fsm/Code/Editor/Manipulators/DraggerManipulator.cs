@@ -5,14 +5,10 @@ namespace FSM.Editor.Manipulators
 {
     public class DraggerManipulator: PointerManipulator
     {
-        private readonly EditorStateProperty<bool> draggingLocked;
         private bool isPressed;
         private Vector2 offset;
 
-        public DraggerManipulator(EditorStateProperty<bool> draggingLocked)
-        {
-            this.draggingLocked = draggingLocked;
-        }
+        private EditorState EditorState => ServiceLocator.Instance.Get<EditorState>();
 
         protected override void RegisterCallbacksOnTarget()
         {
@@ -32,7 +28,7 @@ namespace FSM.Editor.Manipulators
 
         private void HandleMouseDown(PointerDownEvent e)
         {
-            if (draggingLocked.Value) return;
+            if (EditorState.DraggingLocked.Value) return;
             isPressed = true;
             target.BringToFront();
             offset = new Vector2(
@@ -43,7 +39,7 @@ namespace FSM.Editor.Manipulators
         private void HandleMouseMove(PointerMoveEvent e)
         {
             if (!isPressed) return;
-            if (draggingLocked.Value) return;
+            if (EditorState.DraggingLocked.Value) return;
             if (target is ICustomRepaintHandler repaintHandler) repaintHandler.Repaint();
             target.style.left = e.position.x + offset.x;
             target.style.top = e.position.y + offset.y;

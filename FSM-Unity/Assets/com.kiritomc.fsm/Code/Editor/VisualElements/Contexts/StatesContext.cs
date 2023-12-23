@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using FSM.Editor.Manipulators;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
-    public class StatesContext : NodesContext<StateNode>
+    public class StatesContext : VisualNodesContext<VisualStateNode>
     {
-        public List<StateNode> SelectedStateNodes = new List<StateNode>();
-
         private EditorState EditorState => ServiceLocator.Instance.Get<EditorState>();
         private Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
@@ -19,9 +16,9 @@ namespace FSM.Editor
             this.DefaultLayout()
                 .DefaultColors()
                 .DefaultInteractions();
-            this.AddManipulator(new CreateNodeManipulator<StateNode>(GetAvailableNodes));
-            this.AddManipulator(new SelectNodesManipulator<StateNode>(this));
-            this.AddManipulator(new DeleteStateNodeManipulator<StateNode>(this));
+            this.AddManipulator(new CreateVisualNodeManipulator<VisualStateNode>(GetAvailableNodes));
+            this.AddManipulator(new SelectVisualNodesManipulator<VisualStateNode>(this));
+            this.AddManipulator(new DeleteVisualStateNodeManipulator<VisualStateNode>(this));
         }
 
         public Dictionary<string, Action> GetAvailableNodes()
@@ -33,7 +30,7 @@ namespace FSM.Editor
                         const string nodeName = "Simple state";
                         int num = 0;
                         while (Nodes.Exists(i => i.Name == $"{nodeName} {num}")) num++;
-                        StateNode node = Fabric.Nodes.CreateStateNode($"{nodeName} {num}", this);
+                        VisualStateNode node = new VisualStateNode($"{nodeName} {num}", this);
                         Add(node);
                         Nodes.Add(node);
                     }
@@ -41,10 +38,10 @@ namespace FSM.Editor
             };
         }
 
-        public override void Remove(StateNode node)
+        public override void Remove(VisualStateNode node)
         {
             base.Remove(node);
-            foreach (StateNode other in Nodes)
+            foreach (VisualStateNode other in Nodes)
             {
                 for (int i = other.Transitions.Count - 1; i >= 0; i--)
                 {

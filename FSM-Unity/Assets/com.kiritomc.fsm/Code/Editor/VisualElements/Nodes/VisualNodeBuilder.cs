@@ -1,19 +1,12 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
-    public enum ConnectionPosition
+    public static class VisualNodeBuilder
     {
-        Left,
-        Right,
-    }
-
-    public static class NodeBuilder
-    {
-        public static (VisualElement Header, VisualElement Label) DefaultHeader<T>(this T node, string nodeName)
-            where T : Node
+        public static VisualElement NodeHeader<T>(this T node)
+            where T : VisualNode
         {
             VisualElement header = new VisualElement()
             {
@@ -22,8 +15,20 @@ namespace FSM.Editor
                     flexDirection = FlexDirection.Row,
                 },
             };
+            node.Add(header);
+            return header;
+        }
+
+
+        public static Label NodeLabel<T>(this T nodeWithHeader, string text) where T : VisualNode
+        {
+            return nodeWithHeader.Header.NodeLabel(text);
+        }
+
+        public static Label NodeLabel(this VisualElement parent, string text)
+        {
             Label label;
-            header.Add(label = new Label(nodeName)
+            parent.Add(label = new Label(text)
             {
                 style =
                 {
@@ -31,17 +36,20 @@ namespace FSM.Editor
                     width = new StyleLength(new Length(90, LengthUnit.Percent)),
                 },
             });
-            node.Add(header);
-            node.Header = header;
-            node.Label = label;
-            return (header, label);
+            return label;
         }
 
-        public static TextInputBaseField<string> WithInputLabel(this VisualElement parent, string nodeName)
+
+        public static TextInputBaseField<string> NodeInputLabel<T>(this T nodeWithHeader, string text) where T : VisualNode
+        {
+            return nodeWithHeader.Header.NodeInputLabel(text);
+        }
+
+        public static TextInputBaseField<string> NodeInputLabel(this VisualElement parent, string text)
         {
             TextField field = new TextField()
             {
-                value = nodeName,
+                value = text,
                 style =
                 {
                     alignContent = Align.Center,

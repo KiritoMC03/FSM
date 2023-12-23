@@ -17,13 +17,6 @@ namespace FSM.Editor
         public VisualStateTransition CreateTransition<T>(T source, T target)
             where T : VisualStateNode
         {
-            VisualStateTransition transition = new VisualStateTransition(source, target);
-            source.Add(transition);
-            source.Disposables.Add(transition);
-            source.Disposables.Add(target.OnChanged(RepaintTransition));
-            source.ChildrenRepaintHandler.Add(transition);
-            return transition;
-            void RepaintTransition() => transition.Repaint();
         }
 
         public void DestroyTransition<T>(T parent, VisualStateTransition transition)

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using FSM.Editor.Manipulators;
-using FSM.Runtime;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
-    public class TransitionContext : NodesContext<ConditionalNode>
+    public class TransitionContext : VisualNodesContext<VisualConditionalNode>
     {
         private readonly VisualStateTransition target;
 
@@ -19,29 +18,29 @@ namespace FSM.Editor
             this.DefaultLayout()
                 .DefaultColors()
                 .DefaultInteractions();
-            this.AddManipulator(new CreateNodeManipulator<ConditionalNode>(GetAvailableNodes));
-            this.AddManipulator(new SelectNodesManipulator<ConditionalNode>(this));
-            this.AddManipulator(new DeleteStateNodeManipulator<ConditionalNode>(this));
+            this.AddManipulator(new CreateVisualNodeManipulator<VisualConditionalNode>(GetAvailableNodes));
+            this.AddManipulator(new SelectVisualNodesManipulator<VisualConditionalNode>(this));
+            this.AddManipulator(new DeleteVisualStateNodeManipulator<VisualConditionalNode>(this));
         }
 
         private Dictionary<string, Action> GetAvailableNodes()
         {
             return new Dictionary<string, Action>
             {
-                {"Not", () => ProcessNewNode(Fabric.Nodes.ConditionalNotNode(this)) },
-                {"Or", () => ProcessNewNode(Fabric.Nodes.ConditionalOrNode(this)) },
-                {"And", () => ProcessNewNode(Fabric.Nodes.ConditionalAndNode(this)) },
-                { "True Condition", () => ProcessNewNode(Fabric.Nodes.ConditionalConditionNode(this, new ConditionLayoutNode(new TrueCondition()))) },
+                // {"Not", () => ProcessNewNode(Fabric.Nodes.ConditionalNotNode(this)) },
+                // {"Or", () => ProcessNewNode(Fabric.Nodes.ConditionalOrNode(this)) },
+                // {"And", () => ProcessNewNode(Fabric.Nodes.ConditionalAndNode(this)) },
+                // { "True Condition", () => ProcessNewNode(Fabric.Nodes.ConditionalConditionNode(this, new ConditionLayoutNode(new TrueCondition()))) },
             };
         }
 
-        public void ProcessNewNode<T>(T node) where T: ConditionalNode
+        public void ProcessNewNode<T>(T node) where T: VisualConditionalNode
         {
             Add(node);
             Nodes.Add(node);
         }
 
-        public override void Remove(ConditionalNode node)
+        public override void Remove(VisualConditionalNode node)
         {
             base.Remove(node);
             // foreach (ConditionalNode other in Nodes)

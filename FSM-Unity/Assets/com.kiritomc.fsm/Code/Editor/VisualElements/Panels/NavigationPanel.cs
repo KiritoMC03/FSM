@@ -19,7 +19,7 @@ namespace FSM.Editor
             EditorState.CurrentContext.ValueChanged += Redraw;
         }
 
-        private void Redraw(NodesContext currentContext)
+        private void Redraw(VisualNodesContext currentContext)
         {
             while (currentHierarchy.Count > 0)
             {
@@ -42,7 +42,7 @@ namespace FSM.Editor
             Add(button);
         }
 
-        private Button CreateButton(string text, StateNode stateNode)
+        private Button CreateButton(string text, VisualStateNode stateNode)
         {
             return new Button(() => MoveToContext(stateNode))
             {
@@ -50,7 +50,7 @@ namespace FSM.Editor
             };
         }
 
-        private void MoveToContext(StateNode stateNode)
+        private void MoveToContext(VisualStateNode stateNode)
         {
             if (stateNode == null) Fabric.Contexts.CreateRootContext();
             else Fabric.Contexts.CreateStateContext(stateNode);

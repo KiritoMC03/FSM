@@ -7,17 +7,17 @@ namespace FSM.Editor.Manipulators
 {
     public class StateNodeLabelManipulator : Manipulator
     {
-        private new readonly StateNode target;
-        private readonly EditorStateProperty<bool> draggingLocked;
+        private new readonly VisualStateNode target;
         private readonly Func<ChangeEvent<string>, string> validateNameDelegate;
         private string prevValue;
         private string currentValue;
         private bool isEditing;
 
-        public StateNodeLabelManipulator(StateNode target, EditorStateProperty<bool> draggingLocked, Func<ChangeEvent<string>, string> validateNameDelegate)
+        private EditorState EditorState => ServiceLocator.Instance.Get<EditorState>();
+
+        public StateNodeLabelManipulator(VisualStateNode target, Func<ChangeEvent<string>, string> validateNameDelegate)
         {
             this.target = target;
-            this.draggingLocked = draggingLocked;
             this.validateNameDelegate = validateNameDelegate;
         }
         
@@ -74,7 +74,7 @@ namespace FSM.Editor.Manipulators
             }
             target.Label.style.display = DisplayStyle.Flex; 
             target.LabelInputField.style.display = DisplayStyle.None;
-            draggingLocked.Value = false;
+            EditorState.DraggingLocked.Value = false;
         }
 
         private async void HandleClick(PointerUpEvent pointerUpEvent)
@@ -83,7 +83,7 @@ namespace FSM.Editor.Manipulators
             currentValue = prevValue = target.Label.text;
             target.Label.style.display = DisplayStyle.None; 
             target.LabelInputField.style.display = DisplayStyle.Flex;
-            draggingLocked.Value = true;
+            EditorState.DraggingLocked.Value = true;
             await Task.Yield();
             target.LabelInputField.Focus();
         }
