@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
@@ -9,6 +10,7 @@ namespace FSM.Editor
         public readonly EditorStateProperty<Vector3> PointerPosition = new EditorStateProperty<Vector3>();
         public readonly EditorStateProperty<StatesContext> RootContext = new EditorStateProperty<StatesContext>();
         public readonly EditorStateProperty<VisualNodesContext> CurrentContext = new EditorStateProperty<VisualNodesContext>();
+        public readonly EditorStateProperty<VisualElement> EditorRoot = new EditorStateProperty<VisualElement>();
     }
 
     public class EditorStateProperty<T>

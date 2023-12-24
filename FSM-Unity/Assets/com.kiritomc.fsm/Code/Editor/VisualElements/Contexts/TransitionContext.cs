@@ -10,6 +10,7 @@ namespace FSM.Editor
         private readonly VisualStateTransition target;
 
         private Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
+        private EditorState EditorState => ServiceLocator.Instance.Get<EditorState>();
 
         public TransitionContext(VisualStateTransition target, string name)
         {
@@ -38,6 +39,13 @@ namespace FSM.Editor
         {
             Add(node);
             Nodes.Add(node);
+        }
+
+        public void Open()
+        {
+            EditorState.EditorRoot.Value.Remove(EditorState.CurrentContext.Value);
+            EditorState.EditorRoot.Value.Add(this);
+            EditorState.CurrentContext.Value = this;
         }
 
         public override void Remove(VisualConditionalNode node)

@@ -22,7 +22,7 @@ namespace FSM.Editor
 
         public VisualNode()
         {
-            styleRegistrations.Add(BaseStyleRegistration = new VisualNodeStyleRegistration(this, () =>
+            AppendStyleRegistration(BaseStyleRegistration = new VisualNodeStyleRegistration(this, () =>
             {
                 style.paddingTop = style.paddingBottom = style.paddingLeft = style.paddingRight = Sizes.NodePadding;
                 style.borderTopColor = style.borderBottomColor = style.borderLeftColor = style.borderRightColor = Colors.NodeBorderColor;
@@ -42,7 +42,7 @@ namespace FSM.Editor
             Label = Header.NodeLabel(nodeName);
         }
 
-        public void Repaint()
+        public virtual void Repaint()
         {
             for (int i = 0; i < styleRegistrations.Count; i++)
             {

@@ -47,9 +47,19 @@ namespace FSM.Editor.Manipulators
             isRouting = true;
             if (e.button == 1)
             {
-                VisualStateTransition transition = await Fabric.Transitions.RouteTransitionAsync(currentNode, TransitionRequest.NewAsync(currentNode), CheckValid);
-                if (transition != null) currentNode.Transitions.Add(transition);
-                bool CheckValid<T>(T stateNode) where T: VisualStateNode => currentNode.Transitions.All(item => item.Target != stateNode);
+                VisualStateNode targetNode = await TransitionRequest.NewAsync(currentNode).Invoke();
+                if (CheckValid(targetNode))
+                {
+                    VisualStateTransition transition = new VisualStateTransition(currentNode, targetNode);
+                    currentNode.Add(transition);
+                    currentNode.Transitions.Add(transition);
+                }
+                bool CheckValid<T>(T stateNode) where T: VisualStateNode
+                {
+                    return targetNode != null 
+                           && targetNode != currentNode 
+                           && currentNode.Transitions.All(item => item.Target != stateNode);
+                }
             }
             isRouting = false;
         }

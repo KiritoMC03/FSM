@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FSM.Editor.Manipulators;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
@@ -30,7 +31,7 @@ namespace FSM.Editor
                         const string nodeName = "Simple state";
                         int num = 0;
                         while (Nodes.Exists(i => i.Name == $"{nodeName} {num}")) num++;
-                        VisualStateNode node = new VisualStateNode($"{nodeName} {num}", this);
+                        VisualStateNode node = new VisualStateNode($"{nodeName} {num}", this, this.WorldToLocal(EditorState.PointerPosition.Value));
                         Add(node);
                         Nodes.Add(node);
                     }

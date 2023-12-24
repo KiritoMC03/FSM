@@ -37,10 +37,6 @@ namespace FSM.Editor
 
         public void OpenTransitionContext(TransitionContext transitionContext)
         {
-            VisualNodesContext current = EditorState.CurrentContext.Value;
-            current?.parent.Remove(current);
-            root.Add(transitionContext);
-            EditorState.CurrentContext.Value = transitionContext;
         }
     }
 }

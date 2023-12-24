@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Disposables;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
@@ -8,7 +9,8 @@ namespace FSM.Editor
         public readonly VisualStateNode Source;
         public readonly VisualStateNode Target;
         public readonly TransitionContext Context;
-        private TransitionDrawer drawer;
+        private readonly TransitionDrawer drawer;
+        private CompositeDisposable disposables = new CompositeDisposable();
 
         protected Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
@@ -23,17 +25,8 @@ namespace FSM.Editor
             style.flexDirection = FlexDirection.Column;
             style.justifyContent = Justify.Center;
             Context = new TransitionContext(this, $"{source.Name} -> {target.Name}");
-            Add(drawer = new TransitionDrawer(source, target, () => Fabric.Contexts.OpenTransitionContext(Context)));
-            target.OnChanged(Repaint);
-            
-            
-            
-            source.Add(transition);
-            source.Disposables.Add(transition);
-            source.Disposables.Add(target.OnChanged(RepaintTransition));
-            source.ChildrenRepaintHandler.Add(transition);
-            return transition;
-            void RepaintTransition() => transition.Repaint();
+            Add(drawer = new TransitionDrawer(source, target, () => Context.Open()));
+            target.OnChanged(Repaint).AddTo(disposables);
         }
 
         public void Dispose()

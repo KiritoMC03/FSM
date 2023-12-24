@@ -8,7 +8,6 @@ namespace FSM.Editor
         private readonly VisualElement root;
 
         public ContextsFabric Contexts { get; }
-        public TransitionsFabric Transitions { get; } = new TransitionsFabric();
         public PopupsFabric Popups { get; }
         public PanelsFabric Panels { get; }
 

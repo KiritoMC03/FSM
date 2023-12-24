@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FSM.Editor.Extensions;
 using FSM.Editor.Manipulators;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -22,6 +23,7 @@ namespace FSM.Editor
             this.AddManipulator(new StateNodeLabelManipulator(this, ValidatePotentialName));
             this.AddManipulator(new DraggerManipulator());
             this.AddManipulator(new RouteTransitionManipulator<VisualStateNode>(this, context));
+            Repaint();
         }
 
         public string ValidatePotentialName(ChangeEvent<string> changeEvent)
@@ -39,6 +41,12 @@ namespace FSM.Editor
             Transitions.RemoveAt(index);
             Remove(transition);
             transition.Dispose();
+        }
+
+        public override void Repaint()
+        {
+            base.Repaint();
+            Transitions.Repaint();
         }
     }
 }
