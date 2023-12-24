@@ -14,7 +14,7 @@ namespace FSM.Editor
 
         protected NodeLinkPoint Link;
 
-        protected VisualNodeWithLinkExit()
+        protected VisualNodeWithLinkExit(string name) : base(name)
         {
             Link = LinkPointRelativeTo(Header, Label, VisualNodeLinkPosition.Right);
         }

@@ -31,6 +31,7 @@ namespace FSM.Editor
             IsDisposed = true;
         }
 
+        private void Redraw() => Redraw(default);
         private void Redraw(MeshGenerationContext meshGenerationContext)
         {
             Vector2? start = localStartGetter.Invoke();
@@ -41,6 +42,7 @@ namespace FSM.Editor
 
         public void Repaint()
         {
+            Redraw();
             Drawer.MarkDirtyRepaint();
         }
     }

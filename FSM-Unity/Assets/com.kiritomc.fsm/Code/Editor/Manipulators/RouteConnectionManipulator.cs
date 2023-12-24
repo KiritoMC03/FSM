@@ -8,15 +8,15 @@ namespace FSM.Editor.Manipulators
 {
     public class RouteConnectionManipulator : Manipulator
     {
-        private readonly EditorStateProperty<bool> draggingLocked;
         private readonly VisualElement mousePressTrackingElement;
         private readonly List<VisualElement> buffer = new List<VisualElement>(10);
         private bool isPressed;
         private Vector2 lastMousePosition;
 
-        public RouteConnectionManipulator(EditorStateProperty<bool> draggingLocked, VisualElement mousePressTrackingElement)
+        private EditorState EditorState => ServiceLocator.Instance.Get<EditorState>();
+
+        public RouteConnectionManipulator(VisualElement mousePressTrackingElement)
         {
-            this.draggingLocked = draggingLocked;
             this.mousePressTrackingElement = mousePressTrackingElement;
         }
 
@@ -42,9 +42,9 @@ namespace FSM.Editor.Manipulators
         private async void HandleConnectionRequest(VisualNodeLinkRequestEvent e)
         {
             isPressed = true;
-            draggingLocked.Value = true;
+            EditorState.DraggingLocked.Value = true;
             while (isPressed) await Task.Yield();
-            draggingLocked.Value = false;
+            EditorState.DraggingLocked.Value = false;
 
             mousePressTrackingElement.panel.PickAll(lastMousePosition, buffer);
             foreach (VisualElement element in buffer)

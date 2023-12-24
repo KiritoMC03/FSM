@@ -42,13 +42,13 @@ namespace FSM.Editor.Serialization
             ConditionalNodeModel[] conditionalNodeModels = new ConditionalNodeModel[transition.Context.Nodes.Count];
             for (int i = 0; i < transition.Context.Nodes.Count; i++)
             {
-                VisualConditionalNode conditionalNode = transition.Context.Nodes[i];
-                (string kind, VisualConditionalNode left, VisualConditionalNode right) = conditionalNode switch
+                VisualNodeWithLinkExit conditionalNode = transition.Context.Nodes[i];
+                (string kind, VisualConditionNode left, VisualConditionNode right) = conditionalNode switch
                 {
                     // NotNode not => (nameof(NotNode), not.Input.Value, default),
                     // OrNode or => (nameof(OrNode), or.Left.Value, or.Right.Value),
                     // AndNode and => (nameof(AndNode), and.Left.Value, and.Right.Value),
-                    _ => (nameof(VisualConditionalNode), default(VisualConditionalNode), default(VisualConditionalNode)),
+                    _ => (nameof(VisualConditionNode), default(VisualConditionNode), default(VisualConditionNode)),
                 };
 
                 int leftIndex = transition.Context.Nodes.IndexOf(left);
@@ -97,7 +97,7 @@ namespace FSM.Editor.Serialization
             node.Transitions = nodeModel.OutgoingTransitions.Select(transitionModel =>
             {
                 VisualStateNode target = otherStates.First(targetState => targetState.Name == transitionModel.TargetName);
-                VisualStateTransition transition = new VisualStateTransition(node, target);
+                VisualStateTransition transition = node.AddTransition(target);
                 ReadTransitionContext(transition, transitionModel.ContextModel);
                 return transition;
             }).ToList();
@@ -107,20 +107,20 @@ namespace FSM.Editor.Serialization
         {
             foreach (ConditionalNodeModel conditionalNodeModel in transitionContextModel.ConditionalNodeModels)
             {
-                VisualConditionalNode node = conditionalNodeModel.NodeKind switch
-                {
-                    // nameof(NotNode) => Fabric.Nodes.ConditionalNotNode(transition.Context, conditionalNodeModel.Position),
-                    // nameof(OrNode) => Fabric.Nodes.ConditionalOrNode(transition.Context, conditionalNodeModel.Position),
-                    // nameof(AndNode) => Fabric.Nodes.ConditionalAndNode(transition.Context, conditionalNodeModel.Position),
-                    // nameof(ConditionNode) => Fabric.Nodes.ConditionalConditionNode(transition.Context, default), // ToDo
-                    // _ => throw new ArgumentOutOfRangeException(),
-                };
-                transition.Context.ProcessNewNode(node);
+                // VisualConditionNode node = conditionalNodeModel.NodeKind switch
+                // {
+                //     // nameof(NotNode) => Fabric.Nodes.ConditionalNotNode(transition.Context, conditionalNodeModel.Position),
+                //     // nameof(OrNode) => Fabric.Nodes.ConditionalOrNode(transition.Context, conditionalNodeModel.Position),
+                //     // nameof(AndNode) => Fabric.Nodes.ConditionalAndNode(transition.Context, conditionalNodeModel.Position),
+                //     // nameof(ConditionNode) => Fabric.Nodes.ConditionalConditionNode(transition.Context, default), // ToDo
+                //     // _ => throw new ArgumentOutOfRangeException(),
+                // };
+                // transition.Context.ProcessNewNode(node);
             }
 
             for (int i = 0; i < transition.Context.Nodes.Count; i++)
             {
-                VisualConditionalNode node = transition.Context.Nodes[i];
+                VisualNodeWithLinkExit node = transition.Context.Nodes[i];
                 int leftId = transitionContextModel.ConditionalNodeModels[i].LeftConnectionId;
                 int rightId = transitionContextModel.ConditionalNodeModels[i].RightConnectionId;
                 switch (node)

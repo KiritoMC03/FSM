@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FSM.Editor.Manipulators;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
-    public class TransitionContext : VisualNodesContext<VisualConditionalNode>
+    public class TransitionContext : VisualNodesContext<VisualNodeWithLinkExit>
     {
         private readonly VisualStateTransition target;
 
@@ -19,23 +21,32 @@ namespace FSM.Editor
             this.DefaultLayout()
                 .DefaultColors()
                 .DefaultInteractions();
-            this.AddManipulator(new CreateVisualNodeManipulator<VisualConditionalNode>(GetAvailableNodes));
-            this.AddManipulator(new SelectVisualNodesManipulator<VisualConditionalNode>(this));
-            this.AddManipulator(new DeleteVisualStateNodeManipulator<VisualConditionalNode>(this));
+            this.AddManipulator(new CreateVisualNodeManipulator<VisualNodeWithLinkExit>(GetAvailableNodes));
+            this.AddManipulator(new SelectVisualNodesManipulator<VisualNodeWithLinkExit>(this));
+            this.AddManipulator(new DeleteVisualStateNodeManipulator<VisualNodeWithLinkExit>(this));
         }
 
         private Dictionary<string, Action> GetAvailableNodes()
         {
-            return new Dictionary<string, Action>
+            return NodeTypes.InTransitionContext().ToDictionary(t => t.Name, t =>
             {
-                // {"Not", () => ProcessNewNode(Fabric.Nodes.ConditionalNotNode(this)) },
-                // {"Or", () => ProcessNewNode(Fabric.Nodes.ConditionalOrNode(this)) },
-                // {"And", () => ProcessNewNode(Fabric.Nodes.ConditionalAndNode(this)) },
-                // { "True Condition", () => ProcessNewNode(Fabric.Nodes.ConditionalConditionNode(this, new ConditionLayoutNode(new TrueCondition()))) },
-            };
+                if (NodeTypes.Condition.IsAssignableFrom(t))
+                    return () => ProcessNewNode(new VisualConditionNode(t, this));
+                if (NodeTypes.FunctionBool.IsAssignableFrom(t))
+                    return () => ProcessNewFuncNode(new VisualFunctionNode<bool>(t));
+
+                Debug.LogError("");
+                return default(Action);
+            });
         }
 
-        public void ProcessNewNode<T>(T node) where T: VisualConditionalNode
+        public void ProcessNewNode<T>(T node) where T: VisualConditionNode
+        {
+            Add(node);
+            Nodes.Add(node);
+        }
+
+        public void ProcessNewFuncNode<T>(T node) where T: VisualFunctionNode<bool>
         {
             Add(node);
             Nodes.Add(node);
@@ -48,7 +59,7 @@ namespace FSM.Editor
             EditorState.CurrentContext.Value = this;
         }
 
-        public override void Remove(VisualConditionalNode node)
+        public override void Remove(VisualNodeWithLinkExit node)
         {
             base.Remove(node);
             // foreach (ConditionalNode other in Nodes)

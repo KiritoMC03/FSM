@@ -48,12 +48,7 @@ namespace FSM.Editor.Manipulators
             if (e.button == 1)
             {
                 VisualStateNode targetNode = await TransitionRequest.NewAsync(currentNode).Invoke();
-                if (CheckValid(targetNode))
-                {
-                    VisualStateTransition transition = new VisualStateTransition(currentNode, targetNode);
-                    currentNode.Add(transition);
-                    currentNode.Transitions.Add(transition);
-                }
+                if (CheckValid(targetNode)) currentNode.AddTransition(targetNode);
                 bool CheckValid<T>(T stateNode) where T: VisualStateNode
                 {
                     return targetNode != null 

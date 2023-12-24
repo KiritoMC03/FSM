@@ -35,6 +35,15 @@ namespace FSM.Editor
             return $"{newName} {num}";
         }
 
+        public VisualStateTransition AddTransition(VisualStateNode targetNode)
+        {
+            VisualStateTransition transition = new VisualStateTransition(this, targetNode);
+            Add(transition);
+            Transitions.Add(transition);
+            transition.Repaint();
+            return transition;
+        }
+
         public void RemoveTransitionAt(int index)
         {
             VisualStateTransition transition = Transitions[index];

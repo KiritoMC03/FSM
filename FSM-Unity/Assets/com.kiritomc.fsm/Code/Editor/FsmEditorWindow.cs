@@ -30,6 +30,7 @@ namespace FSM.Editor
         private void CreateGUI()
         {
             (fabric, root) = Fabric.Build(rootVisualElement);
+            editorState.EditorRoot.Value = root;
             ServiceLocator.Instance.Set(fabric);
             ServiceLocator.Instance.Set(editorState);
             LeftPanel leftPanel = fabric.Panels.LeftPanel();
