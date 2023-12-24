@@ -1,4 +1,5 @@
-﻿using FSM.Editor.Extensions;
+﻿using System.Collections.Generic;
+using FSM.Editor.Extensions;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -8,38 +9,9 @@ namespace FSM.Editor.Manipulators
         where T: VisualNode
     {
         private readonly VisualNodesContext<T> context;
+        private readonly List<VisualNodeStyleRegistration> currentSelectedRegistrations = new List<VisualNodeStyleRegistration>(10);
         private Vector3 downPoint;
         private bool isPressed;
-        private VisualElement selectionMarker = new VisualElement()
-        {
-            pickingMode = PickingMode.Ignore,
-            style =
-            {
-                position = Position.Absolute,
-                width = new StyleLength(new Length(100, LengthUnit.Percent)),
-                height = new StyleLength(new Length(100, LengthUnit.Percent)),
-                
-                borderTopColor = Colors.SelectedNodeBorderColor,
-                borderBottomColor = Colors.SelectedNodeBorderColor,
-                borderRightColor = Colors.SelectedNodeBorderColor,
-                borderLeftColor = Colors.SelectedNodeBorderColor,
-                
-                borderTopWidth = Sizes.SelectedNodeBorderWidth,
-                borderBottomWidth = Sizes.SelectedNodeBorderWidth,
-                borderLeftWidth = Sizes.SelectedNodeBorderWidth,
-                borderRightWidth = Sizes.SelectedNodeBorderWidth,
-                
-                borderTopRightRadius = Sizes.NodeBorderRadius,
-                borderTopLeftRadius = Sizes.NodeBorderRadius,
-                borderBottomRightRadius = Sizes.NodeBorderRadius,
-                borderBottomLeftRadius = Sizes.NodeBorderRadius,
-                
-                marginTop = -Sizes.NodePadding,
-                marginBottom = -Sizes.NodePadding,
-                marginLeft = -Sizes.NodePadding,
-                marginRight = -Sizes.NodePadding,
-            },
-        };
 
         public SelectVisualNodesManipulator(VisualNodesContext<T> context)
         {
@@ -68,6 +40,7 @@ namespace FSM.Editor.Manipulators
 
         private void HandleUp(PointerUpEvent e)
         {
+            ClearSelected();
             if (isPressed && downPoint == e.position)
             {
                 T node = target.panel.Pick<T>(downPoint);
@@ -75,21 +48,33 @@ namespace FSM.Editor.Manipulators
                 {
                     if (!context.SelectedNodes.Contains(node))
                     {
+                        ApplySelectedStyle(node);
                         context.SelectedNodes.Add(node);
-                        node.Add(selectionMarker);
                     }
                     isPressed = false;
                     return;
                 }
             }
             isPressed = false;
-            ClearSelected();
         }
 
         private void ClearSelected()
         {
-            foreach (T selectedNode in context.SelectedNodes) selectedNode.Remove(selectionMarker);
+            foreach (VisualNodeStyleRegistration registration in currentSelectedRegistrations)
+            {
+                registration?.Dispose();
+            }
+            currentSelectedRegistrations.Clear();
             context.SelectedNodes.Clear();
+        }
+
+        private void ApplySelectedStyle(VisualNode node)
+        {
+            currentSelectedRegistrations.Add(new VisualNodeStyleRegistration(node, Style));
+            void Style()
+            {
+                node.style.borderTopColor = node.style.borderBottomColor = node.style.borderRightColor = node.style.borderLeftColor = Colors.SelectedNodeBorderColor;
+            }
         }
     }
 }

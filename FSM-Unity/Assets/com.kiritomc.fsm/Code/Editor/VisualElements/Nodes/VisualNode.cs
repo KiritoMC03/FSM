@@ -18,11 +18,15 @@ namespace FSM.Editor
         public Vector2 Placement => new Vector2(style.left.value.value, style.top.value.value);
         protected Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
-        public void AppendStyleRegistration(VisualNodeStyleRegistration registration) => styleRegistrations.Add(registration);
+        public void AppendStyleRegistration(VisualNodeStyleRegistration registration)
+        {
+            styleRegistrations.Add(registration);
+            Repaint();
+        }
 
         public VisualNode()
         {
-            AppendStyleRegistration(BaseStyleRegistration = new VisualNodeStyleRegistration(this, () =>
+            BaseStyleRegistration = new VisualNodeStyleRegistration(this, () =>
             {
                 style.paddingTop = style.paddingBottom = style.paddingLeft = style.paddingRight = Sizes.NodePadding;
                 style.borderTopColor = style.borderBottomColor = style.borderLeftColor = style.borderRightColor = Colors.NodeBorderColor;
@@ -32,7 +36,7 @@ namespace FSM.Editor
                 style.minWidth = 200;
                 style.minHeight = 50;
                 style.backgroundColor = Colors.NodeBackground;
-            }));
+            });
         }
 
         public VisualNode(string nodeName) : this()
@@ -47,7 +51,11 @@ namespace FSM.Editor
             for (int i = 0; i < styleRegistrations.Count; i++)
             {
                 VisualNodeStyleRegistration current = styleRegistrations[i];
-                if (current.IsDisposed) i--;
+                if (current.IsDisposed)
+                {
+                    styleRegistrations.RemoveAt(i);
+                    i--;
+                }
                 else current.Apply();
             }
         }

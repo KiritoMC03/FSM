@@ -14,9 +14,14 @@ namespace FSM.Editor
         {
             this.target = target;
             this.applyStyle = applyStyle;
+            this.target.AppendStyleRegistration(this);
         }
 
-        public void Dispose() => IsDisposed = true;
+        public void Dispose()
+        {
+            IsDisposed = true;
+            target.Repaint();
+        }
 
         public void Apply()
         {

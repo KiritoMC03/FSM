@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using FSM.Editor.Extensions;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,6 +13,7 @@ namespace FSM.Editor.Manipulators
         private string prevValue;
         private string currentValue;
         private bool isEditing;
+        private Vector3 touchPosition;
 
         private EditorState EditorState => ServiceLocator.Instance.Get<EditorState>();
 
@@ -23,6 +25,7 @@ namespace FSM.Editor.Manipulators
         
         protected override void RegisterCallbacksOnTarget()
         {
+            target.Label.RegisterCallback<PointerDownEvent>(HandlePress);
             target.Label.RegisterCallback<PointerUpEvent>(HandleClick);
             target.LabelInputField.RegisterCallback<KeyUpEvent>(HandleKeys);
             target.LabelInputField.RegisterCallback<FocusOutEvent>(UnFocusForSubscription);
@@ -31,6 +34,7 @@ namespace FSM.Editor.Manipulators
 
         protected override void UnregisterCallbacksFromTarget()
         {
+            target.Label.UnregisterCallback<PointerDownEvent>(HandlePress);
             target.Label.UnregisterCallback<PointerUpEvent>(HandleClick);
             target.LabelInputField.UnregisterCallback<KeyUpEvent>(HandleKeys);
             target.LabelInputField.UnregisterCallback<FocusOutEvent>(UnFocusForSubscription);
@@ -77,8 +81,14 @@ namespace FSM.Editor.Manipulators
             EditorState.DraggingLocked.Value = false;
         }
 
+        private void HandlePress(PointerDownEvent pointerDownEvent)
+        {
+            touchPosition = pointerDownEvent.position;
+        }
+
         private async void HandleClick(PointerUpEvent pointerUpEvent)
         {
+            if (!pointerUpEvent.position.Approximately(touchPosition)) return;
             isEditing = true;
             currentValue = prevValue = target.Label.text;
             target.Label.style.display = DisplayStyle.None; 
