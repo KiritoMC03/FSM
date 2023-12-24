@@ -1,26 +1,29 @@
 ﻿using System;
 using FSM.Editor.Manipulators;
-using FSM.Runtime;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
-    public class VisualFunctionNode : VisualNodeWithLinkExit
+    public class VisualFunctionNode : VisualNodeWithLinkFields
     {
-        public VisualFunctionNode(Type type) : base(type.Name)
+        public readonly Type FunctionType;
+
+        public VisualFunctionNode(Type functionType) : base(functionType)
         {
+            FunctionType = functionType;
             this.AddManipulator(new DraggerManipulator());
         }
     }
 
     public class VisualFunctionNode<T> : VisualFunctionNode
     {
-        public VisualFunctionNode(FunctionLayoutNode<bool> node) : this(node.LogicObject.GetType())
+        public VisualFunctionNode(Type functionType, VisualNodesContext context, Vector2 position = default) : base(functionType)
         {
-        }
-
-        public VisualFunctionNode(Type type) : base(type)
-        {
+            this.AddManipulator(new DraggerManipulator());
+            this.AddManipulator(new RouteConnectionManipulator(context));
+            style.left = position.x;
+            style.top = position.y;
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reactive.Disposables;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
@@ -19,9 +18,6 @@ namespace FSM.Editor
         {
             Source = source;
             Target = target;
-            style.position = Position.Absolute;
-            style.top = 0;
-            style.bottom = 0;
             style.alignSelf = Align.Center;
             style.flexDirection = FlexDirection.Column;
             style.justifyContent = Justify.Center;

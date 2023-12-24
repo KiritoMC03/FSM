@@ -54,10 +54,15 @@ namespace FSM.Editor
         private async void ConnectionFieldViewMouseDownHandler(MouseDownEvent _)
         {
             IVisualNodeWithLinkExit result = await asyncTargetGetter();
+            SetTarget(result);
+        }
+
+        public void SetTarget(IVisualNodeWithLinkExit target)
+        {
             targetChangedRegistration?.Dispose();
-            if (result != null) targetChangedRegistration = ((VisualNode)result).OnChanged(Repaint);
+            if (target != null) targetChangedRegistration = ((VisualNode)target).OnChanged(Repaint);
             linkDrawerRegistration.Repaint();
-            gotHandler(linkName, result);
+            gotHandler(linkName, target);
         }
 
         private Vector2? GetLinkStart() => linkFieldView?.AnchorCenter();

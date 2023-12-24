@@ -31,9 +31,9 @@ namespace FSM.Editor
             return NodeTypes.InTransitionContext().ToDictionary(t => t.Name, t =>
             {
                 if (NodeTypes.Condition.IsAssignableFrom(t))
-                    return () => ProcessNewNode(new VisualConditionNode(t, this));
+                    return () => ProcessNewNode(new VisualConditionNode(t, this, this.WorldToLocal(EditorState.PointerPosition.Value)));
                 if (NodeTypes.FunctionBool.IsAssignableFrom(t))
-                    return () => ProcessNewFuncNode(new VisualFunctionNode<bool>(t));
+                    return () => ProcessNewFuncNode(new VisualFunctionNode<bool>(t, this, this.WorldToLocal(EditorState.PointerPosition.Value)));
 
                 Debug.LogError("");
                 return default(Action);

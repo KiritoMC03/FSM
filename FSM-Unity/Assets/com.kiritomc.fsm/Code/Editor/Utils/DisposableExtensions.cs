@@ -5,9 +5,10 @@ namespace FSM.Editor
 {
     public static class DisposableExtensions
     {
-        public static void AddTo(this IDisposable disposable, CompositeDisposable target)
+        public static T AddTo<T>(this T disposable, CompositeDisposable target) where T: IDisposable
         {
             target.Add(disposable);
+            return disposable;
         }
     }
 }

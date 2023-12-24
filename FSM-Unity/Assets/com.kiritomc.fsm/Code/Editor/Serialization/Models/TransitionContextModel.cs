@@ -5,13 +5,13 @@ namespace FSM.Editor.Serialization
     [Serializable]
     public class TransitionContextModel
     {
-        public ConditionalNodeModel[] ConditionalNodeModels;
+        public TransitionContextEntryNodeModel[] ConditionalNodeModels;
 
         public TransitionContextModel()
         {
         }
 
-        public TransitionContextModel(ConditionalNodeModel[] conditionalNodeModels)
+        public TransitionContextModel(TransitionContextEntryNodeModel[] conditionalNodeModels)
         {
             ConditionalNodeModels = conditionalNodeModels;
         }

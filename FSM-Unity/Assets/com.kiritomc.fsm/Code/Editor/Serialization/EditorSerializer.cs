@@ -33,31 +33,35 @@ namespace FSM.Editor.Serialization
             (
                 stateNode.Name,
                 (Vector2Model)stateNode.ResolvedPlacement,
-                stateNode.Transitions.Select(transition => WriteStateTransition(stateNode, transition)).ToArray()
+                stateNode.Transitions.Select(transition => WriteTransitionContext(stateNode, transition)).ToArray()
             );
         }
 
-        private StateTransitionModel WriteStateTransition(VisualStateNode sourceNode, VisualStateTransition transition)
+        private StateTransitionModel WriteTransitionContext(VisualStateNode sourceNode, VisualStateTransition transition)
         {
-            ConditionalNodeModel[] conditionalNodeModels = new ConditionalNodeModel[transition.Context.Nodes.Count];
+            TransitionContextEntryNodeModel[] contextEntryNodeModels = new TransitionContextEntryNodeModel[transition.Context.Nodes.Count];
             for (int i = 0; i < transition.Context.Nodes.Count; i++)
             {
-                VisualNodeWithLinkExit conditionalNode = transition.Context.Nodes[i];
-                (string kind, VisualConditionNode left, VisualConditionNode right) = conditionalNode switch
+                VisualNodeWithLinkExit node = transition.Context.Nodes[i];
+                (Type type, Dictionary<string, int> linked) = node switch
                 {
-                    // NotNode not => (nameof(NotNode), not.Input.Value, default),
-                    // OrNode or => (nameof(OrNode), or.Left.Value, or.Right.Value),
-                    // AndNode and => (nameof(AndNode), and.Left.Value, and.Right.Value),
-                    _ => (nameof(VisualConditionNode), default(VisualConditionNode), default(VisualConditionNode)),
+                    VisualConditionNode conditionNode => (conditionNode.ConditionType, LinkedToIndexes(conditionNode.Linked)),
+                    VisualFunctionNode functionNode => (functionNode.FunctionType, LinkedToIndexes(functionNode.Linked)),
+                    _ => throw new Exception(),
                 };
 
-                int leftIndex = transition.Context.Nodes.IndexOf(left);
-                int rightIndex = transition.Context.Nodes.IndexOf(right);
-                conditionalNodeModels[i] = new ConditionalNodeModel(conditionalNode.Name, (Vector2Model)conditionalNode.ResolvedPlacement, kind, leftIndex, rightIndex);
+                contextEntryNodeModels[i] = new TransitionContextEntryNodeModel(type, (Vector2Model)node.ResolvedPlacement, linked);
             }
 
-            TransitionContextModel contextModel = new TransitionContextModel(conditionalNodeModels);
+            TransitionContextModel contextModel = new TransitionContextModel(contextEntryNodeModels);
             return new StateTransitionModel(sourceNode.Name, transition.Target.Name, contextModel);
+
+            Dictionary<string, int> LinkedToIndexes(Dictionary<string, IVisualNodeWithLinkExit> linked)
+            {
+                return linked.ToDictionary(
+                    pair => pair.Key, 
+                    pair => transition.Context.Nodes.IndexOf((VisualNodeWithLinkExit)pair.Value));
+            }
         }
 
         #endregion
@@ -105,37 +109,29 @@ namespace FSM.Editor.Serialization
 
         private void ReadTransitionContext(VisualStateTransition transition, TransitionContextModel transitionContextModel)
         {
-            foreach (ConditionalNodeModel conditionalNodeModel in transitionContextModel.ConditionalNodeModels)
+            VisualNodeWithLinkFields[] nodes = new VisualNodeWithLinkFields[transitionContextModel.ConditionalNodeModels.Length];
+            for (int i = 0; i < transitionContextModel.ConditionalNodeModels.Length; i++)
             {
-                // VisualConditionNode node = conditionalNodeModel.NodeKind switch
-                // {
-                //     // nameof(NotNode) => Fabric.Nodes.ConditionalNotNode(transition.Context, conditionalNodeModel.Position),
-                //     // nameof(OrNode) => Fabric.Nodes.ConditionalOrNode(transition.Context, conditionalNodeModel.Position),
-                //     // nameof(AndNode) => Fabric.Nodes.ConditionalAndNode(transition.Context, conditionalNodeModel.Position),
-                //     // nameof(ConditionNode) => Fabric.Nodes.ConditionalConditionNode(transition.Context, default), // ToDo
-                //     // _ => throw new ArgumentOutOfRangeException(),
-                // };
-                // transition.Context.ProcessNewNode(node);
+                TransitionContextEntryNodeModel contextEntryNodeModels = transitionContextModel.ConditionalNodeModels[i];
+                if (NodeTypes.Condition.IsAssignableFrom(contextEntryNodeModels.Type))
+                {
+                    transition.Context.ProcessNewNode((VisualConditionNode)(nodes[i] = new VisualConditionNode(contextEntryNodeModels.Type, transition.Context, contextEntryNodeModels.Position)));
+                }
+                else if (NodeTypes.FunctionBool.IsAssignableFrom(contextEntryNodeModels.Type))
+                {
+                    transition.Context.ProcessNewFuncNode((VisualFunctionNode<bool>)(nodes[i] = new VisualFunctionNode<bool>(contextEntryNodeModels.Type, transition.Context, contextEntryNodeModels.Position)));
+                }
             }
 
-            for (int i = 0; i < transition.Context.Nodes.Count; i++)
+            for (int i = 0; i < transitionContextModel.ConditionalNodeModels.Length; i++)
             {
-                VisualNodeWithLinkExit node = transition.Context.Nodes[i];
-                int leftId = transitionContextModel.ConditionalNodeModels[i].LeftConnectionId;
-                int rightId = transitionContextModel.ConditionalNodeModels[i].RightConnectionId;
-                switch (node)
+                TransitionContextEntryNodeModel contextEntryNodeModels = transitionContextModel.ConditionalNodeModels[i];
+                foreach ((string fieldName, int linkIndex) in contextEntryNodeModels.Linked)
                 {
-                    // case NotNode not:
-                    //     not.Input.Value = leftId == -1 ? default : transition.Context.Nodes[leftId];
-                    //     break;
-                    // case ConditionGateNode gate:
-                    //     gate.Left.Value = leftId == -1 ? default : transition.Context.Nodes[leftId];
-                    //     gate.Right.Value = rightId == -1 ? default : transition.Context.Nodes[rightId];
-                    //     break;
+                    UnityEngine.Debug.Log($"{fieldName} - {linkIndex} - {transition.Context.Nodes.Count}");
+                    nodes[i].ForceLinkTo(fieldName, transition.Context.Nodes[linkIndex]);
                 }
-                node.Repaint();
             }
-            return;
         }
 
         #endregion
