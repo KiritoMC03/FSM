@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using FSM.Editor.Manipulators;
+﻿using FSM.Editor.Manipulators;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -13,6 +11,9 @@ namespace FSM.Editor
         private const string OnExit = "OnExit";
 
         private readonly StateContext context;
+        public readonly VisualNodeLinkRegistration OnEnterLinkRegistration;
+        public readonly VisualNodeLinkRegistration OnUpdateLinkRegistration;
+        public readonly VisualNodeLinkRegistration OnExitLinkRegistration;
         private VisualNodeFieldLinksRegistration visualNodeFieldLinksRegistration;
         public IVisualNodeWithLinkExit OnEnterLink;
         public IVisualNodeWithLinkExit OnUpdateLink;
@@ -25,11 +26,11 @@ namespace FSM.Editor
             this.AddManipulator(new RouteVisualNodeLinkManipulator(context));
             style.left = position.x;
             style.top = position.y;
-            Create(OnEnter);
-            Create(OnUpdate);
-            Create(OnExit);
+            OnEnterLinkRegistration = Create(OnEnter);
+            OnUpdateLinkRegistration = Create(OnUpdate);
+            OnExitLinkRegistration = Create(OnExit);
 
-            void Create(string fieldName) => new VisualNodeLinkRegistration(this, fieldName, NodeLinkRequest.NewAsync(this, Check), HandleLinked, GetCurrentLinkedNode, Check);
+            VisualNodeLinkRegistration Create(string fieldName) => new VisualNodeLinkRegistration(this, fieldName, NodeLinkRequest.NewAsync(this, Check), HandleLinked, GetCurrentLinkedNode, Check);
             bool Check(IVisualNodeWithLinkExit target) => target is VisualActionNode;
         }
 

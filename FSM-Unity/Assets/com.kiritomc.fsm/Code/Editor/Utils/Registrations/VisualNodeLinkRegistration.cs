@@ -64,11 +64,12 @@ namespace FSM.Editor
 
         public void SetTarget(IVisualNodeWithLinkExit target)
         {
-            if (!checker(target)) return;
+            if (target != null && !checker(target)) return;
             targetChangedRegistration?.Dispose();
             if (target != null) targetChangedRegistration = ((VisualNode)target).OnChanged(Repaint);
-            linkDrawerRegistration.Repaint();
             gotHandler(linkName, target);
+            linkDrawerRegistration.Clear();
+            linkDrawerRegistration.Repaint();
         }
 
         private Vector2? GetLinkStart() => LinkFieldView?.AnchorCenter();

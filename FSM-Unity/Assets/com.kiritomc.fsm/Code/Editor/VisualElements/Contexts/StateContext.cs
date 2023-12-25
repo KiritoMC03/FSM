@@ -41,14 +41,27 @@ namespace FSM.Editor
         public override void Remove(VisualNodeWithLinkExit node)
         {
             base.Remove(node);
-            // foreach (VisualStateNode other in Nodes)
-            // {
-            //     for (int i = other.Transitions.Count - 1; i >= 0; i--)
-            //     {
-            //         VisualStateTransition transition = other.Transitions[i];
-            //         if (transition.Target == node || transition.Source == node) other.RemoveTransitionAt(i);
-            //     }
-            // }
+            if (anchorNode.OnEnterLink == node) anchorNode.OnEnterLinkRegistration.SetTarget(default);
+            if (anchorNode.OnUpdateLink == node) anchorNode.OnUpdateLinkRegistration.SetTarget(default);
+            if (anchorNode.OnExitLink == node) anchorNode.OnExitLinkRegistration.SetTarget(default);
+            foreach (VisualNodeWithLinkExit other in Nodes)
+            {
+                if (other is VisualNodeWithLinkFields nodeWithLinkFields)
+                {
+                    if (nodeWithLinkFields is VisualActionNode actionNode && actionNode.DependentAction == node)
+                    {
+                        actionNode.ForceLinkAction(default);
+                    }
+                    foreach ((string fieldName, IVisualNodeWithLinkExit linked) in nodeWithLinkFields.Linked)
+                    {
+                        if (linked == node)
+                        {
+                            Debug.Log($"DFound");
+                            nodeWithLinkFields.ForceLinkTo(fieldName, default);
+                        }
+                    }
+                }
+            }
         }
     }
 }
