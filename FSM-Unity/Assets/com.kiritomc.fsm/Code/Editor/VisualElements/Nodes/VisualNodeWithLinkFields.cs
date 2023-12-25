@@ -8,7 +8,12 @@ namespace FSM.Editor
         public readonly Dictionary<string, IVisualNodeWithLinkExit> Linked = new Dictionary<string, IVisualNodeWithLinkExit>();
         protected VisualNodeFieldLinksRegistration visualNodeFieldLinksRegistration;
 
-        public VisualNodeWithLinkFields(Type type) : base(type.Name)
+        public VisualNodeWithLinkFields(Type type, bool createFields = true) : base(type.Name)
+        {
+            if (createFields) CreateFields(type);
+        }
+
+        public void CreateFields(Type type)
         {
             visualNodeFieldLinksRegistration = new VisualNodeFieldLinksRegistration(this, type, NodeLinkRequest.NewAsync(this), HandleLinked, GetCurrentLinkedNode);
         }

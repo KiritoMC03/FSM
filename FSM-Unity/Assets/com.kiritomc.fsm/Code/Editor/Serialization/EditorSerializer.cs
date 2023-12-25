@@ -128,7 +128,6 @@ namespace FSM.Editor.Serialization
                 TransitionContextEntryNodeModel contextEntryNodeModels = transitionContextModel.ConditionalNodeModels[i];
                 foreach ((string fieldName, int linkIndex) in contextEntryNodeModels.Linked)
                 {
-                    UnityEngine.Debug.Log($"{fieldName} - {linkIndex} - {transition.Context.Nodes.Count}");
                     nodes[i].ForceLinkTo(fieldName, transition.Context.Nodes[linkIndex]);
                 }
             }

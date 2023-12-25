@@ -14,6 +14,7 @@ namespace FSM.Editor
         private readonly Func<Task<IVisualNodeWithLinkExit>> asyncTargetGetter;
         private readonly Action<string, IVisualNodeWithLinkExit> gotHandler;
         private readonly Func<string, IVisualNodeWithLinkExit> currentGetter;
+        private readonly Func<IVisualNodeWithLinkExit, bool> checker;
         private readonly Subscription connectionFieldViewMouseDownSubscription;
         private readonly VisualNodeLinkDrawerRegistration linkDrawerRegistration;
         private readonly NodeChangingListeningRegistration parentChangedRegistration;
@@ -26,19 +27,23 @@ namespace FSM.Editor
             string linkName,
             Func<Task<IVisualNodeWithLinkExit>> asyncTargetGetter,
             Action<string, IVisualNodeWithLinkExit> gotHandler,
-            Func<string, IVisualNodeWithLinkExit> currentGetter)
+            Func<string, IVisualNodeWithLinkExit> currentGetter,
+            Func<IVisualNodeWithLinkExit, bool> checker,
+            int insertFieldAt = -1)
         {
             this.parent = parent;
             this.linkName = linkName;
             this.asyncTargetGetter = asyncTargetGetter;
             this.gotHandler = gotHandler;
             this.currentGetter = currentGetter;
+            this.checker = checker;
             LinkFieldView = new NodeLinkFieldView(linkName);
             connectionFieldViewMouseDownSubscription = LinkFieldView.SubscribeMouseDown(ConnectionFieldViewMouseDownHandler);
             linkDrawerRegistration = new VisualNodeLinkDrawerRegistration(parent, GetLinkStart, GetLinkEnd);
             parentChangedRegistration = parent.OnChanged(Repaint);
 
-            parent.Add(LinkFieldView);
+            if (insertFieldAt != -1) parent.Insert(insertFieldAt, LinkFieldView);
+            else parent.Add(LinkFieldView);
         }
 
         public void Dispose()
@@ -59,6 +64,7 @@ namespace FSM.Editor
 
         public void SetTarget(IVisualNodeWithLinkExit target)
         {
+            if (!checker(target)) return;
             targetChangedRegistration?.Dispose();
             if (target != null) targetChangedRegistration = ((VisualNode)target).OnChanged(Repaint);
             linkDrawerRegistration.Repaint();

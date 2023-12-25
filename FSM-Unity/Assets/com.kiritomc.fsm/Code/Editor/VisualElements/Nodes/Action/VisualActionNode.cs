@@ -8,23 +8,25 @@ namespace FSM.Editor
 {
     public class VisualActionNode : VisualNodeWithLinkFields
     {
-        public readonly Type ActionType;
-        public IVisualNodeWithLinkExit DependentAction;
-        public VisualNodeLinkRegistration DependentActionLinkRegistration;
-        private readonly StateContext context;
         private const string DependentActionLabel = "Dependent Action";
 
-        public VisualActionNode(Type actionType, StateContext context, Vector2 position = default) : base(actionType)
+        public readonly Type ActionType;
+        public readonly VisualNodeLinkRegistration DependentActionLinkRegistration;
+        private readonly StateContext context;
+
+        public IVisualNodeWithLinkExit DependentAction;
+
+        public VisualActionNode(Type actionType, StateContext context, Vector2 position = default) : base(actionType, false)
         {
-            DependentActionLinkRegistration = new VisualNodeLinkRegistration(this, DependentActionLabel, NodeLinkRequest.NewAsync(this), HandleActionLinked, GetCurrentLinkedActionNode);
-            Remove(DependentActionLinkRegistration.LinkFieldView);
-            Insert(IndexOf(visualNodeFieldLinksRegistration.Items.First().Value.LinkFieldView), DependentActionLinkRegistration.LinkFieldView);
-            this.ActionType = actionType;
+            DependentActionLinkRegistration = new VisualNodeLinkRegistration(this, DependentActionLabel, NodeLinkRequest.NewAsync(this), HandleActionLinked, GetCurrentLinkedActionNode, Check);
+            CreateFields(actionType);
+            ActionType = actionType;
             this.context = context;
             this.AddManipulator(new DraggerManipulator());
             this.AddManipulator(new RouteConnectionManipulator(context));
             style.left = position.x;
             style.top = position.y;
+            bool Check(IVisualNodeWithLinkExit target) => target is VisualActionNode;
         }
 
         public void ForceLinkAction(IVisualNodeWithLinkExit target)

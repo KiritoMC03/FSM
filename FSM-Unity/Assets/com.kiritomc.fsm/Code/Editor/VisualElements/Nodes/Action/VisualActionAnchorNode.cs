@@ -1,4 +1,6 @@
-﻿using FSM.Editor.Manipulators;
+﻿using System;
+using System.Linq;
+using FSM.Editor.Manipulators;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -23,9 +25,12 @@ namespace FSM.Editor
             this.AddManipulator(new RouteConnectionManipulator(context));
             style.left = position.x;
             style.top = position.y;
-            new VisualNodeLinkRegistration(this, OnEnter, NodeLinkRequest.NewAsync(this), HandleLinked, GetCurrentLinkedNode);
-            new VisualNodeLinkRegistration(this, OnUpdate, NodeLinkRequest.NewAsync(this), HandleLinked, GetCurrentLinkedNode);
-            new VisualNodeLinkRegistration(this, OnExit, NodeLinkRequest.NewAsync(this), HandleLinked, GetCurrentLinkedNode);
+            Create(OnEnter);
+            Create(OnUpdate);
+            Create(OnExit);
+
+            void Create(string fieldName) => new VisualNodeLinkRegistration(this, fieldName, NodeLinkRequest.NewAsync(this), HandleLinked, GetCurrentLinkedNode, Check);
+            bool Check(IVisualNodeWithLinkExit target) => target is VisualActionNode;
         }
 
         public void ForceLinkTo(string fieldName, IVisualNodeWithLinkExit target)

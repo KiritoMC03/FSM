@@ -27,9 +27,9 @@ namespace FSM.Editor
                                 field.FieldType.GetGenericTypeDefinition() == typeof(ParamNode<>));
             foreach (FieldInfo fieldInfo in fields)
             {
-                // FieldWrapper<VisualFunctionNode> fieldWrapper = new FieldWrapper<VisualFunctionNode>();
-                // object instance = Activator.CreateInstance(fieldWrapperType.MakeGenericType(returnedType));
-                Items.Add(fieldInfo.Name, new VisualNodeLinkRegistration(node, fieldInfo.Name, asyncTargetGetter, gotHandler, currentGetter).AddTo(disposables));
+                Type returnType = fieldInfo.FieldType.GetGenericArguments().First();
+                Items.Add(fieldInfo.Name, new VisualNodeLinkRegistration(node, $"{fieldInfo.Name} ({returnType.Pretty()})", asyncTargetGetter, gotHandler, currentGetter, LocalCheck).AddTo(disposables));
+                bool LocalCheck(IVisualNodeWithLinkExit target) => target.IsVisualFunctionNodeWithReturnType(returnType);
             }
         }
 
