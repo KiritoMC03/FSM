@@ -18,12 +18,26 @@ namespace FSM.Editor
         public static Color LeftPanelBorder => new Color(0.5f, 0.5f, 0.5f);
         public static Color NavigationPanelBackground => new Color(0.15f, 0.15f, 0.15f);
 
-        public static Gradient NodeConnectionGradient { get; } = new Gradient()
+        public static Gradient NodeLinkGradient { get; } = new Gradient()
         {
             colorKeys = new[]
             {
                 new GradientColorKey(new Color(0.99f, 0.96f, 0.9f), 0),
                 new GradientColorKey(new Color(1, 0.84f, 0f), 1),
+            },
+            alphaKeys = new []
+            {
+                new GradientAlphaKey(0.65f, 0),
+                new GradientAlphaKey(1f, 1),
+            },
+        };
+
+        public static Gradient NodeLinkErrorGradient { get; } = new Gradient()
+        {
+            colorKeys = new[]
+            {
+                new GradientColorKey(new Color(0.65f, 0.16f, 0.16f), 0),
+                new GradientColorKey(new Color(0.88f, 0.18f, 0.07f), 1),
             },
             alphaKeys = new []
             {

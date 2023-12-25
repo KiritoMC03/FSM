@@ -18,12 +18,12 @@ namespace FSM.Editor
 
         public VisualActionNode(Type actionType, StateContext context, Vector2 position = default) : base(actionType, false)
         {
-            DependentActionLinkRegistration = new VisualNodeLinkRegistration(this, DependentActionLabel, NodeLinkRequest.NewAsync(this), HandleActionLinked, GetCurrentLinkedActionNode, Check);
+            DependentActionLinkRegistration = new VisualNodeLinkRegistration(this, DependentActionLabel, NodeLinkRequest.NewAsync(this, Check), HandleActionLinked, GetCurrentLinkedActionNode, Check);
             CreateFields(actionType);
             ActionType = actionType;
             this.context = context;
             this.AddManipulator(new DraggerManipulator());
-            this.AddManipulator(new RouteConnectionManipulator(context));
+            this.AddManipulator(new RouteVisualNodeLinkManipulator(context));
             style.left = position.x;
             style.top = position.y;
             bool Check(IVisualNodeWithLinkExit target) => target is VisualActionNode;

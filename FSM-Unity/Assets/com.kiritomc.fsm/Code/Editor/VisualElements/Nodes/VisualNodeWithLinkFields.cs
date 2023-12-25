@@ -15,7 +15,7 @@ namespace FSM.Editor
 
         public void CreateFields(Type type)
         {
-            visualNodeFieldLinksRegistration = new VisualNodeFieldLinksRegistration(this, type, NodeLinkRequest.NewAsync(this), HandleLinked, GetCurrentLinkedNode);
+            visualNodeFieldLinksRegistration = new VisualNodeFieldLinksRegistration(this, type, HandleLinked, GetCurrentLinkedNode);
         }
 
         public void ForceLinkTo(string fieldName, IVisualNodeWithLinkExit target)

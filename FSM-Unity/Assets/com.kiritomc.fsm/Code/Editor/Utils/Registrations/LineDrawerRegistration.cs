@@ -6,12 +6,12 @@ namespace FSM.Editor
 {
     public class LineDrawerRegistration : IDisposable, ICustomRepaintHandler
     {
-        public NodeConnectionDrawer Drawer { get; private set; }
+        public NodeLinkDrawer Drawer { get; private set; }
         private VisualElement parent;
         private Func<Vector2?> startGetter;
         private Func<Vector2?> endGetter;
 
-        public LineDrawerRegistration(NodeConnectionDrawer drawer, VisualElement parent, Func<Vector2?> startGetter, Func<Vector2?> endGetter)
+        public LineDrawerRegistration(NodeLinkDrawer drawer, VisualElement parent, Func<Vector2?> startGetter, Func<Vector2?> endGetter)
         {
             this.Drawer = drawer;
             this.parent = parent;

@@ -11,7 +11,7 @@ namespace FSM.Editor
         private readonly Func<Vector2?> localStartGetter;
         private readonly Func<Vector2?> worldEndGetter;
 
-        public NodeConnectionDrawer Drawer { get; private set; }
+        public NodeLinkDrawer Drawer { get; private set; }
         public bool IsDisposed { get; private set; }
 
         public VisualNodeLinkDrawerRegistration(VisualElement parent, Func<Vector2?> localStartGetter, Func<Vector2?> worldEndGetter)
@@ -19,7 +19,7 @@ namespace FSM.Editor
             this.parent = parent;
             this.localStartGetter = localStartGetter;
             this.worldEndGetter = worldEndGetter;
-            this.parent.Add(Drawer = new NodeConnectionDrawer());
+            this.parent.Add(Drawer = new NodeLinkDrawer());
             parent.generateVisualContent += Redraw;
         }
 
@@ -31,6 +31,11 @@ namespace FSM.Editor
             IsDisposed = true;
         }
 
+        public void Clear()
+        {
+            Drawer.WorldEndPos = Drawer.LocalStartOffset = default;
+            Repaint();
+        }
         private void Redraw() => Redraw(default);
         private void Redraw(MeshGenerationContext meshGenerationContext)
         {

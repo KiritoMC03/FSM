@@ -3,11 +3,12 @@ using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
-    public class NodeConnectionDrawer : VisualElement
+    public class NodeLinkDrawer : VisualElement
     {
         private const int MaxPoints = 100;
         private const float LengthForMaxPoints = 1000;
         private const float PointClickTrackRadius = 6;
+        public Gradient OverrideGradient;
         public Vector2? LocalStartOffset;
         public Vector2? WorldEndPos;
         private Vector2[] points = new Vector2[MaxPoints];
@@ -15,7 +16,7 @@ namespace FSM.Editor
 
         public Vector2? LocalEndPos => WorldEndPos.HasValue ? WorldEndPos.Value - new Vector2(worldBound.x, worldBound.y) : null;
 
-        public NodeConnectionDrawer()
+        public NodeLinkDrawer()
         {
             generateVisualContent += OnGenerateVisualContent;
         }
@@ -52,7 +53,7 @@ namespace FSM.Editor
             paint2D.lineWidth = 8.0f;
             paint2D.lineCap = LineCap.Round;
             paint2D.lineJoin = LineJoin.Round;
-            paint2D.strokeGradient = Colors.NodeConnectionGradient;
+            paint2D.strokeGradient = OverrideGradient ?? Colors.NodeLinkGradient;
             paint2D.BeginPath();
             // paint2D.Arc(startTangent, 10, 180, -180);
             // paint2D.Arc(endTangent, 10, 180, -180);

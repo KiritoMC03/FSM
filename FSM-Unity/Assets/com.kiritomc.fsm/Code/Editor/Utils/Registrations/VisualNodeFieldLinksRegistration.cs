@@ -17,7 +17,6 @@ namespace FSM.Editor
         public VisualNodeFieldLinksRegistration(
             VisualNode node, 
             Type fieldType,
-            Func<Task<IVisualNodeWithLinkExit>> asyncTargetGetter,
             Action<string, IVisualNodeWithLinkExit> gotHandler,
             Func<string, IVisualNodeWithLinkExit> currentGetter)
         {
@@ -28,7 +27,8 @@ namespace FSM.Editor
             foreach (FieldInfo fieldInfo in fields)
             {
                 Type returnType = fieldInfo.FieldType.GetGenericArguments().First();
-                Items.Add(fieldInfo.Name, new VisualNodeLinkRegistration(node, $"{fieldInfo.Name} ({returnType.Pretty()})", asyncTargetGetter, gotHandler, currentGetter, LocalCheck).AddTo(disposables));
+                Func<Task<IVisualNodeWithLinkExit>> getter = NodeLinkRequest.NewAsync(node, LocalCheck);
+                Items.Add(fieldInfo.Name, new VisualNodeLinkRegistration(node, $"{fieldInfo.Name} ({returnType.Pretty()})", getter, gotHandler, currentGetter, LocalCheck).AddTo(disposables));
                 bool LocalCheck(IVisualNodeWithLinkExit target) => target.IsVisualFunctionNodeWithReturnType(returnType);
             }
         }

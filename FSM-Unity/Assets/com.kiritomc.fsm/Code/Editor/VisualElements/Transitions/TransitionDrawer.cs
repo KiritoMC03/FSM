@@ -53,7 +53,7 @@ namespace FSM.Editor
             paint2D.lineWidth = 8.0f;
             paint2D.lineCap = LineCap.Round;
             paint2D.lineJoin = LineJoin.Round;
-            paint2D.strokeGradient = Colors.NodeConnectionGradient;
+            paint2D.strokeGradient = Colors.NodeLinkGradient;
             paint2D.BeginPath();
             paint2D.MoveTo(start);
             paint2D.BezierCurveTo(startTangent, endTangent, bezierEnd);

@@ -15,7 +15,7 @@ namespace FSM.Editor
             this.ConditionType = conditionType;
             this.context = context;
             this.AddManipulator(new DraggerManipulator());
-            this.AddManipulator(new RouteConnectionManipulator(context));
+            this.AddManipulator(new RouteVisualNodeLinkManipulator(context));
             style.left = position.x;
             style.top = position.y;
         }

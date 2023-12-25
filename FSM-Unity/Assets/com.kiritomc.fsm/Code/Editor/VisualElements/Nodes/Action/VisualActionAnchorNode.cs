@@ -22,14 +22,14 @@ namespace FSM.Editor
         {
             this.context = context;
             this.AddManipulator(new DraggerManipulator());
-            this.AddManipulator(new RouteConnectionManipulator(context));
+            this.AddManipulator(new RouteVisualNodeLinkManipulator(context));
             style.left = position.x;
             style.top = position.y;
             Create(OnEnter);
             Create(OnUpdate);
             Create(OnExit);
 
-            void Create(string fieldName) => new VisualNodeLinkRegistration(this, fieldName, NodeLinkRequest.NewAsync(this), HandleLinked, GetCurrentLinkedNode, Check);
+            void Create(string fieldName) => new VisualNodeLinkRegistration(this, fieldName, NodeLinkRequest.NewAsync(this, Check), HandleLinked, GetCurrentLinkedNode, Check);
             bool Check(IVisualNodeWithLinkExit target) => target is VisualActionNode;
         }
 

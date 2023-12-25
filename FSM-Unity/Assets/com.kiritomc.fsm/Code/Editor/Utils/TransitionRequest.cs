@@ -23,7 +23,7 @@ namespace FSM.Editor
 
     public static class NodeLinkRequest
     {
-        public static Func<Task<IVisualNodeWithLinkExit>> NewAsync<TSourceNode>(TSourceNode source) 
+        public static Func<Task<IVisualNodeWithLinkExit>> NewAsync<TSourceNode>(TSourceNode source, Func<IVisualNodeWithLinkExit, bool> targetChecker) 
             where TSourceNode: VisualNode
         {
             return RequestFunc;
@@ -33,6 +33,7 @@ namespace FSM.Editor
                 VisualNodeLinkRequestEvent @event = VisualNodeLinkRequestEvent.GetPooled();
                 @event.target = source;
                 @event.TargetGotCallback = node => completionSource.SetResult(node);
+                @event.TargetMatchCallback = targetChecker;
                 source.SendEvent(@event);
                 return completionSource.Task;
             };
