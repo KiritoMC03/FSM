@@ -6,7 +6,7 @@ namespace FSM.Editor
     public class VisualNodeWithLinkFields : VisualNodeWithLinkExit
     {
         public readonly Dictionary<string, IVisualNodeWithLinkExit> Linked = new Dictionary<string, IVisualNodeWithLinkExit>();
-        private VisualNodeFieldLinksRegistration visualNodeFieldLinksRegistration;
+        protected VisualNodeFieldLinksRegistration visualNodeFieldLinksRegistration;
 
         public VisualNodeWithLinkFields(Type type) : base(type.Name)
         {

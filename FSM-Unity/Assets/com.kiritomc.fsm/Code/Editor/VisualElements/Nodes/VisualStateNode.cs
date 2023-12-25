@@ -8,21 +8,24 @@ namespace FSM.Editor
 {
     public class VisualStateNode : VisualNode, IVisualNodeWithTransitions
     {
-        private readonly StatesContext context;
+        public readonly StatesContext ParentContext;
+        public readonly StateContext Context;
         public readonly TextInputBaseField<string> LabelInputField;
 
         public List<VisualStateTransition> Transitions { get; set; } = new List<VisualStateTransition>();
 
-        public VisualStateNode(string stateName, StatesContext context, Vector2 position = default) : base(stateName)
+        public VisualStateNode(string stateName, StatesContext parentContext, Vector2 position = default) : base(stateName)
         {
-            this.context = context;
+            ParentContext = parentContext;
+            Context = new StateContext(stateName);
             LabelInputField = Header.NodeInputLabel(stateName);
             LabelInputField.style.display = DisplayStyle.None;
             style.left = position.x;
             style.top = position.y;
+            this.AddManipulator(new OpenStateContextManipulator(this));
             this.AddManipulator(new StateNodeLabelManipulator(this, ValidatePotentialName));
             this.AddManipulator(new DraggerManipulator());
-            this.AddManipulator(new RouteTransitionManipulator<VisualStateNode>(this, context));
+            this.AddManipulator(new RouteTransitionManipulator<VisualStateNode>(this, parentContext));
             Repaint();
         }
 
@@ -30,8 +33,8 @@ namespace FSM.Editor
         {
             string newName = changeEvent.newValue;
             int num = 1;
-            if (!context.Nodes.Exists(i => i.Name == newName)) return newName;
-            while (context.Nodes.Exists(i => i.Name == $"{newName} {num}")) num++;
+            if (!ParentContext.Nodes.Exists(i => i.Name == newName)) return newName;
+            while (ParentContext.Nodes.Exists(i => i.Name == $"{newName} {num}")) num++;
             return $"{newName} {num}";
         }
 

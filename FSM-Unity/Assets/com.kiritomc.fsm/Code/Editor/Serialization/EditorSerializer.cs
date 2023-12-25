@@ -113,13 +113,13 @@ namespace FSM.Editor.Serialization
             for (int i = 0; i < transitionContextModel.ConditionalNodeModels.Length; i++)
             {
                 TransitionContextEntryNodeModel contextEntryNodeModels = transitionContextModel.ConditionalNodeModels[i];
-                if (NodeTypes.Condition.IsAssignableFrom(contextEntryNodeModels.Type))
+                if (contextEntryNodeModels.Type.IsICondition())
                 {
                     transition.Context.ProcessNewNode((VisualConditionNode)(nodes[i] = new VisualConditionNode(contextEntryNodeModels.Type, transition.Context, contextEntryNodeModels.Position)));
                 }
-                else if (NodeTypes.FunctionBool.IsAssignableFrom(contextEntryNodeModels.Type))
+                else if (contextEntryNodeModels.Type.IsIFunctionBool())
                 {
-                    transition.Context.ProcessNewFuncNode((VisualFunctionNode<bool>)(nodes[i] = new VisualFunctionNode<bool>(contextEntryNodeModels.Type, transition.Context, contextEntryNodeModels.Position)));
+                    transition.Context.ProcessNewNode((VisualFunctionNode<bool>)(nodes[i] = new VisualFunctionNode<bool>(contextEntryNodeModels.Type, transition.Context, contextEntryNodeModels.Position)));
                 }
             }
 

@@ -7,13 +7,12 @@ using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
-    public class TransitionContext : VisualNodesContext<VisualNodeWithLinkExit>
+    public class StateContext : VisualNodesContext<VisualNodeWithLinkExit>
     {
-        private readonly VisualStateTransition target;
+        private readonly VisualActionAnchorNode anchorNode;
 
-        public TransitionContext(VisualStateTransition target, string name)
+        public StateContext(string name)
         {
-            this.target = target;
             Name = name;
             this.DefaultLayout()
                 .DefaultColors()
@@ -21,16 +20,18 @@ namespace FSM.Editor
             this.AddManipulator(new CreateVisualNodeManipulator<VisualNodeWithLinkExit>(GetAvailableNodes));
             this.AddManipulator(new SelectVisualNodesManipulator<VisualNodeWithLinkExit>(this));
             this.AddManipulator(new DeleteVisualStateNodeManipulator<VisualNodeWithLinkExit>(this));
+            anchorNode = new VisualActionAnchorNode(this);
+            Add(anchorNode);
         }
 
         private Dictionary<string, Action> GetAvailableNodes()
         {
-            return NodeTypes.InTransitionContext().ToDictionary(t => t.Name, t =>
+            return NodeTypes.InStateContext().ToDictionary(t => t.Name, t =>
             {
-                if (t.IsICondition())
-                    return () => ProcessNewNode(new VisualConditionNode(t, this, this.WorldToLocal(EditorState.PointerPosition.Value)));
-                if (t.IsIFunctionBool())
-                    return () => ProcessNewNode(new VisualFunctionNode<bool>(t, this, this.WorldToLocal(EditorState.PointerPosition.Value)));
+                if (t.IsIAction())
+                    return () => ProcessNewNode(new VisualActionNode(t, this, this.WorldToLocal(EditorState.PointerPosition.Value)));
+                if (t.IsIFunction())
+                    return () => ProcessNewNode(new VisualFunctionNode(t, this, this.WorldToLocal(EditorState.PointerPosition.Value)));
 
                 Debug.LogError("");
                 return default(Action);
@@ -40,11 +41,11 @@ namespace FSM.Editor
         public override void Remove(VisualNodeWithLinkExit node)
         {
             base.Remove(node);
-            // foreach (ConditionalNode other in Nodes)
+            // foreach (VisualStateNode other in Nodes)
             // {
-            //     for (int i = other.conn.Transitions.Count - 1; i >= 0; i--)
+            //     for (int i = other.Transitions.Count - 1; i >= 0; i--)
             //     {
-            //         StateTransition transition = other.Transitions[i];
+            //         VisualStateTransition transition = other.Transitions[i];
             //         if (transition.Target == node || transition.Source == node) other.RemoveTransitionAt(i);
             //     }
             // }

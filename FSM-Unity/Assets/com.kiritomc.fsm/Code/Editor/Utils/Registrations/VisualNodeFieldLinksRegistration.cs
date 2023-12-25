@@ -10,8 +10,8 @@ namespace FSM.Editor
 {
     public class VisualNodeFieldLinksRegistration : ICancelable
     {
+        public readonly Dictionary<string, VisualNodeLinkRegistration> Items = new Dictionary<string, VisualNodeLinkRegistration>();
         private readonly CompositeDisposable disposables = new CompositeDisposable();
-        private readonly Dictionary<string, VisualNodeLinkRegistration> items = new Dictionary<string, VisualNodeLinkRegistration>();
         public bool IsDisposed { get; private set; }
 
         public VisualNodeFieldLinksRegistration(
@@ -29,7 +29,7 @@ namespace FSM.Editor
             {
                 // FieldWrapper<VisualFunctionNode> fieldWrapper = new FieldWrapper<VisualFunctionNode>();
                 // object instance = Activator.CreateInstance(fieldWrapperType.MakeGenericType(returnedType));
-                items.Add(fieldInfo.Name, new VisualNodeLinkRegistration(node, fieldInfo.Name, asyncTargetGetter, gotHandler, currentGetter).AddTo(disposables));
+                Items.Add(fieldInfo.Name, new VisualNodeLinkRegistration(node, fieldInfo.Name, asyncTargetGetter, gotHandler, currentGetter).AddTo(disposables));
             }
         }
 
@@ -42,7 +42,7 @@ namespace FSM.Editor
 
         public void Refresh(string fieldName, IVisualNodeWithLinkExit target)
         {
-            items[fieldName].SetTarget(target);
+            Items[fieldName].SetTarget(target);
         }
     }
 }

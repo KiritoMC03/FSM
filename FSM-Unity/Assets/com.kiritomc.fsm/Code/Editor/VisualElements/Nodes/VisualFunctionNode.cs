@@ -9,21 +9,20 @@ namespace FSM.Editor
     {
         public readonly Type FunctionType;
 
-        public VisualFunctionNode(Type functionType) : base(functionType)
+        public VisualFunctionNode(Type functionType, VisualNodesContext context, Vector2 position = default) : base(functionType)
         {
             FunctionType = functionType;
             this.AddManipulator(new DraggerManipulator());
+            this.AddManipulator(new RouteConnectionManipulator(context));
+            style.left = position.x;
+            style.top = position.y;
         }
     }
 
     public class VisualFunctionNode<T> : VisualFunctionNode
     {
-        public VisualFunctionNode(Type functionType, VisualNodesContext context, Vector2 position = default) : base(functionType)
+        public VisualFunctionNode(Type functionType, VisualNodesContext context, Vector2 position = default) : base(functionType, context, position)
         {
-            this.AddManipulator(new DraggerManipulator());
-            this.AddManipulator(new RouteConnectionManipulator(context));
-            style.left = position.x;
-            style.top = position.y;
         }
     }
 }

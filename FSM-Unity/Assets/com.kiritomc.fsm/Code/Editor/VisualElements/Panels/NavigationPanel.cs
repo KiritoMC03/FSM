@@ -32,12 +32,7 @@ namespace FSM.Editor
             Button button;
             currentHierarchy.Add(button = new Button()
             {
-                text = currentContext switch
-                {
-                    StatesContext statesContext => statesContext.Name,
-                    TransitionContext transitionContext => transitionContext.Name,
-                    _ => "Unknown context",
-                },
+                text = currentContext.Name,
             });
             Add(button);
         }

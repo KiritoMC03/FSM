@@ -5,7 +5,7 @@ using FSM.Runtime.Serialization;
 namespace FSM.Runtime
 {
     [Serializable]
-    public class NotCondition : IFunction<bool>
+    public class Not : IFunction<bool>
     {
         public ParamNode<bool> Value;
 
@@ -17,7 +17,7 @@ namespace FSM.Runtime
     }
 
     [Serializable]
-    public class OrCondition : IFunction<bool>
+    public class Or : IFunction<bool>
     {
         public ParamNode<bool> Left;
         public ParamNode<bool> Right;
@@ -30,7 +30,7 @@ namespace FSM.Runtime
     }
 
     [Serializable]
-    public class AndCondition : IFunction<bool>
+    public class And : IFunction<bool>
     {
         public ParamNode<bool> Left;
         public ParamNode<bool> Right;
