@@ -11,10 +11,10 @@ namespace FSM.Editor
         public readonly NodeLinkFieldView LinkFieldView;
         private readonly VisualNode parent;
         private readonly string linkName;
-        private readonly Func<Task<IVisualNodeWithLinkExit>> asyncTargetGetter;
-        private readonly Action<string, IVisualNodeWithLinkExit> gotHandler;
-        private readonly Func<string, IVisualNodeWithLinkExit> currentGetter;
-        private readonly Func<IVisualNodeWithLinkExit, bool> checker;
+        private readonly Func<Task<VisualNodeWithLinkExit>> asyncTargetGetter;
+        private readonly Action<string, VisualNodeWithLinkExit> gotHandler;
+        private readonly Func<string, VisualNodeWithLinkExit> currentGetter;
+        private readonly Func<VisualNodeWithLinkExit, bool> checker;
         private readonly Subscription connectionFieldViewMouseDownSubscription;
         private readonly VisualNodeLinkDrawerRegistration linkDrawerRegistration;
         private readonly NodeChangingListeningRegistration parentChangedRegistration;
@@ -25,10 +25,10 @@ namespace FSM.Editor
         public VisualNodeLinkRegistration(
             VisualNode parent,
             string linkName,
-            Func<Task<IVisualNodeWithLinkExit>> asyncTargetGetter,
-            Action<string, IVisualNodeWithLinkExit> gotHandler,
-            Func<string, IVisualNodeWithLinkExit> currentGetter,
-            Func<IVisualNodeWithLinkExit, bool> checker,
+            Func<Task<VisualNodeWithLinkExit>> asyncTargetGetter,
+            Action<string, VisualNodeWithLinkExit> gotHandler,
+            Func<string, VisualNodeWithLinkExit> currentGetter,
+            Func<VisualNodeWithLinkExit, bool> checker,
             int insertFieldAt = -1)
         {
             this.parent = parent;
@@ -58,11 +58,11 @@ namespace FSM.Editor
 
         private async void ConnectionFieldViewMouseDownHandler(MouseDownEvent _)
         {
-            IVisualNodeWithLinkExit result = await asyncTargetGetter();
+            VisualNodeWithLinkExit result = await asyncTargetGetter();
             SetTarget(result);
         }
 
-        public void SetTarget(IVisualNodeWithLinkExit target)
+        public void SetTarget(VisualNodeWithLinkExit target)
         {
             if (target != null && !checker(target)) return;
             targetChangedRegistration?.Dispose();

@@ -5,7 +5,7 @@ namespace FSM.Editor
 {
     public class VisualNodeWithLinkFields : VisualNodeWithLinkExit
     {
-        public readonly Dictionary<string, IVisualNodeWithLinkExit> Linked = new Dictionary<string, IVisualNodeWithLinkExit>();
+        public readonly Dictionary<string, VisualNodeWithLinkExit> Linked = new Dictionary<string, VisualNodeWithLinkExit>();
         protected VisualNodeFieldLinksRegistration visualNodeFieldLinksRegistration;
 
         public VisualNodeWithLinkFields(Type type, bool createFields = true) : base(type.Name)
@@ -18,17 +18,17 @@ namespace FSM.Editor
             visualNodeFieldLinksRegistration = new VisualNodeFieldLinksRegistration(this, type, HandleLinked, GetCurrentLinkedNode);
         }
 
-        public void ForceLinkTo(string fieldName, IVisualNodeWithLinkExit target)
+        public void ForceLinkTo(string fieldName, VisualNodeWithLinkExit target)
         {
             visualNodeFieldLinksRegistration.Refresh(fieldName, target);
         }
 
-        public virtual void HandleLinked(string fieldName, IVisualNodeWithLinkExit target)
+        public virtual void HandleLinked(string fieldName, VisualNodeWithLinkExit target)
         {
             Linked[fieldName] = target;
         }
 
-        protected virtual IVisualNodeWithLinkExit GetCurrentLinkedNode(string fieldName)
+        protected virtual VisualNodeWithLinkExit GetCurrentLinkedNode(string fieldName)
         {
             return Linked.GetValueOrDefault(fieldName);
         }

@@ -44,7 +44,7 @@ namespace FSM.Editor
             {
                 if (other is VisualNodeWithLinkFields nodeWithLinkFields)
                 {
-                    foreach ((string fieldName, IVisualNodeWithLinkExit linked) in nodeWithLinkFields.Linked)
+                    foreach ((string fieldName, VisualNodeWithLinkExit linked) in nodeWithLinkFields.Linked)
                     {
                         if (linked == node) nodeWithLinkFields.ForceLinkTo(fieldName, default);
                     }

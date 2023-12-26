@@ -4,27 +4,21 @@ using System.Collections.Generic;
 namespace FSM.Editor.Serialization
 {
     [Serializable]
-    public class TransitionContextEntryNodeModel
+    public class VisualNodeModel
     {
         public Type Type;
         public Vector2Model Position;
         public Dictionary<string, int> Linked;
 
-        public TransitionContextEntryNodeModel()
+        public VisualNodeModel()
         {
         }
 
-        public TransitionContextEntryNodeModel(Type type, Vector2Model position, Dictionary<string, int> linked)
+        public VisualNodeModel(Type type, Vector2Model position, Dictionary<string, int> linked)
         {
             Type = type;
             Position = position;
             Linked = linked;
-        }
-
-        public enum NodeKind
-        {
-            Condition,
-            FunctionBool,
         }
     }
 }

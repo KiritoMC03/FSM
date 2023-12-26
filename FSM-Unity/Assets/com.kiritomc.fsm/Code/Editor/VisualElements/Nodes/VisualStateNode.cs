@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
-    public class VisualStateNode : VisualNode, IVisualNodeWithTransitions
+    public class VisualStateNode : VisualNode
     {
         public readonly StatesContext ParentContext;
         public readonly StateContext Context;
@@ -14,10 +14,10 @@ namespace FSM.Editor
 
         public List<VisualStateTransition> Transitions { get; set; } = new List<VisualStateTransition>();
 
-        public VisualStateNode(string stateName, StatesContext parentContext, Vector2 position = default) : base(stateName)
+        public VisualStateNode(string stateName, StatesContext parentContext, Vector2 position = default, Vector2 anchorNodePosition = default) : base(stateName)
         {
             ParentContext = parentContext;
-            Context = new StateContext(stateName);
+            Context = new StateContext(stateName, anchorNodePosition);
             LabelInputField = Header.NodeInputLabel(stateName);
             LabelInputField.style.display = DisplayStyle.None;
             style.left = position.x;

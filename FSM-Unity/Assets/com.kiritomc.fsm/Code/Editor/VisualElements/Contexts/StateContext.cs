@@ -9,9 +9,9 @@ namespace FSM.Editor
 {
     public class StateContext : VisualNodesContext<VisualNodeWithLinkExit>
     {
-        private readonly VisualActionAnchorNode anchorNode;
+        public readonly VisualActionAnchorNode AnchorNode;
 
-        public StateContext(string name)
+        public StateContext(string name, Vector2 anchorNodePosition = default)
         {
             Name = name;
             this.DefaultLayout()
@@ -20,8 +20,15 @@ namespace FSM.Editor
             this.AddManipulator(new CreateVisualNodeManipulator<VisualNodeWithLinkExit>(GetAvailableNodes));
             this.AddManipulator(new SelectVisualNodesManipulator<VisualNodeWithLinkExit>(this));
             this.AddManipulator(new DeleteVisualStateNodeManipulator<VisualNodeWithLinkExit>(this));
-            anchorNode = new VisualActionAnchorNode(this);
-            Add(anchorNode);
+            AnchorNode = new VisualActionAnchorNode(this)
+            {
+                style =
+                {
+                    left = anchorNodePosition.x,
+                    top = anchorNodePosition.y,
+                },
+            };
+            Add(AnchorNode);
         }
 
         private Dictionary<string, Action> GetAvailableNodes()
@@ -41,9 +48,9 @@ namespace FSM.Editor
         public override void Remove(VisualNodeWithLinkExit node)
         {
             base.Remove(node);
-            if (anchorNode.OnEnterLink == node) anchorNode.OnEnterLinkRegistration.SetTarget(default);
-            if (anchorNode.OnUpdateLink == node) anchorNode.OnUpdateLinkRegistration.SetTarget(default);
-            if (anchorNode.OnExitLink == node) anchorNode.OnExitLinkRegistration.SetTarget(default);
+            if (AnchorNode.OnEnterLink == node) AnchorNode.OnEnterLinkRegistration.SetTarget(default);
+            if (AnchorNode.OnUpdateLink == node) AnchorNode.OnUpdateLinkRegistration.SetTarget(default);
+            if (AnchorNode.OnExitLink == node) AnchorNode.OnExitLinkRegistration.SetTarget(default);
             foreach (VisualNodeWithLinkExit other in Nodes)
             {
                 if (other is VisualNodeWithLinkFields nodeWithLinkFields)
@@ -52,7 +59,7 @@ namespace FSM.Editor
                     {
                         actionNode.ForceLinkAction(default);
                     }
-                    foreach ((string fieldName, IVisualNodeWithLinkExit linked) in nodeWithLinkFields.Linked)
+                    foreach ((string fieldName, VisualNodeWithLinkExit linked) in nodeWithLinkFields.Linked)
                     {
                         if (linked == node)
                         {

@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
-    public abstract class VisualNodeWithLinkExit : VisualNode, IVisualNodeWithLinkExit
+    public abstract class VisualNodeWithLinkExit : VisualNode
     {
         public enum VisualNodeLinkPosition
         {

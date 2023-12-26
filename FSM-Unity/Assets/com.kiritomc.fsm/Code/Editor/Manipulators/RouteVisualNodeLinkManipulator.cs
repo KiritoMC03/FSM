@@ -58,7 +58,7 @@ namespace FSM.Editor.Manipulators
             mousePressTrackingElement.RegisterCallback<MouseMoveEvent>(HandleMouseMove);
             while (isPressed)
             {
-                IVisualNodeWithLinkExit current = Pick(pressedMousePosition);
+                VisualNodeWithLinkExit current = Pick(pressedMousePosition);
                 tempLineDrawerRegistration.Drawer.OverrideGradient = current != null ? e.TargetMatchCallback(current) ? default : Colors.NodeLinkErrorGradient : default;
                 tempLineDrawerRegistration.Repaint();
                 await Task.Yield();
@@ -68,7 +68,7 @@ namespace FSM.Editor.Manipulators
             tempLineDrawerRegistration.Clear();
 
             mousePressTrackingElement.panel.PickAll(upMousePosition, buffer);
-            IVisualNodeWithLinkExit result = Pick(upMousePosition);
+            VisualNodeWithLinkExit result = Pick(upMousePosition);
             e.TargetGotCallback.Invoke(result);
             e.TargetGotCallback = default;
         }
@@ -80,7 +80,7 @@ namespace FSM.Editor.Manipulators
 
         private Vector2? GetEndPosition()
         {
-            IVisualNodeWithLinkExit result = Pick(pressedMousePosition);
+            VisualNodeWithLinkExit result = Pick(pressedMousePosition);
             if (isPressed)
             {
                 Vector2 position = pressedMousePosition;
@@ -90,11 +90,11 @@ namespace FSM.Editor.Manipulators
             return default;
         }
 
-        private IVisualNodeWithLinkExit Pick(Vector2 position)
+        private VisualNodeWithLinkExit Pick(Vector2 position)
         {
             mousePressTrackingElement.panel.PickAll(position, buffer);
             foreach (VisualElement element in buffer)
-                if (element is IVisualNodeWithLinkExit node)
+                if (element is VisualNodeWithLinkExit node)
                     return node;
             return default;
         }

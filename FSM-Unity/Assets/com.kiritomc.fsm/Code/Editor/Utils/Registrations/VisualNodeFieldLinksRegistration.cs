@@ -18,8 +18,8 @@ namespace FSM.Editor
         public VisualNodeFieldLinksRegistration(
             VisualNode node, 
             Type fieldType,
-            Action<string, IVisualNodeWithLinkExit> gotHandler,
-            Func<string, IVisualNodeWithLinkExit> currentGetter)
+            Action<string, VisualNodeWithLinkExit> gotHandler,
+            Func<string, VisualNodeWithLinkExit> currentGetter)
         {
             IEnumerable<FieldInfo> fields = fieldType
                 .GetFields()
@@ -28,10 +28,10 @@ namespace FSM.Editor
             foreach (FieldInfo fieldInfo in fields)
             {
                 Type returnType = fieldInfo.FieldType.GetGenericArguments().First();
-                Func<Task<IVisualNodeWithLinkExit>> getter = NodeLinkRequest.NewAsync(node, LocalCheck);
+                Func<Task<VisualNodeWithLinkExit>> getter = NodeLinkRequest.NewAsync(node, LocalCheck);
                 string linkName = $"{fieldInfo.Name} ({returnType.Pretty()})";
                 Items.Add(linkName, new VisualNodeLinkRegistration(node, linkName, getter, gotHandler, currentGetter, LocalCheck).AddTo(disposables));
-                bool LocalCheck(IVisualNodeWithLinkExit target) => target.IsVisualFunctionNodeWithReturnType(returnType);
+                bool LocalCheck(VisualNodeWithLinkExit target) => target.IsVisualFunctionNodeWithReturnType(returnType);
             }
         }
 
@@ -42,7 +42,7 @@ namespace FSM.Editor
             disposables?.Dispose();
         }
 
-        public void Refresh(string fieldName, IVisualNodeWithLinkExit target)
+        public void Refresh(string fieldName, VisualNodeWithLinkExit target)
         {
             Items[fieldName].SetTarget(target);
         }

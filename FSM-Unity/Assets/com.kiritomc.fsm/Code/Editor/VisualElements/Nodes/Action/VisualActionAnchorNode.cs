@@ -6,18 +6,17 @@ namespace FSM.Editor
 {
     public class VisualActionAnchorNode : VisualNode
     {
-        private const string OnEnter = "OnEnter";
-        private const string OnUpdate = "OnUpdate";
-        private const string OnExit = "OnExit";
+        public const string OnEnter = "OnEnter";
+        public const string OnUpdate = "OnUpdate";
+        public const string OnExit = "OnExit";
 
         private readonly StateContext context;
         public readonly VisualNodeLinkRegistration OnEnterLinkRegistration;
         public readonly VisualNodeLinkRegistration OnUpdateLinkRegistration;
         public readonly VisualNodeLinkRegistration OnExitLinkRegistration;
-        private VisualNodeFieldLinksRegistration visualNodeFieldLinksRegistration;
-        public IVisualNodeWithLinkExit OnEnterLink;
-        public IVisualNodeWithLinkExit OnUpdateLink;
-        public IVisualNodeWithLinkExit OnExitLink;
+        public VisualNodeWithLinkExit OnEnterLink;
+        public VisualNodeWithLinkExit OnUpdateLink;
+        public VisualNodeWithLinkExit OnExitLink;
 
         public VisualActionAnchorNode(StateContext context, Vector2 position = default) : base("Anchor")
         {
@@ -31,15 +30,26 @@ namespace FSM.Editor
             OnExitLinkRegistration = Create(OnExit);
 
             VisualNodeLinkRegistration Create(string fieldName) => new VisualNodeLinkRegistration(this, fieldName, NodeLinkRequest.NewAsync(this, Check), HandleLinked, GetCurrentLinkedNode, Check);
-            bool Check(IVisualNodeWithLinkExit target) => target is VisualActionNode;
+            bool Check(VisualNodeWithLinkExit target) => target is VisualActionNode;
         }
 
-        public void ForceLinkTo(string fieldName, IVisualNodeWithLinkExit target)
+        public void ForceLinkTo(string fieldName, VisualNodeWithLinkExit target)
         {
-            visualNodeFieldLinksRegistration.Refresh(fieldName, target);
+            switch (fieldName)
+            {
+                case OnEnter:
+                    OnEnterLinkRegistration.SetTarget(target);
+                    break;
+                case OnUpdate:
+                    OnUpdateLinkRegistration.SetTarget(target);
+                    break;
+                case OnExit:
+                    OnExitLinkRegistration.SetTarget(target);
+                    break;
+            }
         }
 
-        public virtual void HandleLinked(string fieldName, IVisualNodeWithLinkExit target)
+        public virtual void HandleLinked(string fieldName, VisualNodeWithLinkExit target)
         {
             switch (fieldName)
             {
@@ -55,7 +65,7 @@ namespace FSM.Editor
             }
         }
 
-        protected virtual IVisualNodeWithLinkExit GetCurrentLinkedNode(string fieldName)
+        protected virtual VisualNodeWithLinkExit GetCurrentLinkedNode(string fieldName)
         {
             return fieldName switch
             {

@@ -14,7 +14,7 @@ namespace FSM.Editor
         public readonly VisualNodeLinkRegistration DependentActionLinkRegistration;
         private readonly StateContext context;
 
-        public IVisualNodeWithLinkExit DependentAction;
+        public VisualNodeWithLinkExit DependentAction;
 
         public VisualActionNode(Type actionType, StateContext context, Vector2 position = default) : base(actionType, false)
         {
@@ -26,16 +26,16 @@ namespace FSM.Editor
             this.AddManipulator(new RouteVisualNodeLinkManipulator(context));
             style.left = position.x;
             style.top = position.y;
-            bool Check(IVisualNodeWithLinkExit target) => target is VisualActionNode;
+            bool Check(VisualNodeWithLinkExit target) => target is VisualActionNode;
         }
 
-        public void ForceLinkAction(IVisualNodeWithLinkExit target)
+        public void ForceLinkAction(VisualNodeWithLinkExit target)
         {
             DependentAction = target;
             DependentActionLinkRegistration.SetTarget(target);
         }
 
-        private void HandleActionLinked(string _, IVisualNodeWithLinkExit target) => DependentAction = target;
-        private  IVisualNodeWithLinkExit GetCurrentLinkedActionNode(string _) => DependentAction;
+        private void HandleActionLinked(string _, VisualNodeWithLinkExit target) => DependentAction = target;
+        private  VisualNodeWithLinkExit GetCurrentLinkedActionNode(string _) => DependentAction;
     }
 }

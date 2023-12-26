@@ -6,7 +6,7 @@ namespace FSM.Editor
 {
     public static class TransitionRequest
     {
-        public static Func<Task<TNode>> NewAsync<TNode>(TNode source) where TNode: IVisualNodeWithTransitions
+        public static Func<Task<TNode>> NewAsync<TNode>(TNode source) where TNode: VisualStateNode
         {
             return RequestFunc;
             Task<TNode> RequestFunc()
@@ -23,13 +23,13 @@ namespace FSM.Editor
 
     public static class NodeLinkRequest
     {
-        public static Func<Task<IVisualNodeWithLinkExit>> NewAsync<TSourceNode>(TSourceNode source, Func<IVisualNodeWithLinkExit, bool> targetChecker) 
+        public static Func<Task<VisualNodeWithLinkExit>> NewAsync<TSourceNode>(TSourceNode source, Func<VisualNodeWithLinkExit, bool> targetChecker) 
             where TSourceNode: VisualNode
         {
             return RequestFunc;
-            Task<IVisualNodeWithLinkExit> RequestFunc()
+            Task<VisualNodeWithLinkExit> RequestFunc()
             {
-                TaskCompletionSource<IVisualNodeWithLinkExit> completionSource = new TaskCompletionSource<IVisualNodeWithLinkExit>();
+                TaskCompletionSource<VisualNodeWithLinkExit> completionSource = new TaskCompletionSource<VisualNodeWithLinkExit>();
                 VisualNodeLinkRequestEvent @event = VisualNodeLinkRequestEvent.GetPooled();
                 @event.target = source;
                 @event.TargetGotCallback = node => completionSource.SetResult(node);
