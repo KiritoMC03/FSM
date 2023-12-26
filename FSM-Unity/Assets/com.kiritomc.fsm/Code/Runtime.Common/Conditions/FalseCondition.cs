@@ -7,6 +7,6 @@ namespace FSM.Runtime
     public class FalseCondition : ICondition
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Decide() => false;
+        public bool Execute() => false;
     }
 }

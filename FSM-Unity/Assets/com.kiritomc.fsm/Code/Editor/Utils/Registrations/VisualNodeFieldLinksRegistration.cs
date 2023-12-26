@@ -5,6 +5,7 @@ using System.Reactive.Disposables;
 using System.Reflection;
 using System.Threading.Tasks;
 using FSM.Runtime.Serialization;
+using UnityEngine;
 
 namespace FSM.Editor
 {
@@ -28,7 +29,8 @@ namespace FSM.Editor
             {
                 Type returnType = fieldInfo.FieldType.GetGenericArguments().First();
                 Func<Task<IVisualNodeWithLinkExit>> getter = NodeLinkRequest.NewAsync(node, LocalCheck);
-                Items.Add(fieldInfo.Name, new VisualNodeLinkRegistration(node, $"{fieldInfo.Name} ({returnType.Pretty()})", getter, gotHandler, currentGetter, LocalCheck).AddTo(disposables));
+                string linkName = $"{fieldInfo.Name} ({returnType.Pretty()})";
+                Items.Add(linkName, new VisualNodeLinkRegistration(node, linkName, getter, gotHandler, currentGetter, LocalCheck).AddTo(disposables));
                 bool LocalCheck(IVisualNodeWithLinkExit target) => target.IsVisualFunctionNodeWithReturnType(returnType);
             }
         }

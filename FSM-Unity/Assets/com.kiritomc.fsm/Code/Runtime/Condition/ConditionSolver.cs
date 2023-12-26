@@ -82,7 +82,7 @@ namespace FSM.Runtime
                     result.Operator = Operator.And;
                     return (result, andLayoutNode.Left, andLayoutNode.Right);
                 default:
-                    result.Value = ((ConditionLayoutNode)layoutNode).LogicObject.Decide();
+                    result.Value = ((ConditionLayoutNode)layoutNode).LogicObject.Execute();
                     result.IsLeaf = true;
                     return (result, null, null);
             }

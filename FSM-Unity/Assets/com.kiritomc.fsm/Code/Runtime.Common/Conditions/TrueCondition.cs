@@ -10,6 +10,6 @@ namespace FSM.Runtime
         public ParamNode<bool> Special;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Decide() => true;
+        public bool Execute() => true;
     }
 }

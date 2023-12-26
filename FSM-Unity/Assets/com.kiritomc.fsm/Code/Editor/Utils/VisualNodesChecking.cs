@@ -8,6 +8,10 @@ namespace FSM.Editor
     {
         public static bool IsVisualFunctionNodeWithReturnType(this object target, Type returnType)
         {
+            if (target is VisualConditionNode)
+            {
+                return returnType == typeof(bool);
+            }
             if (target is VisualFunctionNode visualFunctionNode)
             {
                 return visualFunctionNode.FunctionType.GetInterface(typeof(IFunction<>).Name).GetGenericArguments().First() == returnType;

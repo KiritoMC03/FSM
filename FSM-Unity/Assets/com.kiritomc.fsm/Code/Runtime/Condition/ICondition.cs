@@ -1,7 +1,6 @@
 ﻿namespace FSM.Runtime
 {
-    public interface ICondition
+    public interface ICondition : IFunction<bool>
     {
-        bool Decide();
     }
 }
