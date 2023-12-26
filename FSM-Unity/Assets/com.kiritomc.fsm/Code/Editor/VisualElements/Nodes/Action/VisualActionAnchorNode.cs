@@ -18,7 +18,7 @@ namespace FSM.Editor
         public VisualNodeWithLinkExit OnUpdateLink;
         public VisualNodeWithLinkExit OnExitLink;
 
-        public VisualActionAnchorNode(StateContext context, Vector2 position = default) : base("Anchor")
+        public VisualActionAnchorNode(StateContext context, Vector2 position = default) : base("Anchor", -1)
         {
             this.context = context;
             this.AddManipulator(new DraggerManipulator());
@@ -29,7 +29,7 @@ namespace FSM.Editor
             OnUpdateLinkRegistration = Create(OnUpdate);
             OnExitLinkRegistration = Create(OnExit);
 
-            VisualNodeLinkRegistration Create(string fieldName) => new VisualNodeLinkRegistration(this, fieldName, NodeLinkRequest.NewAsync(this, Check), HandleLinked, GetCurrentLinkedNode, Check);
+            VisualNodeLinkRegistration Create(string fieldName) => new VisualNodeLinkRegistration(this, fieldName, fieldName, NodeLinkRequest.NewAsync(this, Check), HandleLinked, GetCurrentLinkedNode, Check);
             bool Check(VisualNodeWithLinkExit target) => target is VisualActionNode;
         }
 

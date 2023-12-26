@@ -10,8 +10,14 @@ namespace FSM.Editor
         public readonly Type ConditionType;
         private readonly TransitionContext context;
 
-        public VisualConditionNode(Type conditionType, TransitionContext context, Vector2 position = default) : base(conditionType)
+        public VisualConditionNode(Type conditionType, TransitionContext context, Vector2 position = default) : 
+            this(conditionType, context.GetFreeId(), context, position)
         {
+        }
+
+        public VisualConditionNode(Type conditionType, int id, TransitionContext context, Vector2 position = default) : base(conditionType, id)
+        {
+            context.ReserveId(id, this);
             this.ConditionType = conditionType;
             this.context = context;
             this.AddManipulator(new DraggerManipulator());

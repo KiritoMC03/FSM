@@ -14,8 +14,14 @@ namespace FSM.Editor
 
         public List<VisualStateTransition> Transitions { get; set; } = new List<VisualStateTransition>();
 
-        public VisualStateNode(string stateName, StatesContext parentContext, Vector2 position = default, Vector2 anchorNodePosition = default) : base(stateName)
+        public VisualStateNode(string stateName, StatesContext parentContext, Vector2 position = default, Vector2 anchorNodePosition = default) : 
+            this(stateName, parentContext.GetFreeId(), parentContext, position, anchorNodePosition)
         {
+        }
+
+        public VisualStateNode(string stateName, int id, StatesContext parentContext, Vector2 position = default, Vector2 anchorNodePosition = default) : base(stateName, id)
+        {
+            parentContext.ReserveId(id, this);
             ParentContext = parentContext;
             Context = new StateContext(stateName, anchorNodePosition);
             LabelInputField = Header.NodeInputLabel(stateName);

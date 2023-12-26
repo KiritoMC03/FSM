@@ -1,5 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using FSM.Editor.Serialization;
+using FSM.Runtime.Serialization;
+using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -41,6 +45,16 @@ namespace FSM.Editor
 
         private void OnDestroy()
         {
+            try
+            {
+                List<StateModel> r = LogicSerializer.Serialize(rootContext);
+                var logicJson = JsonConvert.SerializeObject(r);
+                StateSerializer.DeserializeAndConvert(logicJson);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
             string json = editorSerializer?.Serialize(rootContext);
             PlayerPrefs.SetString("FsmEditorKey", json);
         }

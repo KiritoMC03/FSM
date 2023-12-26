@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FSM.Runtime;
+using FSM.Runtime.Serialization;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace FSM.Editor.Serialization
 {
@@ -31,6 +34,7 @@ namespace FSM.Editor.Serialization
             return new StateNodeModel
             (
                 stateNode.Name,
+                stateNode.Id,
                 (Vector2Model)stateNode.ResolvedPlacement,
                 stateNode.Transitions.Select(transition => WriteTransitionContext(stateNode, transition)).ToArray(),
                 WriteStateNodeLifecycle(stateNode)
@@ -50,17 +54,17 @@ namespace FSM.Editor.Serialization
                     _ => throw new Exception(),
                 };
 
-                contextEntryNodeModels[i] = new VisualNodeModel(type, (Vector2Model)node.ResolvedPlacement, linked);
+                contextEntryNodeModels[i] = new VisualNodeModel(type, node.Id, (Vector2Model)node.ResolvedPlacement, linked);
             }
 
-            TransitionContextModel contextModel = new TransitionContextModel(contextEntryNodeModels);
+            TransitionContextModel contextModel = new TransitionContextModel(transition.Context.AnchorNode.ConditionLink?.Id ?? -1, contextEntryNodeModels);
             return new StateTransitionModel(sourceNode.Name, transition.Target.Name, contextModel);
 
             Dictionary<string, int> LinkedToIndexes(Dictionary<string, VisualNodeWithLinkExit> linked)
             {
                 return linked.ToDictionary(
                     pair => pair.Key, 
-                    pair => transition.Context.Nodes.IndexOf(pair.Value));
+                    pair => transition.Context.GetIdOf(pair.Value));
             }
         }
 
@@ -69,9 +73,9 @@ namespace FSM.Editor.Serialization
             StateNodeLifecycleModel result = new StateNodeLifecycleModel
             {
                 AnchorNodePosition = (Vector2Model)stateNode.Context.AnchorNode.ResolvedPlacement,
-                OnEnterId = stateNode.Context.Nodes.IndexOf(stateNode.Context.AnchorNode.OnEnterLink),
-                OnUpdateId = stateNode.Context.Nodes.IndexOf(stateNode.Context.AnchorNode.OnUpdateLink),
-                OnExitId = stateNode.Context.Nodes.IndexOf(stateNode.Context.AnchorNode.OnExitLink),
+                OnEnterId = stateNode.Context.GetIdOf(stateNode.Context.AnchorNode.OnEnterLink),
+                OnUpdateId = stateNode.Context.GetIdOf(stateNode.Context.AnchorNode.OnUpdateLink),
+                OnExitId = stateNode.Context.GetIdOf(stateNode.Context.AnchorNode.OnExitLink),
                 Nodes = new VisualNodeModel[stateNode.Context.Nodes.Count],
             };
             for (int i = 0; i < stateNode.Context.Nodes.Count; i++)
@@ -83,7 +87,7 @@ namespace FSM.Editor.Serialization
                     VisualFunctionNode functionNode => (functionNode.FunctionType, LinkedToIndexes(functionNode.Linked)),
                     _ => throw new Exception(),
                 };
-                result.Nodes[i] = new VisualNodeModel(type, (Vector2Model)node.ResolvedPlacement, linked);
+                result.Nodes[i] = new VisualNodeModel(type, node.Id, (Vector2Model)node.ResolvedPlacement, linked);
             }
             return result;
 
@@ -91,7 +95,7 @@ namespace FSM.Editor.Serialization
             {
                 return linked.ToDictionary(
                     pair => pair.Key, 
-                    pair => stateNode.Context.Nodes.IndexOf(pair.Value));
+                    pair => stateNode.Context.GetIdOf(pair.Value));
             }
         }
 
@@ -126,7 +130,7 @@ namespace FSM.Editor.Serialization
 
         private VisualStateNode ReadStateNode(StatesContext context, StateNodeModel stateNodeModel)
         {
-            VisualStateNode node = new VisualStateNode(stateNodeModel.Name, context, stateNodeModel.Position, stateNodeModel.Lifecycle?.AnchorNodePosition ?? default);
+            VisualStateNode node = new VisualStateNode(stateNodeModel.Name, stateNodeModel.Id, context, stateNodeModel.Position, stateNodeModel.Lifecycle?.AnchorNodePosition ?? default);
             context.Add(node);
             return node;
         }
@@ -158,12 +162,13 @@ namespace FSM.Editor.Serialization
                 }
             }
 
+            transition.Context.AnchorNode.ConditionLinkRegistration.SetTarget(transition.Context.GetById(transitionContextModel.ConditionAnchorId));
             for (int i = 0; i < transitionContextModel.ConditionalNodeModels.Length; i++)
             {
                 VisualNodeModel contextEntryNodeModels = transitionContextModel.ConditionalNodeModels[i];
                 foreach ((string fieldName, int linkIndex) in contextEntryNodeModels.Linked)
                 {
-                    nodes[i].ForceLinkTo(fieldName, transition.Context.Nodes[linkIndex]);
+                    nodes[i].ForceLinkTo(fieldName, transition.Context.GetById(linkIndex));
                 }
             }
         }
@@ -178,11 +183,11 @@ namespace FSM.Editor.Serialization
                 VisualNodeModel nodeModel = lifecycleModel.Nodes[i];
                 if (nodeModel.Type.IsIAction())
                 {
-                    context.ProcessNewNode(nodes[i] = new VisualActionNode(nodeModel.Type, context, nodeModel.Position));
+                    context.ProcessNewNode(nodes[i] = new VisualActionNode(nodeModel.Type, nodeModel.Id, context, nodeModel.Position));
                 }
                 else if (nodeModel.Type.IsIFunction())
                 {
-                    context.ProcessNewNode(nodes[i] = new VisualFunctionNode(nodeModel.Type, context, nodeModel.Position));
+                    context.ProcessNewNode(nodes[i] = new VisualFunctionNode(nodeModel.Type, nodeModel.Id, context, nodeModel.Position));
                 }
             }
 
@@ -194,16 +199,71 @@ namespace FSM.Editor.Serialization
                 VisualNodeModel nodeModel = lifecycleModel.Nodes[i];
                 foreach ((string fieldName, int linkIndex) in nodeModel.Linked)
                 {
-                    nodes[i].ForceLinkTo(fieldName, node.Context.Nodes[linkIndex]);
+                    nodes[i].ForceLinkTo(fieldName, node.Context.GetById(linkIndex));
                 }
             }
 
             void Link(int index, string name)
             {
-                if (index != -1) context.AnchorNode.ForceLinkTo(name, node.Context.Nodes[index]);
+                if (index != -1) context.AnchorNode.ForceLinkTo(name, node.Context.GetById(index));
             }
         }
 
         #endregion
+    }
+
+    public class LogicSerializer
+    {
+        public static List<StateModel> Serialize(FsmContext rootContext)
+        {
+            List<StateModel> results = new List<StateModel>();
+            foreach (VisualStateNode node in rootContext.StatesContext.Nodes)
+            {
+                Dictionary<string, AbstractSerializableType<ConditionalLayoutNodeModel>> transitions = new Dictionary<string, AbstractSerializableType<ConditionalLayoutNodeModel>>();
+                foreach (VisualStateTransition transition in node.Transitions)
+                {
+                    ConditionalLayoutNodeModel root = SerializeConditionalNode(transition.Context.AnchorNode.ConditionLink);
+                    if (root != null)
+                        transitions.Add(
+                            transition.Target.Name,
+                            new AbstractSerializableType<ConditionalLayoutNodeModel>(root));
+                }
+
+                results.Add(new StateModel(node.Name, transitions));
+            }
+            return results;
+        }
+
+        public static ConditionalLayoutNodeModel SerializeConditionalNode(VisualNodeWithLinkExit visualNode)
+        {
+            if (visualNode == null) return default;
+            if (visualNode is VisualFunctionNode functionNode)
+            {
+                if (functionNode.FunctionType.IsNot())
+                {
+                    functionNode.Linked.TryGetValue(nameof(Not.Value), out VisualNodeWithLinkExit linked);
+                    return new NotLayoutNodeModel(SerializeConditionalNode(linked));
+                } 
+                if (functionNode.FunctionType.IsOr())
+                {
+                    functionNode.Linked.TryGetValue(nameof(Or.Left), out VisualNodeWithLinkExit leftLinked);
+                    functionNode.Linked.TryGetValue(nameof(Or.Right), out VisualNodeWithLinkExit rightLinked);
+                    return new OrLayoutNodeModel(SerializeConditionalNode(leftLinked), SerializeConditionalNode(rightLinked));
+                }
+                if (functionNode.FunctionType.IsAnd())
+                {
+                    functionNode.Linked.TryGetValue(nameof(And.Left), out VisualNodeWithLinkExit leftLinked);
+                    functionNode.Linked.TryGetValue(nameof(And.Right), out VisualNodeWithLinkExit rightLinked);
+                    return new AndLayoutNodeModel(SerializeConditionalNode(leftLinked), SerializeConditionalNode(rightLinked));
+                }
+            }
+            else if (visualNode is VisualConditionNode conditionNode)
+            {
+                return new ConditionLayoutNodeModel((ICondition)Activator.CreateInstance(conditionNode.ConditionType));
+            }
+
+            Debug.LogError("");
+            return default;
+        }
     }
 }

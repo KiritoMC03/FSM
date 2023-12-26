@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using FSM.Editor.Manipulators;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -16,9 +15,15 @@ namespace FSM.Editor
 
         public VisualNodeWithLinkExit DependentAction;
 
-        public VisualActionNode(Type actionType, StateContext context, Vector2 position = default) : base(actionType, false)
+        public VisualActionNode(Type actionType, StateContext context, Vector2 position = default) : 
+            this(actionType, context.GetFreeId(), context, position)
         {
-            DependentActionLinkRegistration = new VisualNodeLinkRegistration(this, DependentActionLabel, NodeLinkRequest.NewAsync(this, Check), HandleActionLinked, GetCurrentLinkedActionNode, Check);
+        }
+
+        public VisualActionNode(Type actionType, int id, StateContext context, Vector2 position = default) : base(actionType, id, false)
+        {
+            context.ReserveId(id, this);
+            DependentActionLinkRegistration = new VisualNodeLinkRegistration(this, DependentActionLabel, DependentActionLabel, NodeLinkRequest.NewAsync(this, Check), HandleActionLinked, GetCurrentLinkedActionNode, Check);
             CreateFields(actionType);
             ActionType = actionType;
             this.context = context;

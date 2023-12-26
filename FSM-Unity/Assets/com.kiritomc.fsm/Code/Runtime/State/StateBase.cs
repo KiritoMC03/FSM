@@ -4,13 +4,14 @@ namespace FSM.Runtime
 {
     public class StateBase : IState
     {
+        public readonly string Name;
         private readonly ActionsExecutor actionsExecutor = new ActionsExecutor();
-        private readonly ActionLayoutNode actions;
+        // private readonly ActionLayoutNode actions;
         private IEnumerable<ITransition> outgoingTransitions;
 
-        public StateBase(ActionLayoutNode actions, IEnumerable<ITransition> outgoingTransitions)
+        public StateBase(string name, IEnumerable<ITransition> outgoingTransitions)
         {
-            this.actions = actions;
+            this.Name = name;
             this.outgoingTransitions = outgoingTransitions;
         }
 
@@ -30,7 +31,7 @@ namespace FSM.Runtime
 
         void IState.OnUpdate()
         {
-            actionsExecutor.Execute(actions);
+            // ToDo: actionsExecutor.Execute(actions);
         }
 
         void IState.OnExit()

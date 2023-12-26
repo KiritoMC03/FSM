@@ -29,8 +29,8 @@ namespace FSM.Editor
             {
                 Type returnType = fieldInfo.FieldType.GetGenericArguments().First();
                 Func<Task<VisualNodeWithLinkExit>> getter = NodeLinkRequest.NewAsync(node, LocalCheck);
-                string linkName = $"{fieldInfo.Name} ({returnType.Pretty()})";
-                Items.Add(linkName, new VisualNodeLinkRegistration(node, linkName, getter, gotHandler, currentGetter, LocalCheck).AddTo(disposables));
+                string prettyLinkName = $"{fieldInfo.Name} ({returnType.Pretty()})";
+                Items.Add(fieldInfo.Name, new VisualNodeLinkRegistration(node, fieldInfo.Name, prettyLinkName, getter, gotHandler, currentGetter, LocalCheck).AddTo(disposables));
                 bool LocalCheck(VisualNodeWithLinkExit target) => target.IsVisualFunctionNodeWithReturnType(returnType);
             }
         }

@@ -9,9 +9,10 @@ namespace FSM.Editor
 {
     public class TransitionContext : VisualNodesContext<VisualNodeWithLinkExit>
     {
+        public readonly VisualTransitionAnchorNode AnchorNode;
         private readonly VisualStateTransition target;
 
-        public TransitionContext(VisualStateTransition target, string name)
+        public TransitionContext(VisualStateTransition target, string name, Vector2 anchorNodePosition = default)
         {
             this.target = target;
             Name = name;
@@ -21,6 +22,15 @@ namespace FSM.Editor
             this.AddManipulator(new CreateVisualNodeManipulator<VisualNodeWithLinkExit>(GetAvailableNodes));
             this.AddManipulator(new SelectVisualNodesManipulator<VisualNodeWithLinkExit>(this));
             this.AddManipulator(new DeleteVisualStateNodeManipulator<VisualNodeWithLinkExit>(this));
+            AnchorNode = new VisualTransitionAnchorNode(this)
+            {
+                style =
+                {
+                    left = anchorNodePosition.x,
+                    top = anchorNodePosition.y,
+                },
+            };
+            Add(AnchorNode);
         }
 
         private Dictionary<string, Action> GetAvailableNodes()
@@ -44,7 +54,7 @@ namespace FSM.Editor
             {
                 if (other is VisualNodeWithLinkFields nodeWithLinkFields)
                 {
-                    foreach ((string fieldName, VisualNodeWithLinkExit linked) in nodeWithLinkFields.Linked)
+                    foreach ((string fieldName, VisualNodeWithLinkExit linked) in nodeWithLinkFields.Linked.ToArray())
                     {
                         if (linked == node) nodeWithLinkFields.ForceLinkTo(fieldName, default);
                     }

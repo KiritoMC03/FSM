@@ -126,34 +126,34 @@ namespace Tests
             ActionLayoutNode actions3 =
                 new ActionLayoutNode(new LogAction("actions3_0"),
                     new ActionLayoutNode(new LogAction("actions3_1"), default));
-            StateBase state0 = new StateBase(actions0, default);
-            StateBase state1 = new StateBase(actions1, default);
-            StateBase state2 = new StateBase(actions2, default);
-            StateBase state3 = new StateBase(actions3, default);
-            BaseTransition transitionTo1 = new BaseTransition(state1, new ConditionLayoutNode(new TrueCondition())); 
-            BaseTransition transitionTo2 = new BaseTransition(state2, new ConditionLayoutNode(new TrueCondition()));
-            BaseTransition transitionTo3 = new BaseTransition(state3, textObj);
-            BaseTransition transitionTo0 = new BaseTransition(state0, new OrLayoutNode(
-                new ConditionLayoutNode(new FalseCondition()),
-                new ConditionLayoutNode(new TrueCondition())));
-            state0.SetTransitions(new []{transitionTo1});
-            state1.SetTransitions(new []{transitionTo2});
-            state2.SetTransitions(new []{transitionTo3});
-            state3.SetTransitions(new []{transitionTo0});
+            // StateBase state0 = new StateBase(actions0, default);
+            // StateBase state1 = new StateBase(actions1, default);
+            // StateBase state2 = new StateBase(actions2, default);
+            // StateBase state3 = new StateBase(actions3, default);
+            // BaseTransition transitionTo1 = new BaseTransition(state1, new ConditionLayoutNode(new TrueCondition())); 
+            // BaseTransition transitionTo2 = new BaseTransition(state2, new ConditionLayoutNode(new TrueCondition()));
+            // BaseTransition transitionTo3 = new BaseTransition(state3, textObj);
+            // BaseTransition transitionTo0 = new BaseTransition(state0, new OrLayoutNode(
+            //     new ConditionLayoutNode(new FalseCondition()),
+            //     new ConditionLayoutNode(new TrueCondition())));
+            // state0.SetTransitions(new []{transitionTo1});
+            // state1.SetTransitions(new []{transitionTo2});
+            // state2.SetTransitions(new []{transitionTo3});
+            // state3.SetTransitions(new []{transitionTo0});
             
-            FsmAgentBase agent = new FsmAgentBase(state0);
-            FsmData data = new FsmData(new []{agent});
-            FsmUpdater updater = new FsmUpdater();
-            
-            updater.Update(data);
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            for (int i = 0; i < 100; i++)
-            {
-                updater.Update(data);
-            }
-            sw.Stop();
-            Console.WriteLine(sw.ElapsedTicks / 100);
+            // FsmAgentBase agent = new FsmAgentBase(state0);
+            // FsmData data = new FsmData(new []{agent});
+            // FsmUpdater updater = new FsmUpdater();
+            //
+            // updater.Update(data);
+            // Stopwatch sw = new Stopwatch();
+            // sw.Start();
+            // for (int i = 0; i < 100; i++)
+            // {
+            //     updater.Update(data);
+            // }
+            // sw.Stop();
+            // Console.WriteLine(sw.ElapsedTicks / 100);
             
             
             

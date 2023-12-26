@@ -25,6 +25,7 @@ namespace FSM.Editor
         public VisualNodeLinkRegistration(
             VisualNode parent,
             string linkName,
+            string displayLinkName,
             Func<Task<VisualNodeWithLinkExit>> asyncTargetGetter,
             Action<string, VisualNodeWithLinkExit> gotHandler,
             Func<string, VisualNodeWithLinkExit> currentGetter,
@@ -37,7 +38,7 @@ namespace FSM.Editor
             this.gotHandler = gotHandler;
             this.currentGetter = currentGetter;
             this.checker = checker;
-            LinkFieldView = new NodeLinkFieldView(linkName);
+            LinkFieldView = new NodeLinkFieldView(displayLinkName);
             connectionFieldViewMouseDownSubscription = LinkFieldView.SubscribeMouseDown(ConnectionFieldViewMouseDownHandler);
             linkDrawerRegistration = new VisualNodeLinkDrawerRegistration(parent, GetLinkStart, GetLinkEnd);
             parentChangedRegistration = parent.OnChanged(Repaint);

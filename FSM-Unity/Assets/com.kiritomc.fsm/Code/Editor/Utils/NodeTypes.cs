@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using FSM.Runtime;
-using FSM.Runtime.Common;
 using UnityEngine;
 
 namespace FSM.Editor
@@ -19,6 +18,10 @@ namespace FSM.Editor
             return type.GetInterfaces().Any(i => 
                 i.IsGenericType && i.GetGenericTypeDefinition() == targetInterface);
         }
+
+        public static bool IsNot(this Type type) => typeof(Not).IsAssignableFrom(type);
+        public static bool IsOr(this Type type) => typeof(Or).IsAssignableFrom(type);
+        public static bool IsAnd(this Type type) => typeof(And).IsAssignableFrom(type);
     }
 
     public static class NodeTypes

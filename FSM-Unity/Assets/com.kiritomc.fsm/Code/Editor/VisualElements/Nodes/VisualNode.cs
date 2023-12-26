@@ -10,6 +10,7 @@ namespace FSM.Editor
         public string Name;
         public VisualElement Header;
         public TextElement Label;
+        public readonly int Id;
         private readonly List<VisualNodeStyleRegistration> styleRegistrations = new List<VisualNodeStyleRegistration>();
 
         protected VisualNodeStyleRegistration BaseStyleRegistration;
@@ -24,8 +25,9 @@ namespace FSM.Editor
             Repaint();
         }
 
-        public VisualNode()
+        public VisualNode(int id)
         {
+            Id = id;
             BaseStyleRegistration = new VisualNodeStyleRegistration(this, () =>
             {
                 style.paddingTop = style.paddingBottom = style.paddingLeft = style.paddingRight = Sizes.NodePadding;
@@ -39,11 +41,11 @@ namespace FSM.Editor
             });
         }
 
-        public VisualNode(string nodeName) : this()
+        public VisualNode(string nodeName, int id) : this(id)
         {
             Name = nodeName;
             Header = this.NodeHeader();
-            Label = Header.NodeLabel(nodeName);
+            Label = Header.NodeLabel($"{nodeName} ({id})");
         }
 
         public virtual void Repaint()
