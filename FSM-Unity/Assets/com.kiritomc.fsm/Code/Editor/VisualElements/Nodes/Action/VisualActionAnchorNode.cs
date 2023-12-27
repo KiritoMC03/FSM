@@ -14,9 +14,9 @@ namespace FSM.Editor
         public readonly VisualNodeLinkRegistration OnEnterLinkRegistration;
         public readonly VisualNodeLinkRegistration OnUpdateLinkRegistration;
         public readonly VisualNodeLinkRegistration OnExitLinkRegistration;
-        public VisualNodeWithLinkExit OnEnterLink;
-        public VisualNodeWithLinkExit OnUpdateLink;
-        public VisualNodeWithLinkExit OnExitLink;
+        public VisualActionNode OnEnterLink;
+        public VisualActionNode OnUpdateLink;
+        public VisualActionNode OnExitLink;
 
         public VisualActionAnchorNode(StateContext context, Vector2 position = default) : base("Anchor", -1)
         {
@@ -54,13 +54,13 @@ namespace FSM.Editor
             switch (fieldName)
             {
                 case OnEnter:
-                    OnEnterLink = target;
+                    OnEnterLink = (VisualActionNode)target;
                     break;
                 case OnUpdate:
-                    OnUpdateLink = target;
+                    OnUpdateLink = (VisualActionNode)target;
                     break;
                 case OnExit:
-                    OnExitLink = target;
+                    OnExitLink = (VisualActionNode)target;
                     break;
             }
         }

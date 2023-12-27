@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using FSM.Runtime;
 using FSM.Runtime.Serialization;
 using Newtonsoft.Json;
@@ -229,7 +230,10 @@ namespace FSM.Editor.Serialization
                             new AbstractSerializableType<ConditionalLayoutNodeModel>(root));
                 }
 
-                results.Add(new StateModel(node.Name, transitions));
+                AbstractSerializableType<ActionLayoutNodeModel> onEnter = new AbstractSerializableType<ActionLayoutNodeModel>(SerializeActionNode(node.Context.AnchorNode.OnEnterLink));
+                AbstractSerializableType<ActionLayoutNodeModel> onUpdate = new AbstractSerializableType<ActionLayoutNodeModel>(SerializeActionNode(node.Context.AnchorNode.OnEnterLink));
+                AbstractSerializableType<ActionLayoutNodeModel> onExit = new AbstractSerializableType<ActionLayoutNodeModel>(SerializeActionNode(node.Context.AnchorNode.OnEnterLink));
+                results.Add(new StateModel(node.Name, transitions, onEnter, onUpdate, onExit));
             }
             return results;
         }
@@ -264,6 +268,41 @@ namespace FSM.Editor.Serialization
 
             Debug.LogError("");
             return default;
+        }
+
+        public static ActionLayoutNodeModel SerializeActionNode(VisualActionNode visualNode)
+        {
+            ActionLayoutNodeModel root = new ActionLayoutNodeModel();
+            ActionLayoutNodeModel current = root;
+            while (visualNode != null)
+            {
+                object nodeObject = Activator.CreateInstance(visualNode.ActionType);
+                SerializeFields(nodeObject, visualNode.ActionType, visualNode);
+                current.Action = new AbstractSerializableType<IAction>((IAction)nodeObject);
+                visualNode = visualNode.DependentAction;
+                if (visualNode != null)
+                {
+                    ActionLayoutNodeModel prev = current;
+                    current = new ActionLayoutNodeModel();
+                    prev.Connection = new AbstractSerializableType<ActionLayoutNodeModel>(current);
+                }
+            }
+
+            return root;
+        }
+
+        public static void SerializeFields(object nodeObject, Type nodeType, VisualNodeWithLinkFields visualNodeWithLinkFields)
+        {
+            foreach ((string fieldName, VisualNodeWithLinkExit linkedNode) in visualNodeWithLinkFields.Linked)
+            {
+                FieldInfo fieldInfo = nodeType.GetField(fieldName);
+                // Type fieldType = typeof(ParamNode<>);
+                // Type fieldTypeArg = fieldInfo.FieldType.GetGenericArguments().First();
+                // fieldType = fieldType.MakeGenericType(fieldTypeArg);
+                // object fieldObject = Activator.CreateInstance(fieldType);
+                object fieldValueObject = Activator.CreateInstance(((VisualFunctionNode)linkedNode).FunctionType);
+                fieldInfo.SetValue(nodeObject, fieldValueObject);
+            }
         }
     }
 }

@@ -22,17 +22,26 @@ namespace FSM.Runtime.Serialization
 
             for (int i = 0; i < models.Count; i++)
             {
-                List<ITransition> transitions = new List<ITransition>(models.Count);
-                StateModel stateModel = models[i];
-                foreach ((string targetName, AbstractSerializableType<ConditionalLayoutNodeModel> conditionModel) in stateModel.Transitions)
-                {
-                    IConditionalLayoutNode condition = ConditionLayoutNodesSerializer.Convert(conditionModel.Item);
-                    transitions.Add(new BaseTransition(results.Find(i => i.Name == targetName), condition));
-                }
-                results[i].SetTransitions(transitions);
+                results[i].OutgoingTransitions = DeserializeTransitions(models[i], results);
             }
 
             return results;
+        }
+
+        private static List<ITransition> DeserializeTransitions(StateModel stateModel, List<StateBase> neighboringStates)
+        {
+            List<ITransition> transitions = new List<ITransition>(stateModel.Transitions.Count);
+            foreach ((string targetName, AbstractSerializableType<ConditionalLayoutNodeModel> conditionModel) in stateModel.Transitions)
+            {
+                IConditionalLayoutNode condition = ConditionLayoutNodesSerializer.Convert(conditionModel.Item);
+                transitions.Add(new BaseTransition(neighboringStates.Find(i => i.Name == targetName), condition));
+            }
+            return transitions;
+        }
+
+        private static List<ActionLayoutNode> DeserializeActions(StateModel stateModel)
+        {
+            ActionLayoutNodesSerializer.DeserializeAndConvert<>()
         }
     }
 }

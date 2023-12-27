@@ -13,7 +13,7 @@ namespace FSM.Editor
         public readonly VisualNodeLinkRegistration DependentActionLinkRegistration;
         private readonly StateContext context;
 
-        public VisualNodeWithLinkExit DependentAction;
+        public VisualActionNode DependentAction;
 
         public VisualActionNode(Type actionType, StateContext context, Vector2 position = default) : 
             this(actionType, context.GetFreeId(), context, position)
@@ -34,13 +34,13 @@ namespace FSM.Editor
             bool Check(VisualNodeWithLinkExit target) => target is VisualActionNode;
         }
 
-        public void ForceLinkAction(VisualNodeWithLinkExit target)
+        public void ForceLinkAction(VisualActionNode target)
         {
             DependentAction = target;
             DependentActionLinkRegistration.SetTarget(target);
         }
 
-        private void HandleActionLinked(string _, VisualNodeWithLinkExit target) => DependentAction = target;
+        private void HandleActionLinked(string _, VisualNodeWithLinkExit target) => DependentAction = (VisualActionNode)target;
         private  VisualNodeWithLinkExit GetCurrentLinkedActionNode(string _) => DependentAction;
     }
 }
