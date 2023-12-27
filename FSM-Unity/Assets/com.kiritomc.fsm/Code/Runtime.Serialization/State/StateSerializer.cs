@@ -41,7 +41,7 @@ namespace FSM.Runtime.Serialization
 
         private static List<ActionLayoutNode> DeserializeActions(StateModel stateModel)
         {
-            ActionLayoutNodesSerializer.DeserializeAndConvert<>()
+            return default;
         }
     }
 }

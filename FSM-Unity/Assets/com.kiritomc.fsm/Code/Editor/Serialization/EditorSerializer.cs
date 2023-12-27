@@ -296,12 +296,12 @@ namespace FSM.Editor.Serialization
             foreach ((string fieldName, VisualNodeWithLinkExit linkedNode) in visualNodeWithLinkFields.Linked)
             {
                 FieldInfo fieldInfo = nodeType.GetField(fieldName);
-                // Type fieldType = typeof(ParamNode<>);
-                // Type fieldTypeArg = fieldInfo.FieldType.GetGenericArguments().First();
-                // fieldType = fieldType.MakeGenericType(fieldTypeArg);
-                // object fieldObject = Activator.CreateInstance(fieldType);
+                Type fieldType = typeof(ParamNode<>);
+                Type fieldTypeArg = fieldInfo.FieldType.GetGenericArguments().First();
+                fieldType = fieldType.MakeGenericType(fieldTypeArg);
                 object fieldValueObject = Activator.CreateInstance(((VisualFunctionNode)linkedNode).FunctionType);
-                fieldInfo.SetValue(nodeObject, fieldValueObject);
+                object fieldObject = Activator.CreateInstance(fieldType, fieldValueObject);
+                fieldInfo.SetValue(nodeObject, fieldObject);
             }
         }
     }

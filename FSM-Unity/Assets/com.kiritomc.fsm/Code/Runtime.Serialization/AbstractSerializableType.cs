@@ -22,6 +22,18 @@ namespace FSM.Runtime.Serialization
             Type = item.GetType();
         }
 
+        public AbstractSerializableType(object item)
+        {
+            Item = (T)item;
+            Type = item.GetType();
+        }
+
+        public AbstractSerializableType(object item, Type itemType)
+        {
+            Item = (T)item;
+            Type = itemType;
+        }
+
         [OnSerializing]
         internal void OnSerializing(StreamingContext context)
         {
