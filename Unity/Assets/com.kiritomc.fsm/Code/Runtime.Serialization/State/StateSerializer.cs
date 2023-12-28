@@ -22,7 +22,11 @@ namespace FSM.Runtime.Serialization
 
             for (int i = 0; i < models.Count; i++)
             {
-                results[i].OutgoingTransitions = DeserializeTransitions(models[i], results);
+                StateModel model = models[i];
+                results[i].OutgoingTransitions = DeserializeTransitions(model, results);
+                results[i].OnEnterActions = ActionLayoutNodesSerializer.Convert(model.OnEnter.Item);
+                results[i].OnUpdateActions = ActionLayoutNodesSerializer.Convert(model.OnUpdate.Item);
+                results[i].OnExitActions = ActionLayoutNodesSerializer.Convert(model.OnExit.Item);
             }
 
             return results;
@@ -37,11 +41,6 @@ namespace FSM.Runtime.Serialization
                 transitions.Add(new BaseTransition(neighboringStates.Find(i => i.Name == targetName), condition));
             }
             return transitions;
-        }
-
-        private static List<ActionLayoutNode> DeserializeActions(StateModel stateModel)
-        {
-            return default;
         }
     }
 }

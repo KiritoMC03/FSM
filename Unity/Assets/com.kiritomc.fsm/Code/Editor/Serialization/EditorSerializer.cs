@@ -74,9 +74,9 @@ namespace FSM.Editor.Serialization
             StateNodeLifecycleModel result = new StateNodeLifecycleModel
             {
                 AnchorNodePosition = (Vector2Model)stateNode.Context.AnchorNode.ResolvedPlacement,
-                OnEnterId = stateNode.Context.GetIdOf(stateNode.Context.AnchorNode.OnEnterLink),
-                OnUpdateId = stateNode.Context.GetIdOf(stateNode.Context.AnchorNode.OnUpdateLink),
-                OnExitId = stateNode.Context.GetIdOf(stateNode.Context.AnchorNode.OnExitLink),
+                OnEnter = WriteStateNodeLifecycleNode(stateNode.Context.AnchorNode.OnEnterLink, stateNode.Context),
+                OnUpdate = WriteStateNodeLifecycleNode(stateNode.Context.AnchorNode.OnUpdateLink, stateNode.Context),
+                OnExit = WriteStateNodeLifecycleNode(stateNode.Context.AnchorNode.OnExitLink, stateNode.Context),
                 Nodes = new VisualNodeModel[stateNode.Context.Nodes.Count],
             };
             for (int i = 0; i < stateNode.Context.Nodes.Count; i++)
@@ -98,6 +98,13 @@ namespace FSM.Editor.Serialization
                     pair => pair.Key, 
                     pair => stateNode.Context.GetIdOf(pair.Value));
             }
+        }
+
+        private StateNodeLifecycleNodeModel WriteStateNodeLifecycleNode(VisualActionNode actionNode, StateContext context)
+        {
+            if (actionNode == null) 
+                return new StateNodeLifecycleNodeModel();
+            return new StateNodeLifecycleNodeModel(context.GetIdOf(actionNode), WriteStateNodeLifecycleNode(actionNode.DependentAction, context));
         }
 
         #endregion
@@ -192,9 +199,9 @@ namespace FSM.Editor.Serialization
                 }
             }
 
-            Link(lifecycleModel.OnEnterId, VisualActionAnchorNode.OnEnter);
-            Link(lifecycleModel.OnUpdateId, VisualActionAnchorNode.OnUpdate);
-            Link(lifecycleModel.OnExitId, VisualActionAnchorNode.OnExit);
+            Link(lifecycleModel.OnEnter, VisualActionAnchorNode.OnEnter);
+            Link(lifecycleModel.OnUpdate, VisualActionAnchorNode.OnUpdate);
+            Link(lifecycleModel.OnExit, VisualActionAnchorNode.OnExit);
             for (int i = 0; i < lifecycleModel.Nodes.Length; i++)
             {
                 VisualNodeModel nodeModel = lifecycleModel.Nodes[i];
@@ -204,9 +211,19 @@ namespace FSM.Editor.Serialization
                 }
             }
 
-            void Link(int index, string name)
+            void Link(StateNodeLifecycleNodeModel lifecycleNodeModel, string name)
             {
-                if (index != -1) context.AnchorNode.ForceLinkTo(name, node.Context.GetById(index));
+                if (lifecycleNodeModel == null || lifecycleNodeModel.SelfId == -1) return;
+                VisualNodeWithLinkExit currentVisualNode = node.Context.GetById(lifecycleNodeModel.SelfId);
+                context.AnchorNode.ForceLinkTo(name, currentVisualNode);
+                StateNodeLifecycleNodeModel currentNodeModel = lifecycleNodeModel;
+                while (currentNodeModel != null && currentVisualNode != null)
+                {
+                    VisualActionNode linkTo = node.Context.GetById(currentNodeModel.Linked?.SelfId ?? -1) as VisualActionNode;
+                    ((VisualActionNode)currentVisualNode).ForceLinkAction(linkTo);
+                    currentVisualNode = linkTo;
+                    currentNodeModel = currentNodeModel.Linked;
+                }
             }
         }
 
@@ -231,8 +248,8 @@ namespace FSM.Editor.Serialization
                 }
 
                 AbstractSerializableType<ActionLayoutNodeModel> onEnter = new AbstractSerializableType<ActionLayoutNodeModel>(SerializeActionNode(node.Context.AnchorNode.OnEnterLink));
-                AbstractSerializableType<ActionLayoutNodeModel> onUpdate = new AbstractSerializableType<ActionLayoutNodeModel>(SerializeActionNode(node.Context.AnchorNode.OnEnterLink));
-                AbstractSerializableType<ActionLayoutNodeModel> onExit = new AbstractSerializableType<ActionLayoutNodeModel>(SerializeActionNode(node.Context.AnchorNode.OnEnterLink));
+                AbstractSerializableType<ActionLayoutNodeModel> onUpdate = new AbstractSerializableType<ActionLayoutNodeModel>(SerializeActionNode(node.Context.AnchorNode.OnUpdateLink));
+                AbstractSerializableType<ActionLayoutNodeModel> onExit = new AbstractSerializableType<ActionLayoutNodeModel>(SerializeActionNode(node.Context.AnchorNode.OnExitLink));
                 results.Add(new StateModel(node.Name, transitions, onEnter, onUpdate, onExit));
             }
             return results;

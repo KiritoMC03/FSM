@@ -22,6 +22,10 @@ namespace FSM.Runtime.Serialization
 
         public static ActionLayoutNode Convert(ActionLayoutNodeModel root)
         {
+            if (root == null)
+            {
+                return new ActionLayoutNode();
+            }
             (ActionLayoutNode rootCopy, ActionLayoutNodeModel rootConnection) = GetNodesFor(root);
             OriginalQueue.Enqueue((root, rootConnection));
             CopyQueue.Enqueue(rootCopy);
@@ -47,7 +51,7 @@ namespace FSM.Runtime.Serialization
 
         private static (ActionLayoutNode result, ActionLayoutNodeModel connection) GetNodesFor(ActionLayoutNodeModel layoutNode)
         {
-            return (new ActionLayoutNode(layoutNode.Action.Item), layoutNode.Connection?.Item);
+            return (new ActionLayoutNode(layoutNode.Action?.Item), layoutNode.Connection?.Item);
         }
     }
 }

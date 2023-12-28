@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FSM.Editor.Serialization;
+using FSM.Runtime;
 using FSM.Runtime.Serialization;
 using Newtonsoft.Json;
 using UnityEditor;
@@ -48,7 +49,7 @@ namespace FSM.Editor
             {
                 List<StateModel> r = LogicSerializer.Serialize(rootContext);
                 string logicJson = JsonConvert.SerializeObject(r);
-                StateSerializer.DeserializeAndConvert(logicJson);
+                List<StateBase> logic = StateSerializer.DeserializeAndConvert(logicJson);
             }
             catch (Exception e)
             {

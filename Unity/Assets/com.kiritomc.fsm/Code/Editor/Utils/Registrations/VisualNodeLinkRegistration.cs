@@ -67,7 +67,7 @@ namespace FSM.Editor
         {
             if (target != null && !checker(target)) return;
             targetChangedRegistration?.Dispose();
-            if (target != null) targetChangedRegistration = ((VisualNode)target).OnChanged(Repaint);
+            if (target != null) targetChangedRegistration = target.OnChanged(Repaint);
             gotHandler(linkName, target);
             linkDrawerRegistration.Clear();
             linkDrawerRegistration.Repaint();

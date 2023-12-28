@@ -7,9 +7,9 @@ namespace FSM.Runtime
         public readonly string Name;
         private readonly ActionsExecutor actionsExecutor = new ActionsExecutor();
 
-        public ActionLayoutNode OnEnterActions { get; }
-        public ActionLayoutNode OnUpdateActions { get; }
-        public ActionLayoutNode OnExitActions { get; }
+        public ActionLayoutNode OnEnterActions { get; set; }
+        public ActionLayoutNode OnUpdateActions { get; set; }
+        public ActionLayoutNode OnExitActions { get; set; }
 
         public StateBase(string name, IEnumerable<ITransition> outgoingTransitions)
         {
