@@ -3,16 +3,47 @@ using UnityEngine.UIElements;
 
 namespace FSM.Editor.Manipulators
 {
-    public class DraggerManipulator: PointerManipulator
+    public class ScaleContextManipulator<T> : Manipulator
+        where T: VisualNode
     {
+        private const float Sensitivity = 0.02f;
+        private readonly VisualNodesContext<T> context;
+        private EditorState EditorState => ServiceLocator.Instance.Get<EditorState>();
+
+        public ScaleContextManipulator(VisualNodesContext<T> context)
+        {
+            this.context = context;
+        }
+
+        protected override void RegisterCallbacksOnTarget()
+        {
+            target.RegisterCallback<WheelEvent>(HandleMouseWheel);
+        }
+
+        protected override void UnregisterCallbacksFromTarget()
+        {
+            target.RegisterCallback<WheelEvent>(HandleMouseWheel);
+        }
+
+        private void HandleMouseWheel(WheelEvent e)
+        {
+            context.ScaleContent(e.delta.y * Sensitivity);
+        }
+    }
+
+    public class ContextDraggingManipulator<T> : Manipulator
+        where T: VisualNode
+    {
+        private readonly VisualNodesContext<T> context;
         private readonly int mouseButton;
         private bool isPressed;
-        private Vector2 offset;
+        private Vector2 prevPressPosition;
 
         private EditorState EditorState => ServiceLocator.Instance.Get<EditorState>();
 
-        public DraggerManipulator(int mouseButton = 0)
+        public ContextDraggingManipulator(VisualNodesContext<T> context, int mouseButton = 2)
         {
+            this.context = context;
             this.mouseButton = mouseButton;
         }
 
@@ -38,21 +69,21 @@ namespace FSM.Editor.Manipulators
             if (EditorState.DraggingLocked.Value) return;
             isPressed = true;
             target.BringToFront();
-            offset = new Vector2(
-                target.resolvedStyle.left - e.position.x,
-                target.resolvedStyle.top - e.position.y);
+            prevPressPosition = new Vector2(e.position.x, e.position.y);
         }
 
         private void HandleMouseMove(PointerMoveEvent e)
         {
             if (!isPressed) return;
             if (EditorState.DraggingLocked.Value) return;
+            Vector2 currentPressPosition = new Vector2(e.position.x, e.position.y);
+            Vector2 offset = currentPressPosition - prevPressPosition;
+            context.MoveNodes(offset);
             if (target is ICustomRepaintHandler repaintHandler) repaintHandler.Repaint();
-            target.style.left = e.position.x + offset.x;
-            target.style.top = e.position.y + offset.y;
+            prevPressPosition = currentPressPosition;
         }
 
-        private void StopDrag<T>(T e) where T: IPointerEvent
+        private void StopDrag<TEvent>(TEvent e) where TEvent: IPointerEvent
         {
             if (e.button == mouseButton)
                 isPressed = false;

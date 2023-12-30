@@ -139,7 +139,7 @@ namespace FSM.Editor.Serialization
         private VisualStateNode ReadStateNode(StatesContext context, StateNodeModel stateNodeModel)
         {
             VisualStateNode node = new VisualStateNode(stateNodeModel.Name, stateNodeModel.Id, context, stateNodeModel.Position, stateNodeModel.Lifecycle?.AnchorNodePosition ?? default);
-            context.Add(node);
+            context.ProcessNewNode(node);
             return node;
         }
 

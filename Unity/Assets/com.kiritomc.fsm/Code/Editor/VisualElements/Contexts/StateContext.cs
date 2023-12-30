@@ -17,6 +17,8 @@ namespace FSM.Editor
             this.DefaultLayout()
                 .DefaultColors()
                 .DefaultInteractions();
+            this.AddManipulator(new ContextDraggingManipulator<VisualNodeWithLinkExit>(this));
+            this.AddManipulator(new ScaleContextManipulator<VisualNodeWithLinkExit>(this));
             this.AddManipulator(new CreateVisualNodeManipulator<VisualNodeWithLinkExit>(GetAvailableNodes));
             this.AddManipulator(new SelectVisualNodesManipulator<VisualNodeWithLinkExit>(this));
             this.AddManipulator(new DeleteVisualStateNodeManipulator<VisualNodeWithLinkExit>(this));
@@ -28,7 +30,7 @@ namespace FSM.Editor
                     top = anchorNodePosition.y,
                 },
             };
-            Add(AnchorNode);
+            BuildContentContainer().Add(AnchorNode);
         }
 
         private Dictionary<string, Action> GetAvailableNodes()
@@ -69,6 +71,12 @@ namespace FSM.Editor
                     }
                 }
             }
+        }
+
+        public override void MoveNodes(Vector2 offset)
+        {
+            base.MoveNodes(offset);
+            AnchorNode.Placement += offset;
         }
     }
 }

@@ -14,9 +14,12 @@ namespace FSM.Editor
             this.DefaultLayout()
                 .DefaultColors()
                 .DefaultInteractions();
+            this.AddManipulator(new ContextDraggingManipulator<VisualStateNode>(this));
+            this.AddManipulator(new ScaleContextManipulator<VisualStateNode>(this));
             this.AddManipulator(new CreateVisualNodeManipulator<VisualStateNode>(GetAvailableNodes));
             this.AddManipulator(new SelectVisualNodesManipulator<VisualStateNode>(this));
             this.AddManipulator(new DeleteVisualStateNodeManipulator<VisualStateNode>(this));
+            BuildContentContainer();
         }
 
         public Dictionary<string, Action> GetAvailableNodes()

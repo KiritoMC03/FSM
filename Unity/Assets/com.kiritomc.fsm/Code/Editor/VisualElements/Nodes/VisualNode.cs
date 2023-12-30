@@ -16,7 +16,16 @@ namespace FSM.Editor
         protected VisualNodeStyleRegistration BaseStyleRegistration;
 
         public Vector2 ResolvedPlacement => new Vector2(resolvedStyle.left, resolvedStyle.top);
-        public Vector2 Placement => new Vector2(style.left.value.value, style.top.value.value);
+        public Vector2 Placement
+        {
+            get => new Vector2(style.left.value.value, style.top.value.value);
+            set
+            {
+                style.left = value.x;
+                style.top = value.y;
+            }
+        }
+
         protected Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
         public void AppendStyleRegistration(VisualNodeStyleRegistration registration)

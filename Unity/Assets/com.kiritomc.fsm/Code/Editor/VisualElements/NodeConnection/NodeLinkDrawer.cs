@@ -33,6 +33,7 @@ namespace FSM.Editor
         private void OnGenerateVisualContent(MeshGenerationContext ctx)
         {
             if (!LocalStartOffset.HasValue || !WorldEndPos.HasValue) return;
+            Debug.Log($"rep");
             Vector2 start = LocalStartOffset.Value;
             Vector2 end = WorldEndPos.Value - new Vector2(worldBound.x, worldBound.y);
             Painter2D paint2D = ctx.painter2D;

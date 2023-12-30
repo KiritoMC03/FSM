@@ -32,5 +32,11 @@ namespace FSM.Editor
         {
             return Linked.GetValueOrDefault(fieldName);
         }
+
+        public override void Repaint()
+        {
+            base.Repaint();
+            MarkDirtyRepaint();
+        }
     }
 }
