@@ -35,7 +35,7 @@ namespace FSM.Editor
             if (!LocalStartOffset.HasValue || !WorldEndPos.HasValue) return;
             Debug.Log($"rep");
             Vector2 start = LocalStartOffset.Value;
-            Vector2 end = WorldEndPos.Value - new Vector2(worldBound.x, worldBound.y);
+            Vector2 end = (WorldEndPos.Value - new Vector2(worldTransform.GetPosition().x, worldTransform.GetPosition().y)) / worldTransform.lossyScale.x;
             Painter2D paint2D = ctx.painter2D;
             Vector2 startTangent;
             Vector2 endTangent;

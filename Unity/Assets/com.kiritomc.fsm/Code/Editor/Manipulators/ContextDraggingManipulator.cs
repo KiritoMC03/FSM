@@ -27,7 +27,7 @@ namespace FSM.Editor.Manipulators
 
         private void HandleMouseWheel(WheelEvent e)
         {
-            context.ScaleContent(e.delta.y * Sensitivity);
+            context.ScaleContent(-e.delta.y * Sensitivity);
         }
     }
 

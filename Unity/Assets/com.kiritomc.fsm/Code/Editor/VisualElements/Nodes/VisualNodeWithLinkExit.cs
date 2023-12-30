@@ -21,7 +21,11 @@ namespace FSM.Editor
 
         public virtual Vector2 GetAbsoluteLinkPointPos()
         {
-            return new Vector2(Link.worldBound.x + Sizes.ConnectionNodePoint / 2f, Link.worldBound.y + Sizes.ConnectionNodePoint / 2f);
+            Vector2 position = Link.worldTransform.GetPosition();
+            float toCenter = Sizes.ConnectionNodePoint / 2f * worldTransform.lossyScale.x;
+            position.x += toCenter;
+            position.y += toCenter;
+            return position;
         }
 
         public static NodeLinkPoint LinkPointRelativeTo(VisualElement parent, VisualElement relative, VisualNodeLinkPosition position)

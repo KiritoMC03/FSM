@@ -57,8 +57,9 @@ namespace FSM.Editor
             IsDisposed = true;
         }
 
-        private async void ConnectionFieldViewMouseDownHandler(MouseDownEvent _)
+        private async void ConnectionFieldViewMouseDownHandler(MouseDownEvent e)
         {
+            if (e.button != 0) return;
             VisualNodeWithLinkExit result = await asyncTargetGetter();
             SetTarget(result);
         }
