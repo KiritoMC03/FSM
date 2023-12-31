@@ -27,6 +27,7 @@ namespace FSM.Editor
         }
 
         protected Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
+        protected EditorState EditorState => ServiceLocator.Instance.Get<EditorState>();
 
         public void AppendStyleRegistration(VisualNodeStyleRegistration registration)
         {
@@ -48,13 +49,14 @@ namespace FSM.Editor
                 style.minHeight = 50;
                 style.backgroundColor = Colors.NodeBackground;
             });
+            EditorState.IsDirty.Value = true;
         }
 
         public VisualNode(string nodeName, int id) : this(id)
         {
             Name = nodeName;
             Header = this.NodeHeader();
-            Label = Header.NodeLabel($"{nodeName} ({id})");
+            Label = Header.NodeLabel(nodeName);
         }
 
         public virtual void Repaint()

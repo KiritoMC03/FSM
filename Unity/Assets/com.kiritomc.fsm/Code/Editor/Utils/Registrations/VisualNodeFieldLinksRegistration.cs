@@ -30,7 +30,7 @@ namespace FSM.Editor
                 Func<Task<VisualNodeWithLinkExit>> getter = NodeLinkRequest.NewAsync(node, LocalCheck);
                 string prettyLinkName = $"{fieldInfo.Name} ({returnType.Pretty()})";
                 Items.Add(fieldInfo.Name, new VisualNodeLinkRegistration(node, fieldInfo.Name, prettyLinkName, getter, gotHandler, currentGetter, LocalCheck).AddTo(disposables));
-                bool LocalCheck(VisualNodeWithLinkExit target) => target.IsVisualFunctionNodeWithReturnType(returnType);
+                bool LocalCheck(VisualNodeWithLinkExit target) => target != node && target.IsVisualFunctionNodeWithReturnType(returnType);
             }
         }
 

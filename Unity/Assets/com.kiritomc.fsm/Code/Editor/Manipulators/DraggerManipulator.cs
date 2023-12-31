@@ -11,7 +11,7 @@ namespace FSM.Editor.Manipulators
 
         private EditorState EditorState => ServiceLocator.Instance.Get<EditorState>();
 
-        public DraggerManipulator(int mouseButton = 0)
+        public DraggerManipulator(int mouseButton = Keys.DragNodeMouseButton)
         {
             this.mouseButton = mouseButton;
         }
@@ -54,7 +54,7 @@ namespace FSM.Editor.Manipulators
 
         private void StopDrag<T>(T e) where T: IPointerEvent
         {
-            if (e.button == mouseButton)
+            if (e.button == mouseButton || e.button == -1)
                 isPressed = false;
         }
     }

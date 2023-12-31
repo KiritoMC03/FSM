@@ -13,7 +13,7 @@ namespace FSM.Editor
             this.root = root;
         }
 
-        public StatesContext CreateRootContext()
+        public StatesContext OpenRootContext()
         {
             VisualNodesContext current = EditorState.CurrentContext.Value;
             current?.parent.Remove(current);
@@ -22,17 +22,6 @@ namespace FSM.Editor
             EditorState.CurrentContext.Value = EditorState.RootContext.Value;
             root.Add(EditorState.RootContext.Value);
             return EditorState.RootContext.Value;
-        }
-
-        public StatesContext CreateStateContext(VisualStateNode target)
-        {
-            EditorState.RootContext.Value.style.display = DisplayStyle.None;
-            VisualNodesContext current = EditorState.CurrentContext.Value;
-            current?.parent.Remove(current);
-            StatesContext result;
-            root.Add(result = new StatesContext(target.Name));
-            EditorState.CurrentContext.Value = result;
-            return result;
         }
 
         public void OpenTransitionContext(TransitionContext transitionContext)

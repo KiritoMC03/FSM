@@ -27,6 +27,9 @@ namespace FSM.Editor
         public const LengthUnit LeftPanelHeightUnits = LengthUnit.Percent;
 
 
+        public const float NavigationPanelPaddings = 12f;
+        public const float NavigationPanelTextSize = 14f;
+
         public const float NavigationPanelWidth = 100f;
         public const LengthUnit NavigationPanelWidthUnits = LengthUnit.Percent;
 

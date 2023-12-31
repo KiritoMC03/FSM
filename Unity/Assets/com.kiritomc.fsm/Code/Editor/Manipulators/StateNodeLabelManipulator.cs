@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FSM.Editor.Extensions;
 using UnityEngine;
@@ -48,7 +49,7 @@ namespace FSM.Editor.Manipulators
 
         private void HandleKeys(KeyUpEvent keyUpEvent)
         {
-            if (keyUpEvent.keyCode == Keys.ApplyNodeRename)
+            if (Keys.ApplyNodeRename.Contains(keyUpEvent.keyCode))
             {
                 target.Label.text = currentValue;
                 target.Name = currentValue;
@@ -62,7 +63,7 @@ namespace FSM.Editor.Manipulators
 
         private async void UnFocusForSubscription(EventBase e)
         {
-            await Task.Yield();
+            await Task.Delay(1000);
             UnFocus();
         }
 

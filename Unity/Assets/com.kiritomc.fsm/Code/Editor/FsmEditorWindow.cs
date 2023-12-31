@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FSM.Editor.Serialization;
 using FSM.Runtime;
 using FSM.Runtime.Serialization;
@@ -41,6 +42,25 @@ namespace FSM.Editor
             LeftPanel leftPanel = fabric.Panels.LeftPanel();
             leftPanel.Add(fabric.Panels.NavigationPanel());
             LoadEditor();
+            editorState.IsDirty.ValueChanged += dirty =>
+            {
+                if (dirty)
+                {
+                    string json = editorSerializer?.Serialize(rootContext);
+                    PlayerPrefs.SetString("FsmEditorKey", json);
+                    editorState.IsDirty.Value = false;
+                }
+            };
+
+            root.RegisterCallback<KeyDownEvent>(e =>
+            {
+                if (e.keyCode == KeyCode.S && e.ctrlKey)
+                {
+                    string json = editorSerializer?.Serialize(rootContext);
+                    PlayerPrefs.SetString("FsmEditorKey", json);
+                    editorState.IsDirty.Value = false;
+                }
+            });
         }
 
         private void OnDestroy()

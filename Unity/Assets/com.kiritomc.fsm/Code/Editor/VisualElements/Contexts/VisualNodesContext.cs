@@ -64,7 +64,6 @@ namespace FSM.Editor
 
         public override int GetFreeId()
         {
-            Debug.Log($"GetFreeId");
             int id = 0;
             while (NodesIds.ContainsKey(id)) id++;
             return id;

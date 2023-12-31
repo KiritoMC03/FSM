@@ -116,15 +116,15 @@ namespace FSM.Editor.Serialization
             FsmContextModel fsmContextModel = JsonConvert.DeserializeObject<FsmContextModel>(json);
             FsmContext fsmContext = new FsmContext
             {
-                StatesContext = fsmContextModel == null ? Fabric.Contexts.CreateRootContext() : ReadStatesContext(fsmContextModel.StatesContextModel, isRoot: true),
+                StatesContext = fsmContextModel == null ? Fabric.Contexts.OpenRootContext() : ReadStatesContext(fsmContextModel.StatesContextModel),
             };
             return fsmContext;
         }
 
-        private StatesContext ReadStatesContext(StatesContextModel statesContextModel, VisualStateNode target = default, bool isRoot = false)
+        private StatesContext ReadStatesContext(StatesContextModel statesContextModel)
         {            
-            if (statesContextModel == null) return Fabric.Contexts.CreateRootContext();
-            StatesContext statesContext = isRoot ? Fabric.Contexts.CreateRootContext() : Fabric.Contexts.CreateStateContext(target);
+            if (statesContextModel == null) return Fabric.Contexts.OpenRootContext();
+            StatesContext statesContext = Fabric.Contexts.OpenRootContext();
             List<VisualStateNode> states = statesContextModel.StateNodeModels.Select(nodeModel => ReadStateNode(statesContext, nodeModel)).ToList();
             statesContext.Nodes = states;
             for (int i = 0; i < states.Count; i++)

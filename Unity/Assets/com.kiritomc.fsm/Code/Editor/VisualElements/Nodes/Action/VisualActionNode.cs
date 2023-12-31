@@ -31,7 +31,7 @@ namespace FSM.Editor
             this.AddManipulator(new RouteVisualNodeLinkManipulator(context));
             style.left = position.x;
             style.top = position.y;
-            bool Check(VisualNodeWithLinkExit target) => target is VisualActionNode;
+            bool Check(VisualNodeWithLinkExit target) => target is VisualActionNode && target != this;
         }
 
         public void ForceLinkAction(VisualActionNode target)

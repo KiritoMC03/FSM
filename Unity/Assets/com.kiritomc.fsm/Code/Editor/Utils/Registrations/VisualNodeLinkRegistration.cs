@@ -66,6 +66,7 @@ namespace FSM.Editor
 
         public void SetTarget(VisualNodeWithLinkExit target)
         {
+            if (target == parent) return;
             if (target != null && !checker(target)) return;
             targetChangedRegistration?.Dispose();
             if (target != null) targetChangedRegistration = target.OnChanged(Repaint);

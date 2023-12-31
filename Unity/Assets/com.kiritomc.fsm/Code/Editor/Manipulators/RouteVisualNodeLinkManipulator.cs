@@ -84,7 +84,7 @@ namespace FSM.Editor.Manipulators
             if (isPressed)
             {
                 Vector2 position = pressedMousePosition;
-                if (result != null) position = result.GetAbsoluteLinkPointPos();
+                if (result != null && result != target) position = result.GetAbsoluteLinkPointPos();
                 return position;
             }
             return default;

@@ -1,21 +1,25 @@
 ﻿using System.Collections.Generic;
+using System.Reactive.Disposables;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
     public class NavigationPanel : VisualElement
     {
+        private readonly List<VisualElement> currentHierarchy = new List<VisualElement>();
+        private CompositeDisposable disposables = new CompositeDisposable();
+        private VisualElement root;
+
         private EditorState EditorState => ServiceLocator.Instance.Get<EditorState>();
         private Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
-        private readonly List<Button> currentHierarchy = new List<Button>();
-        private Button root;
 
         public NavigationPanel()
         {
             style.backgroundColor = Colors.NavigationPanelBackground;
             style.width = new StyleLength(new Length(Sizes.NavigationPanelWidth, Sizes.NavigationPanelWidthUnits));
             style.height = new StyleLength(new Length(Sizes.NavigationPanelHeight, Sizes.NavigationPanelHeightUnits));
-            Add(root = CreateButton("Root", default));
+            style.paddingTop = style.paddingBottom = style.paddingRight = style.paddingLeft = Sizes.NavigationPanelPaddings;
             EditorState.CurrentContext.ValueChanged += Redraw;
         }
 
@@ -23,32 +27,42 @@ namespace FSM.Editor
         {
             while (currentHierarchy.Count > 0)
             {
-                Button current = currentHierarchy[0];
+                VisualElement current = currentHierarchy[0];
                 Remove(current);
                 currentHierarchy.RemoveAt(0);
             }
 
-            if (currentContext is StatesContext { Name: "Root" }) return;
-            Button button;
-            currentHierarchy.Add(button = new Button()
+            disposables?.Dispose();
+            disposables = new CompositeDisposable();
+            Add(root = CreateButton("Root", default, currentContext.Name == "Root"));
+            currentHierarchy.Add(root);
+            foreach (VisualStateNode stateNode in EditorState.RootContext.Value.Nodes)
             {
-                text = currentContext.Name,
-            });
-            Add(button);
+                var button = CreateButton($"\t{stateNode.Context.Name}", stateNode, currentContext.Name == stateNode.Context.Name);
+                currentHierarchy.Add(button);
+                Add(button);
+            }
         }
 
-        private Button CreateButton(string text, VisualStateNode stateNode)
+        private VisualElement CreateButton(string text, VisualStateNode stateNode, bool isSelected)
         {
-            return new Button(() => MoveToContext(stateNode))
+            TextElement element = new TextElement
             {
                 text = text,
+                style =
+                {
+                    fontSize = Sizes.NavigationPanelTextSize,
+                    unityFontStyleAndWeight = isSelected ? new StyleEnum<FontStyle>(FontStyle.Bold) : default,
+                },
             };
+            new OnVisualElementClickedRegistration(element, () => MoveToContext(stateNode)).AddTo(disposables);
+            return element;
         }
 
         private void MoveToContext(VisualStateNode stateNode)
         {
-            if (stateNode == null) Fabric.Contexts.CreateRootContext();
-            else Fabric.Contexts.CreateStateContext(stateNode);
+            if (stateNode == null) Fabric.Contexts.OpenRootContext();
+            else stateNode.Context.Open();
         }
     }
 }
