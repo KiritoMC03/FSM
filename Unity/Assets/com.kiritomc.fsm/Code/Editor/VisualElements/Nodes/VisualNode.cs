@@ -49,7 +49,6 @@ namespace FSM.Editor
                 style.minHeight = 50;
                 style.backgroundColor = Colors.NodeBackground;
             });
-            EditorState.IsDirty.Value = true;
         }
 
         public VisualNode(string nodeName, int id) : this(id)

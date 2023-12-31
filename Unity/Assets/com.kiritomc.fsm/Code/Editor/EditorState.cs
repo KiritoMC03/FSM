@@ -6,7 +6,7 @@ namespace FSM.Editor
 {
     public class EditorState
     {
-        public readonly EditorStateProperty<bool> IsDirty = new EditorStateProperty<bool>();
+        // public readonly EditorStateProperty<bool> IsDirty = new EditorStateProperty<bool>();
         public readonly EditorStateProperty<bool> DraggingLocked = new EditorStateProperty<bool>();
         public readonly EditorStateProperty<Vector3> PointerPosition = new EditorStateProperty<Vector3>();
         public readonly EditorStateProperty<StatesContext> RootContext = new EditorStateProperty<StatesContext>();

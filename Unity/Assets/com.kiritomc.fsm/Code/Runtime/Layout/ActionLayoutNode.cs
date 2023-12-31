@@ -9,7 +9,7 @@
 
         public void Execute()
         {
-            actionObject.Execute();
+            actionObject?.Execute();
         }
 
         public void SetAction(IAction actionObject)

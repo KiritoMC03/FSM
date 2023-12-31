@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using FSM.Editor.Serialization;
 using FSM.Runtime;
 using FSM.Runtime.Serialization;
@@ -42,41 +41,29 @@ namespace FSM.Editor
             LeftPanel leftPanel = fabric.Panels.LeftPanel();
             leftPanel.Add(fabric.Panels.NavigationPanel());
             LoadEditor();
-            editorState.IsDirty.ValueChanged += dirty =>
-            {
-                if (dirty)
-                {
-                    string json = editorSerializer?.Serialize(rootContext);
-                    PlayerPrefs.SetString("FsmEditorKey", json);
-                    editorState.IsDirty.Value = false;
-                }
-            };
 
             root.RegisterCallback<KeyDownEvent>(e =>
             {
                 if (e.keyCode == KeyCode.S && e.ctrlKey)
                 {
-                    string json = editorSerializer?.Serialize(rootContext);
-                    PlayerPrefs.SetString("FsmEditorKey", json);
-                    editorState.IsDirty.Value = false;
+                    Save();
                 }
             });
         }
 
-        private void OnDestroy()
+        private void Save()
         {
-            try
-            {
-                List<StateModel> r = LogicSerializer.Serialize(rootContext);
-                string logicJson = JsonConvert.SerializeObject(r);
-                List<StateBase> logic = StateSerializer.DeserializeAndConvert(logicJson);
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
             string json = editorSerializer?.Serialize(rootContext);
             PlayerPrefs.SetString("FsmEditorKey", json);
+
+            List<StateModel> r = LogicSerializer.Serialize(rootContext);
+            string logicJson = JsonConvert.SerializeObject(r);
+            PlayerPrefs.SetString("FsmLogicKey", logicJson);
+        }
+
+        private void OnDestroy()
+        {
+            Save();
         }
 
         private void LoadEditor()
