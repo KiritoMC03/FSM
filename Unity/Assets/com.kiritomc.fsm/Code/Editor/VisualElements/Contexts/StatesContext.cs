@@ -7,7 +7,6 @@ namespace FSM.Editor
 {
     public class StatesContext : VisualNodesContext<VisualStateNode>
     {
-
         public StatesContext(string name)
         {
             Name = name;
@@ -19,6 +18,7 @@ namespace FSM.Editor
             this.AddManipulator(new CreateVisualNodeManipulator<VisualStateNode>(GetAvailableNodes));
             this.AddManipulator(new SelectVisualNodesManipulator<VisualStateNode>(this));
             this.AddManipulator(new DeleteVisualStateNodeManipulator<VisualStateNode>(this));
+            this.AddManipulator(new OpenTransitionInContextManipulator(this));
             BuildContentContainer();
         }
 

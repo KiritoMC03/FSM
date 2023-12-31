@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Disposables;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace FSM.Editor
@@ -14,16 +17,21 @@ namespace FSM.Editor
 
         protected Fabric Fabric => ServiceLocator.Instance.Get<Fabric>();
 
-        public VisualStateTransition(VisualStateNode source, VisualStateNode target)
+        public VisualStateTransition(VisualStateNode source, VisualStateNode target, Vector2 anchorNodePosition = default)
         {
             Source = source;
             Target = target;
             style.alignSelf = Align.Center;
             style.flexDirection = FlexDirection.Column;
             style.justifyContent = Justify.Center;
-            Context = new TransitionContext(this, $"{source.Name} -> {target.Name}");
+            Context = new TransitionContext(this, $"{source.Name} -> {target.Name}", anchorNodePosition);
             Add(drawer = new TransitionDrawer(source, target, () => Context.Open()));
             target.OnChanged(Repaint).AddTo(disposables);
+        }
+
+        public IEnumerable<Vector2> IterateLinkWorldPoints()
+        {
+            return drawer.Points.Select(point => drawer.LocalToWorld(point));
         }
 
         public void Dispose()

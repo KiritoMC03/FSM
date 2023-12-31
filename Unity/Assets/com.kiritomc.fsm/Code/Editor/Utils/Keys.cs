@@ -5,6 +5,7 @@ namespace FSM.Editor
     public static class Keys
     {
         public const int DragNodeMouseButton = 0;
+        public const int OpenTransitionButton = 0;
         public const KeyCode CreateNode = KeyCode.Space;
         public const KeyCode DeleteNode = KeyCode.Delete;
 

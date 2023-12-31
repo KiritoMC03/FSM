@@ -59,7 +59,7 @@ namespace FSM.Editor.Serialization
             }
 
             TransitionContextModel contextModel = new TransitionContextModel(transition.Context.AnchorNode.ConditionLink?.Id ?? -1, contextEntryNodeModels);
-            return new StateTransitionModel(sourceNode.Name, transition.Target.Name, contextModel);
+            return new StateTransitionModel(transition.Context.AnchorNode.ResolvedPlacement, sourceNode.Name, transition.Target.Name, contextModel);
 
             Dictionary<string, int> LinkedToIndexes(Dictionary<string, VisualNodeWithLinkExit> linked)
             {
@@ -148,7 +148,7 @@ namespace FSM.Editor.Serialization
             node.Transitions = nodeModel.OutgoingTransitions.Select(transitionModel =>
             {
                 VisualStateNode target = otherStates.First(targetState => targetState.Name == transitionModel.TargetName);
-                VisualStateTransition transition = node.AddTransition(target);
+                VisualStateTransition transition = node.AddTransition(target, transitionModel.AnchorNodePosition);
                 ReadTransitionContext(transition, transitionModel.ContextModel);
                 return transition;
             }).ToList();

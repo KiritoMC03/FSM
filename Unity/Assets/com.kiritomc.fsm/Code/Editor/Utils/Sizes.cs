@@ -4,7 +4,9 @@ namespace FSM.Editor
 {
     public static class Sizes
     {
-        public const float ConnectionNodePoint = 15f; 
+        public const float ConnectionNodePoint = 15f;
+        public const float NodeLinkLinkOffset = 40f;
+        public const float NodeTransitionOffset = 30f;  
         public const float NodePadding = 8;
         public const float NodeBorderWidth = 1f;
         public const float NodeBorderRadius = 8f;
@@ -12,6 +14,7 @@ namespace FSM.Editor
         public const float CreateNodePopupItemsSpacing = 8f;
         public const float LeftPanelBorderWidth = 1.5f;
 
+        public const float TransitionPointClickTrackRadius = 6;
 
         public const float ContextWidth = 80f;
         public const LengthUnit ContextWidthUnits = LengthUnit.Percent;

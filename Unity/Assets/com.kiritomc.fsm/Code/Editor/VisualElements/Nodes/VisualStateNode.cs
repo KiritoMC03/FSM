@@ -44,9 +44,9 @@ namespace FSM.Editor
             return $"{newName} {num}";
         }
 
-        public VisualStateTransition AddTransition(VisualStateNode targetNode)
+        public VisualStateTransition AddTransition(VisualStateNode targetNode, Vector2 anchorNodePosition = default)
         {
-            VisualStateTransition transition = new VisualStateTransition(this, targetNode);
+            VisualStateTransition transition = new VisualStateTransition(this, targetNode, anchorNodePosition);
             Add(transition);
             Transitions.Add(transition);
             transition.Repaint();

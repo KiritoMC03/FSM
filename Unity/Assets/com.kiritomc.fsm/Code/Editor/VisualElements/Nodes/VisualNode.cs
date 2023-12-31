@@ -12,10 +12,12 @@ namespace FSM.Editor
         public TextElement Label;
         public readonly int Id;
         private readonly List<VisualNodeStyleRegistration> styleRegistrations = new List<VisualNodeStyleRegistration>();
+        private bool isResolved;
 
         protected VisualNodeStyleRegistration BaseStyleRegistration;
 
-        public Vector2 ResolvedPlacement => new Vector2(resolvedStyle.left, resolvedStyle.top);
+        public Vector2 ResolvedPlacement => isResolved ? new Vector2(resolvedStyle.left, resolvedStyle.top) : Placement;
+
         public Vector2 Placement
         {
             get => new Vector2(style.left.value.value, style.top.value.value);
@@ -49,6 +51,12 @@ namespace FSM.Editor
                 style.minHeight = 50;
                 style.backgroundColor = Colors.NodeBackground;
             });
+            RegisterCallback<GeometryChangedEvent>(HandleFirstDraw);
+            void HandleFirstDraw(GeometryChangedEvent e)
+            {
+                UnregisterCallback<GeometryChangedEvent>(HandleFirstDraw);
+                isResolved = true;
+            }
         }
 
         public VisualNode(string nodeName, int id) : this(id)

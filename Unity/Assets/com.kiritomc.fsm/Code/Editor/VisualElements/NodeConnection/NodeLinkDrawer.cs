@@ -7,7 +7,6 @@ namespace FSM.Editor
     {
         private const int MaxPoints = 100;
         private const float LengthForMaxPoints = 1000;
-        private const float PointClickTrackRadius = 6;
         public Gradient OverrideGradient;
         public Vector2? LocalStartOffset;
         public Vector2? WorldEndPos;
@@ -21,44 +20,27 @@ namespace FSM.Editor
             generateVisualContent += OnGenerateVisualContent;
         }
 
-        public override bool ContainsPoint(Vector2 localPoint)
-        {
-            if (base.ContainsPoint(localPoint)) return true;
-            for (int i = 0; i < currentPointsNumber - 1; i++)
-                if (Vector2.Distance(points[i], localPoint) < PointClickTrackRadius) 
-                    return true;
-            return false;
-        }
-
         private void OnGenerateVisualContent(MeshGenerationContext ctx)
         {
             if (!LocalStartOffset.HasValue || !WorldEndPos.HasValue) return;
             Vector2 start = LocalStartOffset.Value;
             Vector2 end = (WorldEndPos.Value - new Vector2(worldTransform.GetPosition().x, worldTransform.GetPosition().y)) / worldTransform.lossyScale.x;
             Painter2D paint2D = ctx.painter2D;
-            Vector2 startTangent;
-            Vector2 endTangent;
-            // Vector2 offset = end - StartPos;
-        
-            // if (Mathf.Abs(offset.x) < Mathf.Abs(offset.y))
-            {
-                startTangent = new Vector2(start.x + (end.x - start.x) / 2f, start.y);
-                endTangent = new Vector2(end.x - (end.x - start.x) / 2f, end.y);
-            }
-            // else
-            // {
-            //     startTangent = new Vector2(StartPos.x, (end.y - StartPos.y) / 2f);
-            //     endTangent = new Vector2(end.x, (end.y - StartPos.y) / 2f);
-            // }
+
+            Vector2 startOffset = new Vector2(start.x - Sizes.NodeLinkLinkOffset, start.y);
+            Vector2 endOffset = new Vector2(end.x + Sizes.NodeLinkLinkOffset, end.y);
+            Vector2 startTangent = new Vector2(startOffset.x - Sizes.NodeLinkLinkOffset, startOffset.y);
+            Vector2 endTangent = new Vector2(endOffset.x + Sizes.NodeLinkLinkOffset, endOffset.y);
+
             paint2D.lineWidth = 8.0f;
             paint2D.lineCap = LineCap.Round;
             paint2D.lineJoin = LineJoin.Round;
             paint2D.strokeGradient = OverrideGradient ?? Colors.NodeLinkGradient;
             paint2D.BeginPath();
-            // paint2D.Arc(startTangent, 10, 180, -180);
-            // paint2D.Arc(endTangent, 10, 180, -180);
             paint2D.MoveTo(start);
-            paint2D.BezierCurveTo(startTangent, endTangent, end);
+            paint2D.LineTo(startOffset);
+            paint2D.BezierCurveTo(startTangent, endTangent, endOffset);
+            paint2D.LineTo(end);
             paint2D.Stroke();
 
             currentPointsNumber = Mathf.Clamp(Mathf.RoundToInt(Vector2.Distance(end, start) / LengthForMaxPoints * MaxPoints), 0, MaxPoints);
