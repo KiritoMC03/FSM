@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT License.
 // See the LICENSE file in the project root for more information. 
 
+#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 namespace System.Reactive.Disposables
@@ -22,7 +24,8 @@ namespace System.Reactive.Disposables
     /// <summary>
     /// Represents a group of disposable resources that are disposed together.
     /// </summary>
-    [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "Backward compat + ideally want to get rid of the ICollection nature of the type.")]
+    [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "Backward compat + ideally want to get rid of the ICollection nature of the type.")]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public sealed class CompositeDisposable : ICollection<IDisposable>, ICancelable
     {
         private readonly object _gate = new();
@@ -455,3 +458,5 @@ namespace System.Reactive.Disposables
         }
     }
 }
+
+#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
