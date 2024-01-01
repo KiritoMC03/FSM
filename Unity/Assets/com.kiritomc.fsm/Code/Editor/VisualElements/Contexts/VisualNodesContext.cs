@@ -94,6 +94,7 @@ namespace FSM.Editor
         {
             Vector3 scale = Content.resolvedStyle.scale.value;
             float axisValue = scale.x + delta;
+            axisValue = Mathf.Clamp(axisValue, 0.1f, 3f);
             Content.style.scale = new Vector2(axisValue, axisValue);
             foreach (T node in Nodes) node.Repaint();
         }
