@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using FSM.Editor.Serialization;
 using FSM.Runtime;
-using FSM.Runtime.Serialization;
-using Newtonsoft.Json;
+using FSM.Runtime.Common;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace FSM.Example
 {
-    public class EmulatorBehaviour : MonoBehaviour
+    public class EmulatorBehaviour : FsmAgent
     {
         public bool moving;
         public bool seeEnemy;
@@ -22,10 +19,7 @@ namespace FSM.Example
         private void Start()
         {
             Instance = this;
-
-            string jsonLogic = PlayerPrefs.GetString("FsmLogicKey");
-            List<StateBase> states = StateSerializer.DeserializeAndConvert(jsonLogic);
-            data = new FsmData(new []{new FsmAgentBase(states[0])});
+            data = new FsmData(new[] { AsRunnable() });
         }
 
         private void Update()
@@ -75,7 +69,7 @@ namespace FSM.Example
     {
         public void Execute()
         {
-            EmulatorBehaviour.SelectedWeapon = EmulatorBehaviour.Instance.weapons[Random.Range(0, EmulatorBehaviour.Instance.weapons.Length - 1)];
+            EmulatorBehaviour.SelectedWeapon = EmulatorBehaviour.Instance.weapons[Random.Range(0, EmulatorBehaviour.Instance.weapons.Length)];
         }
     }
 

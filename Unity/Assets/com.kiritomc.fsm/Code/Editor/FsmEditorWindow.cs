@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using FSM.Editor.Serialization;
-using FSM.Runtime;
 using FSM.Runtime.Serialization;
 using Newtonsoft.Json;
 using UnityEditor;
@@ -10,6 +9,8 @@ using UnityEngine.UIElements;
 
 namespace FSM.Editor
 {
+    public delegate void SaveFsmEditorDataDelegate(string editorModel, string logicModel);
+    
     public class FsmEditorWindow : EditorWindow
     {
         private readonly EditorState editorState = new EditorState();
@@ -17,18 +18,17 @@ namespace FSM.Editor
         private FsmContext rootContext;
         private VisualElement root;
         private Fabric fabric;
+        private SaveFsmEditorDataDelegate saveFsmEditorDataDelegate;
+        private string editorModel;
+        private bool isFieldsFilled;
 
-        [MenuItem("FSM/Reset Save")]
-        public static void ResetPrefs()
-        {
-            PlayerPrefs.DeleteAll();
-        }
-        
-        [MenuItem("FSM/Editor")]
-        private static void ShowWindow()
+        public static void ShowWindow(SaveFsmEditorDataDelegate saveFsmEditorDataDelegate, string editorModel)
         {
             FsmEditorWindow window = GetWindow<FsmEditorWindow>();
-            window.titleContent = new GUIContent("Fsm Editor sWindow");
+            window.saveFsmEditorDataDelegate = saveFsmEditorDataDelegate;
+            window.editorModel = editorModel;
+            window.isFieldsFilled = true;
+            window.titleContent = new GUIContent("Fsm Editor Window");
             window.Show();
         }
 
@@ -54,11 +54,10 @@ namespace FSM.Editor
         private void Save()
         {
             string json = editorSerializer?.Serialize(rootContext);
-            PlayerPrefs.SetString("FsmEditorKey", json);
 
             List<StateModel> r = LogicSerializer.Serialize(rootContext);
             string logicJson = JsonConvert.SerializeObject(r);
-            PlayerPrefs.SetString("FsmLogicKey", logicJson);
+            saveFsmEditorDataDelegate.Invoke(json, logicJson);
         }
 
         private void OnDestroy()
@@ -66,13 +65,13 @@ namespace FSM.Editor
             Save();
         }
 
-        private void LoadEditor()
+        private async void LoadEditor()
         {
+            while (!isFieldsFilled) await Task.Yield();
             editorSerializer = new EditorSerializer();
-            string json = PlayerPrefs.GetString("FsmEditorKey", default);
             rootContext = new FsmContext
             {
-                StatesContext = editorSerializer.Deserialize(json).StatesContext,
+                StatesContext = editorSerializer.Deserialize(editorModel ?? "").StatesContext,
             };
             root.Add(rootContext.StatesContext);
             editorState.CurrentContext.Value = editorState.RootContext.Value = rootContext.StatesContext;

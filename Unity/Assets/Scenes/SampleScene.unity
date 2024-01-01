@@ -338,6 +338,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e98f13bbd654d9cbdb4353d1374d828, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fsmDataAsset: {fileID: 11400000, guid: eaa6ac8282f599d4684c8d68da07669b, type: 2}
   moving: 0
   seeEnemy: 0
   weapons:
