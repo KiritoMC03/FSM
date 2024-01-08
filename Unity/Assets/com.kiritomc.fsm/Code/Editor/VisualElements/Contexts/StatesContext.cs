@@ -13,6 +13,7 @@ namespace FSM.Editor
             this.DefaultLayout()
                 .DefaultColors()
                 .DefaultInteractions();
+            style.overflow = Overflow.Hidden;
             this.AddManipulator(new ContextDraggingManipulator<VisualStateNode>(this));
             this.AddManipulator(new ScaleContextManipulator<VisualStateNode>(this));
             this.AddManipulator(new CreateVisualNodeManipulator<VisualStateNode>(GetAvailableNodes));

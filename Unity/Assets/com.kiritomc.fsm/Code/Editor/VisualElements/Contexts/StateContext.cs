@@ -17,6 +17,7 @@ namespace FSM.Editor
             this.DefaultLayout()
                 .DefaultColors()
                 .DefaultInteractions();
+            style.overflow = Overflow.Hidden;
             this.AddManipulator(new ContextDraggingManipulator<VisualNodeWithLinkExit>(this));
             this.AddManipulator(new ScaleContextManipulator<VisualNodeWithLinkExit>(this));
             this.AddManipulator(new CreateVisualNodeManipulator<VisualNodeWithLinkExit>(GetAvailableNodes));
