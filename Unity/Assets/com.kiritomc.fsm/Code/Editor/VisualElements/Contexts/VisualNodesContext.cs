@@ -24,6 +24,7 @@ namespace FSM.Editor
         public List<T> Nodes = new List<T>();
         public List<T> SelectedNodes = new List<T>();
         protected Dictionary<int, T> NodesIds = new Dictionary<int, T>();
+        protected float Scale = 1f;
 
         public void Open()
         {
@@ -71,7 +72,7 @@ namespace FSM.Editor
 
         public override void MoveNodes(Vector2 offset)
         {
-            foreach (T node in Nodes) node.Placement += offset;
+            foreach (T node in Nodes) node.Placement += offset / Scale;
             foreach (T node in Nodes) node.Repaint();
         }
 
@@ -92,10 +93,8 @@ namespace FSM.Editor
 
         public void ScaleContent(float delta)
         {
-            Vector3 scale = Content.resolvedStyle.scale.value;
-            float axisValue = scale.x + delta;
-            axisValue = Mathf.Clamp(axisValue, 0.1f, 3f);
-            Content.style.scale = new Vector2(axisValue, axisValue);
+            Scale = Mathf.Clamp(Scale + delta, 0.1f, 3f);
+            Content.style.scale = Vector2.one * Scale;
             foreach (T node in Nodes) node.Repaint();
         }
     }
