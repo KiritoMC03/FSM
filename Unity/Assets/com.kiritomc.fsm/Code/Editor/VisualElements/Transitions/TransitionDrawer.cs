@@ -78,8 +78,8 @@ namespace FSM.Editor
             //     paint2D.Stroke();
             // }
         }
-
-        private Vector2 TargetCenterLocal => source.WorldToLocal(target.worldBound).min;
+        private Vector2 TargetCenterLocal => source.WorldToLocal(target.worldTransform.GetPosition());
+        private float TargetYOffset => target.localBound.height / 2f - source.WorldToLocal(this.LocalToWorld(Vector2.zero)).y;
 
         private Vector2 GetStartPoint()
         {
@@ -88,13 +88,13 @@ namespace FSM.Editor
             if (TargetCenterLocal.x < 0) result.x *= -1;
             return result;
         }
-        
+
         private Vector2 GetTargetPoint()
         {
-            Vector2 targetCenter = TargetCenterLocal;
-            float halfHeight = target.worldBound.height / 2f;
-            if (TargetCenterLocal.y > 0) halfHeight *= -1;
-            return new Vector2(targetCenter.x, targetCenter.y + halfHeight);
+            float yOffset = target.worldBound.height / 2f;
+            Vector2 center = TargetCenterLocal;
+            if (center.y > 0) yOffset *= -1;
+            return source.WorldToLocal((Vector2)target.worldTransform.GetPosition() + new Vector2(0f, yOffset + TargetYOffset));
         }
 
         public void Repaint()
