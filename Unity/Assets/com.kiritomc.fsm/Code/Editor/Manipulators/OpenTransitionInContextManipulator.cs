@@ -26,14 +26,14 @@ namespace FSM.Editor.Manipulators
         private void HandleClick(ClickEvent e)
         {
             if (e.clickCount != 2 || e.button != Keys.OpenTransitionButton) return;
-            foreach (VisualStateTransition transition in context.Nodes.SelectMany(node => node.Transitions))
+            foreach (VisualStateTransitionData transitionData in context.Nodes.SelectMany(node => node.Transitions))
             {
-                foreach (Vector2 point in transition.IterateLinkWorldPoints())
+                foreach (Vector2 point in transitionData.Transition.IterateLinkWorldPoints())
                 {
                     float dist = Vector2.Distance(point, e.position);
                     if (dist > Sizes.TransitionPointClickTrackRadius) 
                         continue;
-                    transition.Context.Open();
+                    transitionData.Transition.Context.Open();
                     e.StopPropagation();
                     return;
                 }

@@ -83,6 +83,7 @@ namespace FSM.Editor
 
         private Vector2 GetStartPoint()
         {
+            // return Vector2.zero;
             Vector2 result = new Vector2(source.resolvedStyle.width / 2f, 0f);
             if (TargetCenterLocal.x < 0) result.x *= -1;
             return result;

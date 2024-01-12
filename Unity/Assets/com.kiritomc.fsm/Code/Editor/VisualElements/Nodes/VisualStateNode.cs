@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FSM.Editor.Extensions;
 using FSM.Editor.Manipulators;
 using UnityEngine;
@@ -11,8 +12,9 @@ namespace FSM.Editor
         public readonly StatesContext ParentContext;
         public readonly StateContext Context;
         public readonly TextInputBaseField<string> LabelInputField;
+        private readonly VisualElement fieldsContainer;
 
-        public List<VisualStateTransition> Transitions { get; set; } = new List<VisualStateTransition>();
+        public List<VisualStateTransitionData> Transitions { get; set; } = new List<VisualStateTransitionData>();
 
         public VisualStateNode(string stateName, StatesContext parentContext, Vector2 position = default, Vector2 anchorNodePosition = default) : 
             this(stateName, parentContext.GetFreeId(), parentContext, position, anchorNodePosition)
@@ -28,6 +30,14 @@ namespace FSM.Editor
             LabelInputField.style.display = DisplayStyle.None;
             style.left = position.x;
             style.top = position.y;
+            fieldsContainer = new VisualElement()
+            {
+                style =
+                {
+                    width = new StyleLength(new Length(100, LengthUnit.Percent)),
+                },
+            };
+            Add(fieldsContainer);
             this.AddManipulator(new OpenStateContextManipulator(this));
             this.AddManipulator(new StateNodeLabelManipulator(this, ValidatePotentialName));
             this.AddManipulator(new DraggerManipulator());
@@ -44,27 +54,59 @@ namespace FSM.Editor
             return $"{newName} {num}";
         }
 
-        public VisualStateTransition AddTransition(VisualStateNode targetNode, Vector2 anchorNodePosition = default)
+        public VisualStateTransitionData AddTransition(VisualStateNode targetNode, Vector2 anchorNodePosition = default)
         {
             VisualStateTransition transition = new VisualStateTransition(this, targetNode, anchorNodePosition);
-            Add(transition);
-            Transitions.Add(transition);
+            VisualNodeTransitionField field = new VisualNodeTransitionField(targetNode.Name, transition);
+            fieldsContainer.Add(field);
+            VisualStateTransitionData data = new VisualStateTransitionData(transition, field);
+            data.OnFieldPriorityUpClicked = field.SubscribePriorityUpClicked(UpPriority);
+            data.OnFieldPriorityUpClicked = field.SubscribePriorityDownClicked(DownPriority);
+            Transitions.Add(data);
             transition.Repaint();
-            return transition;
+            return data;
+
+            void UpPriority()
+            {
+                int indexOf = Transitions.IndexOf(data);
+                if (indexOf == 0) return;
+                Transitions.RemoveAt(indexOf);
+                Transitions.Insert(indexOf - 1, data);
+                SortTransitions();
+            }
+
+            void DownPriority()
+            {
+                int indexOf = Transitions.IndexOf(data);
+                if (indexOf == Transitions.Count - 1) return;
+                Transitions.RemoveAt(indexOf);
+                Transitions.Insert(indexOf + 1, data);
+                SortTransitions();
+            }
         }
 
         public void RemoveTransitionAt(int index)
         {
-            VisualStateTransition transition = Transitions[index];
+            VisualStateTransitionData data = Transitions[index];
             Transitions.RemoveAt(index);
-            Remove(transition);
-            transition.Dispose();
+            fieldsContainer.Remove(data.Field);
+            data.Dispose();
         }
 
         public override void Repaint()
         {
             base.Repaint();
-            Transitions.Repaint();
+            Transitions.Select(d => d.Transition).Repaint();
+        }
+
+        private void SortTransitions()
+        {
+            fieldsContainer.Sort((transitionA, transitionB) =>
+            {
+                int indexA = Transitions.FindIndex(element => element.Field == transitionA);
+                int indexB = Transitions.FindIndex(element => element.Field == transitionB);
+                return indexA - indexB;
+            });
         }
     }
 }

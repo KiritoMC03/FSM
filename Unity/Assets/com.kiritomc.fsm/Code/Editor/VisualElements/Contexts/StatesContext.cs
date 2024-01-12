@@ -46,8 +46,8 @@ namespace FSM.Editor
             {
                 for (int i = other.Transitions.Count - 1; i >= 0; i--)
                 {
-                    VisualStateTransition transition = other.Transitions[i];
-                    if (transition.Target == node || transition.Source == node) other.RemoveTransitionAt(i);
+                    VisualStateTransitionData transitionData = other.Transitions[i];
+                    if (transitionData.Transition.Target == node || transitionData.Transition.Source == node) other.RemoveTransitionAt(i);
                 }
             }
         }

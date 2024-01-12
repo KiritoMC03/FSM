@@ -42,8 +42,9 @@ namespace FSM.Editor.Serialization
             );
         }
 
-        private StateTransitionModel WriteTransitionContext(VisualStateNode sourceNode, VisualStateTransition transition)
+        private StateTransitionModel WriteTransitionContext(VisualStateNode sourceNode, VisualStateTransitionData transitionData)
         {
+            VisualStateTransition transition = transitionData.Transition;
             VisualNodeModel[] contextEntryNodeModels = new VisualNodeModel[transition.Context.Nodes.Count];
             for (int i = 0; i < transition.Context.Nodes.Count; i++)
             {
@@ -148,14 +149,15 @@ namespace FSM.Editor.Serialization
             node.Transitions = nodeModel.OutgoingTransitions.Select(transitionModel =>
             {
                 VisualStateNode target = otherStates.First(targetState => targetState.Name == transitionModel.TargetName);
-                VisualStateTransition transition = node.AddTransition(target, transitionModel.AnchorNodePosition);
-                ReadTransitionContext(transition, transitionModel.ContextModel);
-                return transition;
+                VisualStateTransitionData transitionData = node.AddTransition(target, transitionModel.AnchorNodePosition);
+                ReadTransitionContext(transitionData, transitionModel.ContextModel);
+                return transitionData;
             }).ToList();
         }
 
-        private void ReadTransitionContext(VisualStateTransition transition, TransitionContextModel transitionContextModel)
+        private void ReadTransitionContext(VisualStateTransitionData transitionData, TransitionContextModel transitionContextModel)
         {
+            VisualStateTransition transition = transitionData.Transition;
             VisualNodeWithLinkFields[] nodes = new VisualNodeWithLinkFields[transitionContextModel.ConditionalNodeModels.Length];
             for (int i = 0; i < transitionContextModel.ConditionalNodeModels.Length; i++)
             {
@@ -238,12 +240,12 @@ namespace FSM.Editor.Serialization
             foreach (VisualStateNode node in rootContext.StatesContext.Nodes)
             {
                 Dictionary<string, AbstractSerializableType<ConditionalLayoutNodeModel>> transitions = new Dictionary<string, AbstractSerializableType<ConditionalLayoutNodeModel>>();
-                foreach (VisualStateTransition transition in node.Transitions)
+                foreach (VisualStateTransitionData transitionData in node.Transitions)
                 {
-                    ConditionalLayoutNodeModel root = SerializeConditionalNode(transition.Context.AnchorNode.ConditionLink);
+                    ConditionalLayoutNodeModel root = SerializeConditionalNode(transitionData.Transition.Context.AnchorNode.ConditionLink);
                     if (root != null)
                         transitions.Add(
-                            transition.Target.Name,
+                            transitionData.Transition.Target.Name,
                             new AbstractSerializableType<ConditionalLayoutNodeModel>(root));
                 }
 

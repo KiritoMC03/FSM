@@ -19,10 +19,12 @@ namespace FSM.Editor
 
         public VisualStateTransition(VisualStateNode source, VisualStateNode target, Vector2 anchorNodePosition = default)
         {
+            style.minWidth = new StyleLength(new Length(100, LengthUnit.Percent));
             Source = source;
             Target = target;
+            style.position = Position.Absolute;
             style.alignSelf = Align.Center;
-            style.flexDirection = FlexDirection.Column;
+            style.flexDirection = FlexDirection.Row;
             style.justifyContent = Justify.Center;
             Context = new TransitionContext(this, $"{source.Name} -> {target.Name}", anchorNodePosition);
             Add(drawer = new TransitionDrawer(source, target, () => Context.Open()));

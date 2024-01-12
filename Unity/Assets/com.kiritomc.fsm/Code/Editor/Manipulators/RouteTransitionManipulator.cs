@@ -53,7 +53,7 @@ namespace FSM.Editor.Manipulators
                 {
                     return targetNode != null 
                            && targetNode != currentNode 
-                           && currentNode.Transitions.All(item => item.Target != stateNode);
+                           && currentNode.Transitions.All(item => item.Transition.Target != stateNode);
                 }
             }
             isRouting = false;
